@@ -2,32 +2,55 @@
 aaip/cli/identity.py
 Commands: init, register, status, doctor
 """
+
 from __future__ import annotations
 
 import json
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 import click
 
 from ._shared import (
-    banner, get_client, load_manifest, save_manifest,
-    b, c, g, r, y, dim, bold, tick, fail, info, warn,
+    b,
+    banner,
+    bold,
+    c,
+    dim,
+    fail,
+    g,
+    get_client,
+    info,
+    load_manifest,
+    r,
+    save_manifest,
+    tick,
+    warn,
+    y,
 )
 
 
 @click.command()
-@click.option("--name",         prompt="Agent name",              help="Your agent's name")
-@click.option("--owner",        prompt="Owner / organization",    help="Your name or org")
-@click.option("--endpoint",     prompt="Agent endpoint URL",      help="https://your-agent.com/api")
-@click.option("--capabilities", prompt="Capabilities (comma-separated)", help="e.g. translation,code_analysis")
-@click.option("--domain",       type=click.Choice(["coding", "finance", "general"]),
-              default="general", prompt="Domain")
-@click.option("--framework",    type=click.Choice(["langchain", "crewai", "openai_agents", "autogpt", "custom"]),
-              prompt="Framework", default="custom")
-@click.option("--output",       default=".aaip.json", help="Output file path")
+@click.option("--name", prompt="Agent name", help="Your agent's name")
+@click.option("--owner", prompt="Owner / organization", help="Your name or org")
+@click.option("--endpoint", prompt="Agent endpoint URL", help="https://your-agent.com/api")
+@click.option(
+    "--capabilities", prompt="Capabilities (comma-separated)", help="e.g. translation,code_analysis"
+)
+@click.option(
+    "--domain",
+    type=click.Choice(["coding", "finance", "general"]),
+    default="general",
+    prompt="Domain",
+)
+@click.option(
+    "--framework",
+    type=click.Choice(["langchain", "crewai", "openai_agents", "autogpt", "custom"]),
+    prompt="Framework",
+    default="custom",
+)
+@click.option("--output", default=".aaip.json", help="Output file path")
 def init(
     name: str,
     owner: str,
@@ -74,9 +97,9 @@ def init(
 
 
 @click.command()
-@click.option("--manifest", default=".aaip.json",  help="Path to manifest file")
-@click.option("--api-key",  envvar="AAIP_API_KEY", help="AAIP API key")
-def register(manifest: str, api_key: Optional[str]) -> None:
+@click.option("--manifest", default=".aaip.json", help="Path to manifest file")
+@click.option("--api-key", envvar="AAIP_API_KEY", help="AAIP API key")
+def register(manifest: str, api_key: str | None) -> None:
     """Register your agent with the AAIP network."""
     banner()
     click.echo(bold("  Registering agent...\n"))
@@ -94,11 +117,9 @@ def register(manifest: str, api_key: Optional[str]) -> None:
     client = get_client(api_key)
 
     try:
-        result   = client.register(data)
+        result = client.register(data)
         agent_id = (
-            result.get("arpp_agent_id")
-            or result.get("aaip_agent_id")
-            or result.get("agent_id", "")
+            result.get("arpp_agent_id") or result.get("aaip_agent_id") or result.get("agent_id", "")
         )
 
         tick("Connected to AAIP network")
@@ -127,13 +148,13 @@ def register(manifest: str, api_key: Optional[str]) -> None:
 
 @click.command()
 @click.option("--agent-id", envvar="AAIP_AGENT_ID")
-@click.option("--api-key",  envvar="AAIP_API_KEY")
-def status(agent_id: Optional[str], api_key: Optional[str]) -> None:
+@click.option("--api-key", envvar="AAIP_API_KEY")
+def status(agent_id: str | None, api_key: str | None) -> None:
     """Show your agent's reputation score and stats."""
     banner()
 
     if not agent_id:
-        config   = load_manifest(".aaip-config.json")
+        config = load_manifest(".aaip-config.json")
         agent_id = (config or {}).get("agent_id")
     if not agent_id:
         fail("No agent ID. Set AAIP_AGENT_ID or run 'aaip register' first.")
@@ -141,17 +162,19 @@ def status(agent_id: Optional[str], api_key: Optional[str]) -> None:
 
     client = get_client(api_key)
     try:
-        data   = client.get_agent(agent_id)
-        rep    = client.get_reputation(agent_id)
-        score  = rep.current_score
-        trend  = rep.trend
+        data = client.get_agent(agent_id)
+        rep = client.get_reputation(agent_id)
+        score = rep.current_score
+        trend = rep.trend
         trend_str = (
-            g(f"↑ +{trend:.1f}") if trend > 0
-            else r(f"↓ {trend:.1f}") if trend < 0
+            g(f"↑ +{trend:.1f}")
+            if trend > 0
+            else r(f"↓ {trend:.1f}")
+            if trend < 0
             else dim("→ 0.0")
         )
 
-        agent  = data.get("agent", {})
+        agent = data.get("agent", {})
         traces = data.get("trace_stats", {})
 
         click.echo(f"  {bold(agent.get('agent_name', agent_id))}\n")
@@ -168,9 +191,9 @@ def status(agent_id: Optional[str], api_key: Optional[str]) -> None:
 
 
 @click.command()
-@click.option("--api-key",  envvar="AAIP_API_KEY")
+@click.option("--api-key", envvar="AAIP_API_KEY")
 @click.option("--base-url", envvar="AAIP_BASE_URL")
-def doctor(api_key: Optional[str], base_url: Optional[str]) -> None:
+def doctor(api_key: str | None, base_url: str | None) -> None:
     """Validate your AAIP config and check network health."""
     banner()
     click.echo(bold("  Running diagnostics...\n"))
@@ -202,7 +225,7 @@ def doctor(api_key: Optional[str], base_url: Optional[str]) -> None:
         warn("AAIP_API_KEY not set — set it to authenticate")
         issues += 1
 
-    config   = load_manifest(".aaip-config.json")
+    config = load_manifest(".aaip-config.json")
     agent_id = (config or {}).get("agent_id")
     if agent_id:
         tick(f"Agent ID: {c(agent_id)}")

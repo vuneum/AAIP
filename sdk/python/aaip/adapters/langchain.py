@@ -17,10 +17,10 @@ Usage:
 from __future__ import annotations
 
 import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from ..client import AAIPClient, AsyncAAIPClient
-from ..models import AgentManifest, PoETrace, PoETraceStep
+from ..models import AgentManifest, PoETraceStep
 from ..poe import ProofOfExecution
 
 
@@ -33,7 +33,7 @@ class AAIPLangChainAgent:
     def __init__(
         self,
         langchain_agent: Any,
-        aaip_client: Union[AAIPClient, AsyncAAIPClient],
+        aaip_client: AAIPClient | AsyncAAIPClient,
         agent_id: str,
         auto_evaluate: bool = True,
         auto_submit_trace: bool = True,
@@ -46,7 +46,7 @@ class AAIPLangChainAgent:
         self.auto_submit_trace = auto_submit_trace
         self.domain = domain
 
-    def run(self, task: str, **kwargs) -> Dict[str, Any]:
+    def run(self, task: str, **kwargs) -> dict[str, Any]:
         """Run the LangChain agent with AAIP PoE tracing."""
         import uuid
 
@@ -71,25 +71,36 @@ class AAIPLangChainAgent:
                     result = {"output": output}
 
                 latency = int(time.time() * 1000) - start
-                poe.tool("langchain_agent", inputs={"task": task[:200]}, output={"output": str(output)[:200]}, latency_ms=latency)
+                poe.tool(
+                    "langchain_agent",
+                    inputs={"task": task[:200]},
+                    output={"output": str(output)[:200]},
+                    latency_ms=latency,
+                )
 
                 # Capture intermediate steps if available
                 if hasattr(result, "get") and result.get("intermediate_steps"):
                     for step in result["intermediate_steps"]:
                         action, obs = step if isinstance(step, tuple) else (step, "")
                         tool_name = getattr(action, "tool", "unknown_tool")
-                        poe.tool(tool_name, inputs={"input": str(getattr(action, "tool_input", ""))[:100]}, output={"obs": str(obs)[:100]})
+                        poe.tool(
+                            tool_name,
+                            inputs={"input": str(getattr(action, "tool_input", ""))[:100]},
+                            output={"obs": str(obs)[:100]},
+                        )
 
-                poe.reason(f"Task completed successfully")
+                poe.reason("Task completed successfully")
 
             except Exception as e:
-                poe.trace.add_step(PoETraceStep(
-                    step_type="tool_call",
-                    name="langchain_agent",
-                    timestamp_ms=int(time.time() * 1000),
-                    status="error",
-                    metadata={"error": str(e)},
-                ))
+                poe.trace.add_step(
+                    PoETraceStep(
+                        step_type="tool_call",
+                        name="langchain_agent",
+                        timestamp_ms=int(time.time() * 1000),
+                        status="error",
+                        metadata={"error": str(e)},
+                    )
+                )
                 raise
 
         # Submit trace
@@ -121,7 +132,7 @@ class AAIPLangChainAgent:
             "evaluation": eval_result,
         }
 
-    async def arun(self, task: str, **kwargs) -> Dict[str, Any]:
+    async def arun(self, task: str, **kwargs) -> dict[str, Any]:
         """Async version of run."""
         import uuid
 
@@ -141,7 +152,12 @@ class AAIPLangChainAgent:
                 output = str(self.agent(task))
 
             latency = int(time.time() * 1000) - start
-            poe.tool("langchain_agent", inputs={"task": task[:200]}, output={"output": str(output)[:200]}, latency_ms=latency)
+            poe.tool(
+                "langchain_agent",
+                inputs={"task": task[:200]},
+                output={"output": str(output)[:200]},
+                latency_ms=latency,
+            )
 
         if self.auto_submit_trace and isinstance(self.client, AsyncAAIPClient):
             try:
@@ -175,8 +191,8 @@ def register_langchain_agent(
     agent_name: str,
     owner: str,
     endpoint: str,
-    capabilities: List[str],
-    tools: Optional[List[str]] = None,
+    capabilities: list[str],
+    tools: list[str] | None = None,
     description: str = "",
     domain: str = "general",
 ) -> dict:

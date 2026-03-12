@@ -9,15 +9,16 @@ Commands are split into focused modules:
     explorer.py   — explorer, explore
     leaderboard.py — leaderboard, discover, evaluate, wallet
 """
+
 from __future__ import annotations
 
 import click
 
-from .identity   import init, register, status, doctor
-from .run        import run, verify, demo
-from .simulate   import simulate
-from .explorer   import explorer, explore
-from .leaderboard import leaderboard, discover, evaluate, wallet
+from .explorer import explore, explorer
+from .identity import doctor, init, register, status
+from .leaderboard import discover, evaluate, leaderboard, wallet
+from .run import demo, run, verify
+from .simulate import simulate
 
 
 @click.group()

@@ -38,31 +38,42 @@ Quick start:
 __version__ = "1.0.0"
 
 # ── Quick integration (10-minute onboarding) ──────────────────────────────
-from .quick import aaip_agent, aaip_task, verify, AAIPResult
+from .quick import AAIPResult, aaip_agent, aaip_task, verify
+
 
 # ── Network client (lazy — only loaded if httpx is installed) ─────────────
 def __getattr__(name):
     _lazy = {
-        "AAIPClient", "AsyncAAIPClient", "AgentManifest",
-        "ProofOfExecution", "PoETrace", "PoETraceStep", "track_tool",
+        "AAIPClient",
+        "AsyncAAIPClient",
+        "AgentManifest",
+        "ProofOfExecution",
+        "PoETrace",
+        "PoETraceStep",
+        "track_tool",
     }
     if name in _lazy:
         try:
-            from . import client as _c, models as _m, poe as _p
+            from . import client as _c
+            from . import models as _m
+            from . import poe as _p
+
             _map = {
-                "AAIPClient":       _c.AAIPClient,
-                "AsyncAAIPClient":  _c.AsyncAAIPClient,
-                "AgentManifest":    _m.AgentManifest,
+                "AAIPClient": _c.AAIPClient,
+                "AsyncAAIPClient": _c.AsyncAAIPClient,
+                "AgentManifest": _m.AgentManifest,
                 "ProofOfExecution": _p.ProofOfExecution,
-                "PoETrace":         _m.PoETrace,
-                "PoETraceStep":     _m.PoETraceStep,
-                "track_tool":       _p.track_tool,
+                "PoETrace": _m.PoETrace,
+                "PoETraceStep": _m.PoETraceStep,
+                "track_tool": _p.track_tool,
             }
             if name in _map:
                 return _map[name]
         except ImportError:
             pass
     raise AttributeError(f"module 'aaip' has no attribute {name!r}")
+
+
 __author__ = "AAIP"
 __license__ = "MIT"
 
@@ -79,6 +90,11 @@ __all__ = [
     "PoETraceStep",
     "ProofOfExecution",
     "track_tool",
+    # Quick integration
+    "AAIPResult",
+    "aaip_agent",
+    "aaip_task",
+    "verify",
     # Evaluation
     "EvaluationRequest",
     "EvaluationResponse",

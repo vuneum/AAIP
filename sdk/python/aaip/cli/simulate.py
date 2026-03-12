@@ -2,24 +2,30 @@
 aaip/cli/simulate.py
 Command: simulate
 """
+
 from __future__ import annotations
 
 import random
-from typing import Optional
 
 import click
 
-from ._shared import banner, g, r, y, dim, bold, tick
+from ._shared import banner, bold, dim, g, r, tick, y
 
 
 @click.command()
-@click.option("--agents",           default=10,     show_default=True, help="Number of agents to simulate")
-@click.option("--validators",       default=5,      show_default=True, help="Validators per panel")
-@click.option("--malicious-ratio",  default=0.20,   show_default=True, help="Fraction of malicious agents (0-1)")
-@click.option("--scenario",         default="mixed", show_default=True,
-              type=click.Choice(["honest", "fraud", "mixed", "sybil", "collusion"]),
-              help="Simulation scenario")
-@click.option("--tasks",            default=100,    show_default=True, help="Number of tasks to simulate")
+@click.option("--agents", default=10, show_default=True, help="Number of agents to simulate")
+@click.option("--validators", default=5, show_default=True, help="Validators per panel")
+@click.option(
+    "--malicious-ratio", default=0.20, show_default=True, help="Fraction of malicious agents (0-1)"
+)
+@click.option(
+    "--scenario",
+    default="mixed",
+    show_default=True,
+    type=click.Choice(["honest", "fraud", "mixed", "sybil", "collusion"]),
+    help="Simulation scenario",
+)
+@click.option("--tasks", default=100, show_default=True, help="Number of tasks to simulate")
 def simulate(
     agents: int,
     validators: int,
@@ -48,32 +54,32 @@ def simulate(
     click.echo(f"  Scenario:   {bold(scenario)}")
     click.echo()
 
-    rng              = random.Random(42)
+    rng = random.Random(42)
     agent_identities = [AgentIdentity.generate() for _ in range(agents)]
-    n_malicious      = int(agents * malicious_ratio)
-    malicious_ids    = {a.agent_id for a in agent_identities[:n_malicious]}
-    panel            = ValidatorPanel(n=validators)
+    n_malicious = int(agents * malicious_ratio)
+    malicious_ids = {a.agent_id for a in agent_identities[:n_malicious]}
+    panel = ValidatorPanel(n=validators)
 
-    approved_count  = 0
-    rejected_count  = 0
-    fraud_caught    = 0
-    false_positive  = 0
+    approved_count = 0
+    rejected_count = 0
+    fraud_caught = 0
+    false_positive = 0
     escrow_released = 0.0
     escrow_refunded = 0.0
-    task_value      = 0.002   # USDC
+    task_value = 0.002  # USDC
 
     tasks_to_run = min(tasks, 500)
-    bar_width    = 40
+    bar_width = 40
 
     click.echo(f"  Running {tasks_to_run} tasks...")
     click.echo()
 
     for i in range(tasks_to_run):
-        agent      = rng.choice(agent_identities)
-        is_mal     = agent.agent_id in malicious_ids
+        agent = rng.choice(agent_identities)
+        is_mal = agent.agent_id in malicious_ids
         should_fraud = _should_commit_fraud(scenario, is_mal, rng)
 
-        task_desc  = f"Task {i}: process dataset and return summary"
+        task_desc = f"Task {i}: process dataset and return summary"
         output_str = f"Processed dataset {i}. Summary: {rng.randint(1000, 9999)} records."
 
         poe = DeterministicPoE(agent)
@@ -86,15 +92,15 @@ def simulate(
 
         if should_fraud:
             poe_dict["output_hash"] = "00" * 32
-            poe_dict["step_count"]  = -1
+            poe_dict["step_count"] = -1
 
         result = panel.vote(poe_dict)
 
         if result.passed:
-            approved_count  += 1
+            approved_count += 1
             escrow_released += task_value * 0.993
         else:
-            rejected_count  += 1
+            rejected_count += 1
             escrow_refunded += task_value
             if should_fraud:
                 fraud_caught += 1
@@ -104,15 +110,15 @@ def simulate(
         # Progress bar
         if (i + 1) % max(1, tasks_to_run // 20) == 0 or i == tasks_to_run - 1:
             done = int((i + 1) / tasks_to_run * bar_width)
-            bar  = "█" * done + "░" * (bar_width - done)
-            pct  = int((i + 1) / tasks_to_run * 100)
+            bar = "█" * done + "░" * (bar_width - done)
+            pct = int((i + 1) / tasks_to_run * 100)
             click.echo(f"  [{bar}] {pct:3d}%  ({i + 1}/{tasks_to_run})", nl=(i == tasks_to_run - 1))
 
     click.echo()
     click.echo()
 
     fraud_detection = fraud_caught / max(1, rejected_count + fraud_caught) * 100
-    validation_acc  = approved_count / tasks_to_run * 100
+    validation_acc = approved_count / tasks_to_run * 100
 
     click.echo(f"  {'─' * 48}")
     click.echo(f"  {bold('Results')}\n")
@@ -125,10 +131,12 @@ def simulate(
     tick(f"Escrow refunded:  {bold(f'{escrow_refunded:.4f} USDC')}")
     tick(f"Fraud detection:  {g(bold(f'{fraud_detection:.1f}%'))}")
     click.echo()
-    click.echo(dim(
-        "  For full simulation (7 scenarios, 2000 tasks): "
-        "python simulation_lab/aaip_sim.py benchmark\n"
-    ))
+    click.echo(
+        dim(
+            "  For full simulation (7 scenarios, 2000 tasks): "
+            "python simulation_lab/aaip_sim.py benchmark\n"
+        )
+    )
 
 
 def _should_commit_fraud(scenario: str, is_malicious: bool, rng: random.Random) -> bool:

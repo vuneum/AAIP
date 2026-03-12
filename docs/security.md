@@ -188,7 +188,7 @@ At current parameters, a fraud attempt that fails costs the attacker at minimum 
 
 ## Reporting Security Issues
 
-Please report security vulnerabilities to: **security@aaip.dev**
+Please report security vulnerabilities to: **security@vuneum.com**
 
 Do not open public GitHub issues for security vulnerabilities.
 

@@ -243,7 +243,7 @@ Open a [GitHub Issue](https://github.com/vuneum/aaip/issues/new) with:
 
 **Do not open public GitHub issues for security vulnerabilities.**
 
-Email: **security@aaip.dev**
+Email: **security@vuneum.com**
 
 Include:
 - Vulnerability description

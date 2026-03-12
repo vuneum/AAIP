@@ -5,11 +5,9 @@ Utilities for generating verifiable execution traces.
 
 from __future__ import annotations
 
-import hashlib
-import time
 import functools
-from contextlib import asynccontextmanager, contextmanager
-from typing import Any, Callable, Optional
+import time
+from typing import Any, Callable
 
 from ..models import PoETrace, PoETraceStep
 
@@ -73,7 +71,9 @@ class ProofOfExecution:
         )
         self.trace.add_step(step)
 
-    def llm_call(self, model: str, tokens_in: int = 0, tokens_out: int = 0, latency_ms: int = 0) -> None:
+    def llm_call(
+        self, model: str, tokens_in: int = 0, tokens_out: int = 0, latency_ms: int = 0
+    ) -> None:
         """Record an LLM inference call."""
         step = PoETraceStep(
             step_type="llm_call",
@@ -116,7 +116,7 @@ class ProofOfExecution:
         }
 
 
-def track_tool(poe: ProofOfExecution, tool_name: Optional[str] = None):
+def track_tool(poe: ProofOfExecution, tool_name: str | None = None):
     """
     Decorator to automatically track tool calls in a PoE trace.
 
@@ -125,6 +125,7 @@ def track_tool(poe: ProofOfExecution, tool_name: Optional[str] = None):
         def search(query: str) -> list:
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         name = tool_name or func.__name__
 
@@ -134,16 +135,23 @@ def track_tool(poe: ProofOfExecution, tool_name: Optional[str] = None):
             try:
                 result = func(*args, **kwargs)
                 latency = int(time.time() * 1000) - start
-                poe.tool(name, inputs={"args": str(args)[:100]}, output=str(result)[:100], latency_ms=latency)
+                poe.tool(
+                    name,
+                    inputs={"args": str(args)[:100]},
+                    output=str(result)[:100],
+                    latency_ms=latency,
+                )
                 return result
             except Exception as e:
-                poe.trace.add_step(PoETraceStep(
-                    step_type="tool_call",
-                    name=name,
-                    timestamp_ms=int(time.time() * 1000),
-                    status="error",
-                    metadata={"error": str(e)},
-                ))
+                poe.trace.add_step(
+                    PoETraceStep(
+                        step_type="tool_call",
+                        name=name,
+                        timestamp_ms=int(time.time() * 1000),
+                        status="error",
+                        metadata={"error": str(e)},
+                    )
+                )
                 raise
 
         @functools.wraps(func)
@@ -152,18 +160,27 @@ def track_tool(poe: ProofOfExecution, tool_name: Optional[str] = None):
             try:
                 result = await func(*args, **kwargs)
                 latency = int(time.time() * 1000) - start
-                poe.tool(name, inputs={"args": str(args)[:100]}, output=str(result)[:100], latency_ms=latency)
+                poe.tool(
+                    name,
+                    inputs={"args": str(args)[:100]},
+                    output=str(result)[:100],
+                    latency_ms=latency,
+                )
                 return result
             except Exception as e:
-                poe.trace.add_step(PoETraceStep(
-                    step_type="tool_call",
-                    name=name,
-                    timestamp_ms=int(time.time() * 1000),
-                    status="error",
-                    metadata={"error": str(e)},
-                ))
+                poe.trace.add_step(
+                    PoETraceStep(
+                        step_type="tool_call",
+                        name=name,
+                        timestamp_ms=int(time.time() * 1000),
+                        status="error",
+                        metadata={"error": str(e)},
+                    )
+                )
                 raise
 
         import asyncio
+
         return async_wrapper if asyncio.iscoroutinefunction(func) else wrapper
+
     return decorator
