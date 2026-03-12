@@ -37,7 +37,7 @@ def _build_demo_poe(fraud: bool) -> tuple:
 
 
 @click.command()
-@click.option("--fraud",       is_flag=True, default=False, help="Show a fraudulent PoE for comparison")
+@click.option("--fraud",       is_flag=True, default=False, help="Show a fraudulent PoE for comparison")  # noqa: E501
 @click.option("--json-output", is_flag=True, default=False, help="Print raw JSON")
 @click.option("--pretty",      is_flag=True, default=False, help="Pretty-print the full trace")
 def explorer(fraud: bool, json_output: bool, pretty: bool) -> None:
@@ -54,7 +54,7 @@ def explorer(fraud: bool, json_output: bool, pretty: bool) -> None:
 
 
 @click.command()
-@click.option("--fraud",       is_flag=True, default=False, help="Show a fraudulent PoE for comparison")
+@click.option("--fraud",       is_flag=True, default=False, help="Show a fraudulent PoE for comparison")  # noqa: E501
 @click.option("--json-output", is_flag=True, default=False, help="Print raw JSON")
 def explore(fraud: bool, json_output: bool) -> None:
     """AAIP Explorer — inspect a signed PoE and validator votes (alias for explorer)."""
@@ -91,7 +91,7 @@ def _render_explorer(fraud: bool, json_output: bool, pretty: bool) -> None:
         fields = [
             ("aaip_version", poe_dict["aaip_version"]),
             ("agent_id",     c(poe_dict["agent_id"])),
-            ("task",         dim(poe_dict["task"][:60] + ("..." if len(poe_dict["task"]) > 60 else ""))),
+            ("task",         dim(poe_dict["task"][:60] + ("..." if len(poe_dict["task"]) > 60 else ""))),  # noqa: E501
             ("tools_used",   g(", ".join(poe_dict["tools_used"]))),
             ("model_used",   b(str(poe_dict["model_used"]))),
             ("step_count",   str(poe_dict["step_count"])),

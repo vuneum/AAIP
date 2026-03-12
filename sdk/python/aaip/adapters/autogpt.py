@@ -120,7 +120,7 @@ class AAIPAutoGPTAdapter:
             start = int(time.time() * 1000)
             output = autogpt_run_fn(task, **kwargs)
             latency = int(time.time() * 1000) - start
-            poe.tool("autogpt_run", inputs={"task": task[:200]}, output={"result": str(output)[:200]}, latency_ms=latency)
+            poe.tool("autogpt_run", inputs={"task": task[:200]}, output={"result": str(output)[:200]}, latency_ms=latency)  # noqa: E501
 
         if self.auto_submit_trace and isinstance(self.aaip, AAIPClient):
             try:

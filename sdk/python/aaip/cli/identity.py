@@ -34,10 +34,10 @@ from ._shared import (
 @click.option("--name",         prompt="Agent name",              help="Your agent's name")
 @click.option("--owner",        prompt="Owner / organization",    help="Your name or org")
 @click.option("--endpoint",     prompt="Agent endpoint URL",      help="https://your-agent.com/api")
-@click.option("--capabilities", prompt="Capabilities (comma-separated)", help="e.g. translation,code_analysis")
+@click.option("--capabilities", prompt="Capabilities (comma-separated)", help="e.g. translation,code_analysis")  # noqa: E501
 @click.option("--domain",       type=click.Choice(["coding", "finance", "general"]),
               default="general", prompt="Domain")
-@click.option("--framework",    type=click.Choice(["langchain", "crewai", "openai_agents", "autogpt", "custom"]),
+@click.option("--framework",    type=click.Choice(["langchain", "crewai", "openai_agents", "autogpt", "custom"]),  # noqa: E501
               prompt="Framework", default="custom")
 @click.option("--output",       default=".aaip.json", help="Output file path")
 def init(

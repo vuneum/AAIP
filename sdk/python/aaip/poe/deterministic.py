@@ -306,7 +306,7 @@ class PoEVerifier:
 
 
 class VerificationResult:
-    def __init__(self, verdict: str, signals: list[str], hash_verified: bool, signature_verified: bool) -> None:
+    def __init__(self, verdict: str, signals: list[str], hash_verified: bool, signature_verified: bool) -> None:  # noqa: E501
         self.verdict             = verdict
         self.signals             = signals
         self.hash_verified       = hash_verified

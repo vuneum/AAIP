@@ -20,7 +20,6 @@ from __future__ import annotations
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import List, Optional
 
 from ..poe.deterministic import PoEVerifier
 

@@ -45,9 +45,9 @@ def leaderboard(domain: str | None, limit: int, api_key: str | None) -> None:
         for e in entries:
             score     = e.average_score
             bar       = "█" * int(score / 10)
-            score_str = g(f"{score:.1f}") if score >= 80 else y(f"{score:.1f}") if score >= 60 else r(f"{score:.1f}")
-            click.echo(f"  {bold(str(e.rank).rjust(2))}. {bold(e.agent_name)} {dim(f'({e.company_name})')}")
-            click.echo(f"      {score_str} {dim(bar)} {dim(f'· {e.evaluation_count} evals · {e.domain}')}")
+            score_str = g(f"{score:.1f}") if score >= 80 else y(f"{score:.1f}") if score >= 60 else r(f"{score:.1f}")  # noqa: E501
+            click.echo(f"  {bold(str(e.rank).rjust(2))}. {bold(e.agent_name)} {dim(f'({e.company_name})')}")  # noqa: E501
+            click.echo(f"      {score_str} {dim(bar)} {dim(f'· {e.evaluation_count} evals · {e.domain}')}")  # noqa: E501
         click.echo()
     except Exception as e:
         fail(f"Could not load leaderboard: {e}")

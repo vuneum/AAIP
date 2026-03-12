@@ -38,7 +38,7 @@ Quick start:
 __version__ = "1.0.0"
 
 # ── Quick integration (10-minute onboarding) ──────────────────────────────
-from .quick import AAIPResult, aaip_agent, aaip_task, verify
+from .quick import AAIPResult, aaip_agent, aaip_task, verify  # noqa: F401
 
 
 # ── Network client (lazy — only loaded if httpx is installed) ─────────────

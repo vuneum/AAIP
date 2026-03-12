@@ -365,7 +365,7 @@ def aaip_crewai(crew: Any, validators: int = 3) -> Any:
             raw  = self._inner.kickoff(inputs=inputs, **kwargs)
             out  = getattr(raw, "raw", str(raw))
             agent_roles = [a.role for a in getattr(self._inner, "agents", [])]
-            tools = [f"crew_agent:{r.lower().replace(' ','_')}" for r in agent_roles] or ["crewai_kickoff"]
+            tools = [f"crew_agent:{r.lower().replace(' ','_')}" for r in agent_roles] or ["crewai_kickoff"]  # noqa: E501
             return _build_and_verify(identity, task, out, tools, None, validators)
 
         def __getattr__(self, name):

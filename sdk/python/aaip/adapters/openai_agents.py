@@ -77,7 +77,7 @@ class AAIPOpenAIAgent:
                     output = str(self.agent)
 
                 latency = int(time.time() * 1000) - start
-                poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)
+                poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)  # noqa: E501
 
                 # Capture tool calls if available
                 if hasattr(result, "messages"):
@@ -137,10 +137,10 @@ class AAIPOpenAIAgent:
             if hasattr(self.agent, "arun"):
                 result = await self.agent.arun(task, **kwargs)
             else:
-                result = self.agent.run(task, **kwargs) if hasattr(self.agent, "run") else str(self.agent)
+                result = self.agent.run(task, **kwargs) if hasattr(self.agent, "run") else str(self.agent)  # noqa: E501
             output = str(result)
             latency = int(time.time() * 1000) - start
-            poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)
+            poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)  # noqa: E501
 
         if isinstance(self.aaip, AsyncAAIPClient):
             try:

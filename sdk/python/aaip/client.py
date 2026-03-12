@@ -43,7 +43,7 @@ class _BaseClient:
         timeout: float = 30.0,
     ):
         self.api_key = api_key or os.environ.get("AAIP_API_KEY", "")
-        self.base_url = (base_url or os.environ.get("AAIP_BASE_URL", self.DEFAULT_BASE_URL)).rstrip("/")
+        self.base_url = (base_url or os.environ.get("AAIP_BASE_URL", self.DEFAULT_BASE_URL)).rstrip("/")  # noqa: E501
         self.timeout = timeout
 
     def _headers(self) -> dict[str, str]:
@@ -244,7 +244,7 @@ class AsyncAAIPClient(_BaseClient):
         """Poll async evaluation job status."""
         return await self._get(f"/jobs/{job_id}")
 
-    async def wait_for_job(self, job_id: str, poll_interval: float = 2.0, timeout: float = 120.0) -> dict:
+    async def wait_for_job(self, job_id: str, poll_interval: float = 2.0, timeout: float = 120.0) -> dict:  # noqa: E501
         """Poll until async job completes or times out."""
         start = time.time()
         while True:
@@ -344,7 +344,7 @@ class AsyncAAIPClient(_BaseClient):
             return await self._get(f"/benchmarks/{domain}/judges")
         return await self._get("/judges/custom")
 
-    async def create_judge(self, name: str, model_id: str, domain: str, system_prompt: str | None = None) -> dict:
+    async def create_judge(self, name: str, model_id: str, domain: str, system_prompt: str | None = None) -> dict:  # noqa: E501
         """Create a custom judge model."""
         body = {"name": name, "model_id": model_id, "domain": domain}
         if system_prompt:
@@ -402,25 +402,25 @@ class AAIPClient(_BaseClient):
 
     # Mirror all async methods synchronously
     def register(self, manifest): return self._run(self._async.register(manifest))
-    def update_manifest(self, agent_id, manifest): return self._run(self._async.update_manifest(agent_id, manifest))
+    def update_manifest(self, agent_id, manifest): return self._run(self._async.update_manifest(agent_id, manifest))  # noqa: E501
     def get_agent(self, agent_id): return self._run(self._async.get_agent(agent_id))
     def discover(self, capability=None, domain=None, tag=None, min_reputation=None, limit=20):
         return self._run(self._async.discover(capability, domain, tag, min_reputation, limit))
     def crawl(self, base_url): return self._run(self._async.crawl(base_url))
-    def evaluate(self, agent_id, task_description, agent_output, domain="general", trace=None, judge_ids=None, benchmark_dataset_id=None, async_mode=False):
-        return self._run(self._async.evaluate(agent_id, task_description, agent_output, domain, trace, judge_ids, benchmark_dataset_id, async_mode))
-    def get_evaluation(self, evaluation_id): return self._run(self._async.get_evaluation(evaluation_id))
+    def evaluate(self, agent_id, task_description, agent_output, domain="general", trace=None, judge_ids=None, benchmark_dataset_id=None, async_mode=False):  # noqa: E501
+        return self._run(self._async.evaluate(agent_id, task_description, agent_output, domain, trace, judge_ids, benchmark_dataset_id, async_mode))  # noqa: E501
+    def get_evaluation(self, evaluation_id): return self._run(self._async.get_evaluation(evaluation_id))  # noqa: E501
     def get_job(self, job_id): return self._run(self._async.get_job(job_id))
     def wait_for_job(self, job_id, poll_interval=2.0, timeout=120.0):
         return self._run(self._async.wait_for_job(job_id, poll_interval, timeout))
-    def submit_trace(self, agent_id, trace): return self._run(self._async.submit_trace(agent_id, trace))
+    def submit_trace(self, agent_id, trace): return self._run(self._async.submit_trace(agent_id, trace))  # noqa: E501
     def verify_trace(self, trace_id): return self._run(self._async.verify_trace(trace_id))
-    def get_traces(self, agent_id, limit=20): return self._run(self._async.get_traces(agent_id, limit))
-    def get_reputation(self, agent_id, days=30): return self._run(self._async.get_reputation(agent_id, days))
-    def get_leaderboard(self, domain=None, limit=20): return self._run(self._async.get_leaderboard(domain, limit))
+    def get_traces(self, agent_id, limit=20): return self._run(self._async.get_traces(agent_id, limit))  # noqa: E501
+    def get_reputation(self, agent_id, days=30): return self._run(self._async.get_reputation(agent_id, days))  # noqa: E501
+    def get_leaderboard(self, domain=None, limit=20): return self._run(self._async.get_leaderboard(domain, limit))  # noqa: E501
     def get_badge(self, agent_id): return self._run(self._async.get_badge(agent_id))
-    def get_quote(self, agent_id, task=None): return self._run(self._async.get_quote(agent_id, task))
-    def verify_payment(self, tx_hash, chain="base"): return self._run(self._async.verify_payment(tx_hash, chain))
+    def get_quote(self, agent_id, task=None): return self._run(self._async.get_quote(agent_id, task))  # noqa: E501
+    def verify_payment(self, tx_hash, chain="base"): return self._run(self._async.verify_payment(tx_hash, chain))  # noqa: E501
     def execute_paid_task(self, agent_id, task, payment_tx_hash, chain="base"):
         return self._run(self._async.execute_paid_task(agent_id, task, payment_tx_hash, chain))
     def list_judges(self, domain=None): return self._run(self._async.list_judges(domain))

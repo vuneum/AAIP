@@ -6,10 +6,8 @@ Utilities for generating verifiable execution traces.
 from __future__ import annotations
 
 import functools
-import hashlib
 import time
-from contextlib import asynccontextmanager, contextmanager
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from ..models import PoETrace, PoETraceStep
 
@@ -73,7 +71,7 @@ class ProofOfExecution:
         )
         self.trace.add_step(step)
 
-    def llm_call(self, model: str, tokens_in: int = 0, tokens_out: int = 0, latency_ms: int = 0) -> None:
+    def llm_call(self, model: str, tokens_in: int = 0, tokens_out: int = 0, latency_ms: int = 0) -> None:  # noqa: E501
         """Record an LLM inference call."""
         step = PoETraceStep(
             step_type="llm_call",
@@ -134,7 +132,7 @@ def track_tool(poe: ProofOfExecution, tool_name: str | None = None):
             try:
                 result = func(*args, **kwargs)
                 latency = int(time.time() * 1000) - start
-                poe.tool(name, inputs={"args": str(args)[:100]}, output=str(result)[:100], latency_ms=latency)
+                poe.tool(name, inputs={"args": str(args)[:100]}, output=str(result)[:100], latency_ms=latency)  # noqa: E501
                 return result
             except Exception as e:
                 poe.trace.add_step(PoETraceStep(
@@ -152,7 +150,7 @@ def track_tool(poe: ProofOfExecution, tool_name: str | None = None):
             try:
                 result = await func(*args, **kwargs)
                 latency = int(time.time() * 1000) - start
-                poe.tool(name, inputs={"args": str(args)[:100]}, output=str(result)[:100], latency_ms=latency)
+                poe.tool(name, inputs={"args": str(args)[:100]}, output=str(result)[:100], latency_ms=latency)  # noqa: E501
                 return result
             except Exception as e:
                 poe.trace.add_step(PoETraceStep(

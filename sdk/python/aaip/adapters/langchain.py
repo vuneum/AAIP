@@ -71,14 +71,14 @@ class AAIPLangChainAgent:
                     result = {"output": output}
 
                 latency = int(time.time() * 1000) - start
-                poe.tool("langchain_agent", inputs={"task": task[:200]}, output={"output": str(output)[:200]}, latency_ms=latency)
+                poe.tool("langchain_agent", inputs={"task": task[:200]}, output={"output": str(output)[:200]}, latency_ms=latency)  # noqa: E501
 
                 # Capture intermediate steps if available
                 if hasattr(result, "get") and result.get("intermediate_steps"):
                     for step in result["intermediate_steps"]:
                         action, obs = step if isinstance(step, tuple) else (step, "")
                         tool_name = getattr(action, "tool", "unknown_tool")
-                        poe.tool(tool_name, inputs={"input": str(getattr(action, "tool_input", ""))[:100]}, output={"obs": str(obs)[:100]})
+                        poe.tool(tool_name, inputs={"input": str(getattr(action, "tool_input", ""))[:100]}, output={"obs": str(obs)[:100]})  # noqa: E501
 
                 poe.reason("Task completed successfully")
 
@@ -141,7 +141,7 @@ class AAIPLangChainAgent:
                 output = str(self.agent(task))
 
             latency = int(time.time() * 1000) - start
-            poe.tool("langchain_agent", inputs={"task": task[:200]}, output={"output": str(output)[:200]}, latency_ms=latency)
+            poe.tool("langchain_agent", inputs={"task": task[:200]}, output={"output": str(output)[:200]}, latency_ms=latency)  # noqa: E501
 
         if self.auto_submit_trace and isinstance(self.client, AsyncAAIPClient):
             try:

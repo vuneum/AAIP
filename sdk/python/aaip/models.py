@@ -260,10 +260,10 @@ class EvaluationResponse:
     @property
     def grade(self) -> str:
         s = self.final_score
-        if s >= 95: return "Elite"
-        if s >= 90: return "Gold"
-        if s >= 80: return "Silver"
-        if s >= 70: return "Bronze"
+        if s >= 95: return "Elite"  # noqa: E701
+        if s >= 90: return "Gold"  # noqa: E701
+        if s >= 80: return "Silver"  # noqa: E701
+        if s >= 70: return "Bronze"  # noqa: E701
         return "Unrated"
 
 

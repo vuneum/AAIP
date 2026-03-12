@@ -28,7 +28,7 @@ from pathlib import Path
 
 def _has_cryptography() -> bool:
     try:
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey  # noqa: F401
         return True
     except ImportError:
         return False
@@ -67,8 +67,8 @@ class AgentIdentity:
             from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
             from cryptography.hazmat.primitives.serialization import (
                 Encoding,
-                NoEncryption,
-                PrivateFormat,
+                NoEncryption,  # noqa: F401
+                PrivateFormat,  # noqa: F401
                 PublicFormat,
             )
             priv = Ed25519PrivateKey.from_private_bytes(seed)
@@ -161,7 +161,7 @@ _B  = [_Bx % _P, _By % _P]
 
 def _eadd(P: list, Q: list) -> list:
     """Twisted Edwards addition (a = -1)."""
-    x1, y1 = P; x2, y2 = Q
+    x1, y1 = P; x2, y2 = Q  # noqa: E702
     dxy = _D * x1 * x2 * y1 * y2 % _P
     x3  = (x1 * y2 + x2 * y1) * _inv((1 + dxy) % _P) % _P
     y3  = (y1 * y2 + x1 * x2) * _inv((1 - dxy) % _P) % _P

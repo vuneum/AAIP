@@ -74,7 +74,7 @@ class AAIPCrewAdapter:
                 raw_result = self.crew.kickoff(inputs=inputs or {})
                 latency = int(time.time() * 1000) - start
                 output = str(raw_result)
-                poe.tool("crewai_execution", inputs={"inputs": str(inputs)[:200]}, output={"result": output[:200]}, latency_ms=latency)
+                poe.tool("crewai_execution", inputs={"inputs": str(inputs)[:200]}, output={"result": output[:200]}, latency_ms=latency)  # noqa: E501
                 poe.reason("Crew completed all tasks successfully")
             except Exception as e:
                 poe.trace.add_step(PoETraceStep(
@@ -129,7 +129,7 @@ class AAIPCrewAdapter:
                 raw_result = self.crew.kickoff(inputs=inputs or {})
             latency = int(time.time() * 1000) - start
             output = str(raw_result)
-            poe.tool("crewai_execution", inputs={"inputs": str(inputs)[:200]}, output={"result": output[:200]}, latency_ms=latency)
+            poe.tool("crewai_execution", inputs={"inputs": str(inputs)[:200]}, output={"result": output[:200]}, latency_ms=latency)  # noqa: E501
 
         if self.auto_submit_trace and isinstance(self.client, AsyncAAIPClient):
             try:
