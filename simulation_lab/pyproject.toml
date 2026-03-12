@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name            = "aaip-simulation-lab"
+version         = "1.0.0"
+description     = "Discrete-event simulation and stress testing framework for the AAIP protocol"
+requires-python = ">=3.10"
+dependencies    = []   # stdlib only — no external runtime dependencies
+
+[project.scripts]
+aaip-lab = "aaip_lab:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
