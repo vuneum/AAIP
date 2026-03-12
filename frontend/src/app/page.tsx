@@ -96,7 +96,7 @@ export default function Home() {
 
     try {
       const result = await registerAgent(registerForm)
-      setRegisteredAgent(result.arpp_agent_id)
+      setRegisteredAgent(result.aaip_agent_id)
       setRegisterForm({ company_name: '', agent_name: '', domain: 'coding' })
       loadDashboardData()
     } catch (error: any) {
@@ -242,7 +242,7 @@ export default function Home() {
                     {agents.slice(0, 5).map((agent) => (
                       <tr key={agent.id}>
                         <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>
-                          {agent.arpp_agent_id}
+                          {agent.aaip_agent_id}
                         </td>
                         <td>{agent.company_name}</td>
                         <td>
@@ -483,10 +483,10 @@ export default function Home() {
                 </thead>
                 <tbody>
                   {leaderboard.map((entry) => (
-                    <tr key={entry.arpp_agent_id}>
+                    <tr key={entry.aaip_agent_id}>
                       <td style={{ fontWeight: '600' }}>#{entry.rank}</td>
                       <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>
-                        {entry.arpp_agent_id}
+                        {entry.aaip_agent_id}
                       </td>
                       <td>{entry.company_name}</td>
                       <td>
