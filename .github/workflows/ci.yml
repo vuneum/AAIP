@@ -41,6 +41,11 @@ jobs:
           python-version: "3.11"
           cache: pip
 
+      - name: Upgrade pip and install build tools
+        run: |
+         python -m pip install --upgrade pip
+         pip install setuptools wheel buil
+
       - name: Install SDK dependencies
         working-directory: sdk/python
         run: pip install -e ".[dev]"
