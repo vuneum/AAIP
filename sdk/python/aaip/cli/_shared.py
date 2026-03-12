@@ -7,7 +7,6 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 import click
 
@@ -41,13 +40,13 @@ def banner() -> None:
 {RESET}{DIM}  Identity · Discovery · Reputation · Payments{RESET}
 """)
 
-def get_client(api_key: Optional[str] = None, base_url: Optional[str] = None):
+def get_client(api_key: str | None = None, base_url: str | None = None):
     from aaip.client import AAIPClient
     key = api_key or os.environ.get("AAIP_API_KEY", "")
     url = base_url or os.environ.get("AAIP_BASE_URL", "https://api.aaip.dev")
     return AAIPClient(api_key=key, base_url=url)
 
-def load_manifest(path: str = ".aaip.json") -> Optional[dict]:
+def load_manifest(path: str = ".aaip.json") -> dict | None:
     p = Path(path)
     if p.exists():
         with open(p) as f:

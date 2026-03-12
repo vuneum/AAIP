@@ -5,9 +5,9 @@ Utilities for generating verifiable execution traces.
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import time
-import functools
 from contextlib import asynccontextmanager, contextmanager
 from typing import Any, Callable, Optional
 
@@ -116,7 +116,7 @@ class ProofOfExecution:
         }
 
 
-def track_tool(poe: ProofOfExecution, tool_name: Optional[str] = None):
+def track_tool(poe: ProofOfExecution, tool_name: str | None = None):
     """
     Decorator to automatically track tool calls in a PoE trace.
 

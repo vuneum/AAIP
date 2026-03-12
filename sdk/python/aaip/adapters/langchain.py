@@ -17,10 +17,10 @@ Usage:
 from __future__ import annotations
 
 import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from ..client import AAIPClient, AsyncAAIPClient
-from ..models import AgentManifest, PoETrace, PoETraceStep
+from ..models import AgentManifest, PoETraceStep
 from ..poe import ProofOfExecution
 
 
@@ -33,7 +33,7 @@ class AAIPLangChainAgent:
     def __init__(
         self,
         langchain_agent: Any,
-        aaip_client: Union[AAIPClient, AsyncAAIPClient],
+        aaip_client: AAIPClient | AsyncAAIPClient,
         agent_id: str,
         auto_evaluate: bool = True,
         auto_submit_trace: bool = True,
@@ -46,7 +46,7 @@ class AAIPLangChainAgent:
         self.auto_submit_trace = auto_submit_trace
         self.domain = domain
 
-    def run(self, task: str, **kwargs) -> Dict[str, Any]:
+    def run(self, task: str, **kwargs) -> dict[str, Any]:
         """Run the LangChain agent with AAIP PoE tracing."""
         import uuid
 
@@ -80,7 +80,7 @@ class AAIPLangChainAgent:
                         tool_name = getattr(action, "tool", "unknown_tool")
                         poe.tool(tool_name, inputs={"input": str(getattr(action, "tool_input", ""))[:100]}, output={"obs": str(obs)[:100]})
 
-                poe.reason(f"Task completed successfully")
+                poe.reason("Task completed successfully")
 
             except Exception as e:
                 poe.trace.add_step(PoETraceStep(
@@ -121,7 +121,7 @@ class AAIPLangChainAgent:
             "evaluation": eval_result,
         }
 
-    async def arun(self, task: str, **kwargs) -> Dict[str, Any]:
+    async def arun(self, task: str, **kwargs) -> dict[str, Any]:
         """Async version of run."""
         import uuid
 
@@ -175,8 +175,8 @@ def register_langchain_agent(
     agent_name: str,
     owner: str,
     endpoint: str,
-    capabilities: List[str],
-    tools: Optional[List[str]] = None,
+    capabilities: list[str],
+    tools: list[str] | None = None,
     description: str = "",
     domain: str = "general",
 ) -> dict:

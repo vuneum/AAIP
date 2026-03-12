@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import click
 
-from ._shared import banner, g, b, c, r, dim, bold, tick
+from ._shared import b, banner, bold, c, dim, g, r
 
 
 def _build_demo_poe(fraud: bool) -> tuple:
@@ -48,7 +48,6 @@ def explorer(fraud: bool, json_output: bool, pretty: bool) -> None:
     Use --pretty for a colour-formatted trace view.
     Use --json-output for machine-readable output.
     """
-    import json as _json
     banner()
     click.echo(bold("  aaip explorer\n"))
     _render_explorer(fraud, json_output, pretty)
@@ -59,7 +58,6 @@ def explorer(fraud: bool, json_output: bool, pretty: bool) -> None:
 @click.option("--json-output", is_flag=True, default=False, help="Print raw JSON")
 def explore(fraud: bool, json_output: bool) -> None:
     """AAIP Explorer — inspect a signed PoE and validator votes (alias for explorer)."""
-    import json as _json
     banner()
     click.echo(bold("  ░░░ AAIP Explorer ░░░\n"))
     _render_explorer(fraud, json_output, pretty=False)

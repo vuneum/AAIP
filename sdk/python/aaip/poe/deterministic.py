@@ -46,7 +46,6 @@ from __future__ import annotations
 import hashlib
 import json
 import time
-from typing import List, Optional
 
 
 class DeterministicPoE:
@@ -60,7 +59,7 @@ class DeterministicPoE:
 
     AAIP_VERSION = "2.0"
 
-    def __init__(self, identity: "AgentIdentity") -> None:  # noqa: F821
+    def __init__(self, identity: AgentIdentity) -> None:  # noqa: F821
         """
         Parameters
         ----------
@@ -68,48 +67,48 @@ class DeterministicPoE:
         """
         self._identity   = identity
         self._task       = ""
-        self._tools      : List[str] = []
-        self._model      : Optional[str] = None
-        self._output_raw : Optional[str] = None
+        self._tools      : list[str] = []
+        self._model      : str | None = None
+        self._output_raw : str | None = None
         self._step_count  = 0
-        self._timestamp  : Optional[int] = None
-        self._poe_hash   : Optional[str] = None
-        self._signature  : Optional[str] = None
+        self._timestamp  : int | None = None
+        self._poe_hash   : str | None = None
+        self._signature  : str | None = None
         self._finished   = False
 
     # ------------------------------------------------------------------
     # Building the trace
     # ------------------------------------------------------------------
 
-    def begin(self, task: str) -> "DeterministicPoE":
+    def begin(self, task: str) -> DeterministicPoE:
         """Set the task description."""
         self._task = task
         return self
 
-    def record_tool(self, tool_name: str) -> "DeterministicPoE":
+    def record_tool(self, tool_name: str) -> DeterministicPoE:
         """Record that a tool was used."""
         if tool_name not in self._tools:
             self._tools.append(tool_name)
         self._step_count += 1
         return self
 
-    def record_model(self, model_name: str) -> "DeterministicPoE":
+    def record_model(self, model_name: str) -> DeterministicPoE:
         """Record which model was used (last one wins)."""
         self._model = model_name
         self._step_count += 1
         return self
 
-    def record_step(self) -> "DeterministicPoE":
+    def record_step(self) -> DeterministicPoE:
         """Increment step counter for any other significant step."""
         self._step_count += 1
         return self
 
-    def set_output(self, output: str) -> "DeterministicPoE":
+    def set_output(self, output: str) -> DeterministicPoE:
         """Set the final agent output (stored as hash only)."""
         self._output_raw = output
         return self
 
-    def finish(self) -> "DeterministicPoE":
+    def finish(self) -> DeterministicPoE:
         """
         Finalise the PoE: set timestamp, compute hash, sign.
         Call this once after all tools/model/output are recorded.
@@ -185,7 +184,7 @@ class DeterministicPoE:
     # Context manager support
     # ------------------------------------------------------------------
 
-    def __enter__(self) -> "DeterministicPoE":
+    def __enter__(self) -> DeterministicPoE:
         return self
 
     def __exit__(self, *_) -> bool:
@@ -213,7 +212,7 @@ class PoEVerifier:
         "SIGNATURE_INVALID",
     ]
 
-    def verify(self, poe_dict: dict) -> "VerificationResult":
+    def verify(self, poe_dict: dict) -> VerificationResult:
         """
         Verify a PoE dictionary.
 
@@ -307,7 +306,7 @@ class PoEVerifier:
 
 
 class VerificationResult:
-    def __init__(self, verdict: str, signals: List[str], hash_verified: bool, signature_verified: bool) -> None:
+    def __init__(self, verdict: str, signals: list[str], hash_verified: bool, signature_verified: bool) -> None:
         self.verdict             = verdict
         self.signals             = signals
         self.hash_verified       = hash_verified

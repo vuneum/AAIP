@@ -5,12 +5,19 @@ Commands: run, verify, demo
 from __future__ import annotations
 
 import time
-from typing import Optional
 
 import click
 
 from ._shared import (
-    banner, g, b, c, r, dim, bold, tick, fail, info,
+    b,
+    banner,
+    bold,
+    c,
+    dim,
+    g,
+    info,
+    r,
+    tick,
 )
 
 
@@ -19,7 +26,7 @@ from ._shared import (
 @click.option("--tools",  default="web_search,read_url", show_default=True, help="Comma-separated tools used")
 @click.option("--model",  default="gpt-4o",              show_default=True, help="Model used")
 @click.option("--output", default=None,                  help="Output text (prompted if omitted)")
-def run(task: str, tools: str, model: str, output: Optional[str]) -> None:
+def run(task: str, tools: str, model: str, output: str | None) -> None:
     """
     Execute a task, record a PoE, and display the signed trace.
 
@@ -77,6 +84,7 @@ def verify(task: str, output: str, validators: int, json_output: bool) -> None:
         aaip verify --task "Translate this text" --output "Bonjour le monde"
     """
     import json as _json
+
     from aaip.identity import AgentIdentity
     from aaip.poe.deterministic import DeterministicPoE
     from aaip.validators import ValidatorPanel

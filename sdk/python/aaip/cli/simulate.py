@@ -5,11 +5,10 @@ Command: simulate
 from __future__ import annotations
 
 import random
-from typing import Optional
 
 import click
 
-from ._shared import banner, g, r, y, dim, bold, tick
+from ._shared import banner, bold, dim, g, r, tick, y
 
 
 @click.command()

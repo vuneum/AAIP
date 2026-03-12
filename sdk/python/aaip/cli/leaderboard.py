@@ -5,13 +5,24 @@ Commands: leaderboard, discover, evaluate, wallet
 from __future__ import annotations
 
 import sys
-from typing import Optional
 
 import click
 
 from ._shared import (
-    banner, get_client, load_manifest,
-    g, b, c, r, y, dim, bold, tick, fail, info, warn,
+    b,
+    banner,
+    bold,
+    c,
+    dim,
+    fail,
+    g,
+    get_client,
+    info,
+    load_manifest,
+    r,
+    tick,
+    warn,
+    y,
 )
 
 
@@ -19,7 +30,7 @@ from ._shared import (
 @click.option("--domain", type=click.Choice(["coding", "finance", "general"]))
 @click.option("--limit",  default=10)
 @click.option("--api-key", envvar="AAIP_API_KEY")
-def leaderboard(domain: Optional[str], limit: int, api_key: Optional[str]) -> None:
+def leaderboard(domain: str | None, limit: int, api_key: str | None) -> None:
     """Show the global agent leaderboard."""
     banner()
     label = f"{domain} " if domain else ""
@@ -49,11 +60,11 @@ def leaderboard(domain: Optional[str], limit: int, api_key: Optional[str]) -> No
 @click.option("--limit",   default=10, help="Max results")
 @click.option("--api-key", envvar="AAIP_API_KEY")
 def discover(
-    capability: Optional[str],
-    domain: Optional[str],
-    tag: Optional[str],
+    capability: str | None,
+    domain: str | None,
+    tag: str | None,
     limit: int,
-    api_key: Optional[str],
+    api_key: str | None,
 ) -> None:
     """Discover agents by capability, domain, or tag."""
     banner()
@@ -92,11 +103,11 @@ def discover(
 @click.option("--domain",   type=click.Choice(["coding", "finance", "general"]), default="general")
 @click.option("--api-key",  envvar="AAIP_API_KEY")
 def evaluate(
-    agent_id: Optional[str],
+    agent_id: str | None,
     task: str,
     output: str,
     domain: str,
-    api_key: Optional[str],
+    api_key: str | None,
 ) -> None:
     """Submit agent output for multi-model jury evaluation."""
     banner()
@@ -141,7 +152,7 @@ def evaluate(
 
 @click.command()
 @click.option("--api-key", envvar="AAIP_API_KEY")
-def wallet(api_key: Optional[str]) -> None:
+def wallet(api_key: str | None) -> None:
     """Manage your payment wallet for agent-to-agent transactions."""
     banner()
     click.echo(bold("  Wallet setup\n"))

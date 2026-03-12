@@ -7,34 +7,25 @@ https://aaip.dev
 from __future__ import annotations
 
 import asyncio
-import hashlib
-import json
 import os
 import time
-from dataclasses import dataclass, field, asdict
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
-from urllib.parse import urljoin
+from typing import Any
 
 import httpx
 
 from .models import (
-    AgentManifest,
-    EvaluationRequest,
-    EvaluationResponse,
-    PoETrace,
-    PoETraceStep,
-    DiscoveryResult,
-    ReputationTimeline,
-    PaymentQuote,
-    LeaderboardEntry,
     AAIPError,
-    ValidationError,
+    AgentManifest,
     AuthError,
+    DiscoveryResult,
+    EvaluationResponse,
+    LeaderboardEntry,
     NotFoundError,
+    PaymentQuote,
+    PoETrace,
+    ReputationTimeline,
+    ValidationError,
 )
-from .poe import ProofOfExecution
-
 
 # ─────────────────────────────────────────────
 # Base Client (shared logic)
@@ -47,15 +38,15 @@ class _BaseClient:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
         timeout: float = 30.0,
     ):
         self.api_key = api_key or os.environ.get("AAIP_API_KEY", "")
         self.base_url = (base_url or os.environ.get("AAIP_BASE_URL", self.DEFAULT_BASE_URL)).rstrip("/")
         self.timeout = timeout
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict[str, str]:
         h = {
             "Content-Type": "application/json",
             "User-Agent": "aaip-python-sdk/1.0.0",
@@ -95,7 +86,7 @@ class AsyncAAIPClient(_BaseClient):
 
     def __init__(self, api_key=None, base_url=None, timeout=30.0):
         super().__init__(api_key, base_url, timeout)
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     async def __aenter__(self):
         self._client = httpx.AsyncClient(headers=self._headers(), timeout=self.timeout)
@@ -130,7 +121,7 @@ class AsyncAAIPClient(_BaseClient):
 
     # ── Identity & Registration ──────────────
 
-    async def register(self, manifest: Union[AgentManifest, dict]) -> dict:
+    async def register(self, manifest: AgentManifest | dict) -> dict:
         """
         Register your agent with AAIP. Returns agent_id and registration details.
         AAIP does not create your agent — it registers an agent you already built.
@@ -147,7 +138,7 @@ class AsyncAAIPClient(_BaseClient):
             body = {"manifest": manifest}
         return await self._post("/discovery/register", body)
 
-    async def update_manifest(self, agent_id: str, manifest: Union[AgentManifest, dict]) -> dict:
+    async def update_manifest(self, agent_id: str, manifest: AgentManifest | dict) -> dict:
         """Update an existing agent's manifest."""
         body = manifest.to_dict() if isinstance(manifest, AgentManifest) else manifest
         return await self._post(f"/agents/{agent_id}/manifest/update", body)
@@ -160,12 +151,12 @@ class AsyncAAIPClient(_BaseClient):
 
     async def discover(
         self,
-        capability: Optional[str] = None,
-        domain: Optional[str] = None,
-        tag: Optional[str] = None,
-        min_reputation: Optional[float] = None,
+        capability: str | None = None,
+        domain: str | None = None,
+        tag: str | None = None,
+        min_reputation: float | None = None,
         limit: int = 20,
-    ) -> List[DiscoveryResult]:
+    ) -> list[DiscoveryResult]:
         """
         Discover agents by capability, domain, or tag.
         Results ranked by reputation score.
@@ -205,9 +196,9 @@ class AsyncAAIPClient(_BaseClient):
         task_description: str,
         agent_output: str,
         domain: str = "general",
-        trace: Optional[PoETrace] = None,
-        judge_ids: Optional[List[str]] = None,
-        benchmark_dataset_id: Optional[str] = None,
+        trace: PoETrace | None = None,
+        judge_ids: list[str] | None = None,
+        benchmark_dataset_id: str | None = None,
         async_mode: bool = False,
     ) -> EvaluationResponse:
         """
@@ -289,7 +280,7 @@ class AsyncAAIPClient(_BaseClient):
         """Verify a previously submitted PoE trace."""
         return await self._get(f"/traces/{trace_id}/verify")
 
-    async def get_traces(self, agent_id: str, limit: int = 20) -> List[dict]:
+    async def get_traces(self, agent_id: str, limit: int = 20) -> list[dict]:
         """Get execution trace history for an agent."""
         return await self._get(f"/agents/{agent_id}/traces", {"limit": limit})
 
@@ -302,9 +293,9 @@ class AsyncAAIPClient(_BaseClient):
 
     async def get_leaderboard(
         self,
-        domain: Optional[str] = None,
+        domain: str | None = None,
         limit: int = 20
-    ) -> List[LeaderboardEntry]:
+    ) -> list[LeaderboardEntry]:
         """Get global leaderboard, optionally filtered by domain."""
         params = {"limit": limit}
         if domain:
@@ -318,7 +309,7 @@ class AsyncAAIPClient(_BaseClient):
 
     # ── Payments ─────────────────────────────
 
-    async def get_quote(self, agent_id: str, task: Optional[str] = None) -> PaymentQuote:
+    async def get_quote(self, agent_id: str, task: str | None = None) -> PaymentQuote:
         """Get payment quote for calling an agent."""
         body = {"agent_id": agent_id}
         if task:
@@ -347,20 +338,20 @@ class AsyncAAIPClient(_BaseClient):
 
     # ── Judges & Benchmarks ──────────────────
 
-    async def list_judges(self, domain: Optional[str] = None) -> dict:
+    async def list_judges(self, domain: str | None = None) -> dict:
         """List available judge models for a domain."""
         if domain:
             return await self._get(f"/benchmarks/{domain}/judges")
         return await self._get("/judges/custom")
 
-    async def create_judge(self, name: str, model_id: str, domain: str, system_prompt: Optional[str] = None) -> dict:
+    async def create_judge(self, name: str, model_id: str, domain: str, system_prompt: str | None = None) -> dict:
         """Create a custom judge model."""
         body = {"name": name, "model_id": model_id, "domain": domain}
         if system_prompt:
             body["system_prompt"] = system_prompt
         return await self._post("/judges/custom", body)
 
-    async def list_datasets(self, domain: Optional[str] = None) -> dict:
+    async def list_datasets(self, domain: str | None = None) -> dict:
         """List benchmark datasets."""
         params = {}
         if domain:
@@ -395,7 +386,7 @@ class AAIPClient(_BaseClient):
     def __init__(self, api_key=None, base_url=None, timeout=30.0):
         super().__init__(api_key, base_url, timeout)
         self._async = AsyncAAIPClient(api_key, base_url, timeout)
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self._loop: asyncio.AbstractEventLoop | None = None
 
     def _run(self, coro):
         try:

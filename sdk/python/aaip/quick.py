@@ -31,10 +31,8 @@ Framework-specific (one line each):
 from __future__ import annotations
 
 import functools
-import time
 from dataclasses import dataclass, field
-from typing import Any, Callable, List, Optional
-
+from typing import Any, Callable
 
 # ---------------------------------------------------------------------------
 # Result object returned from every aaip-wrapped call
@@ -51,7 +49,7 @@ class AAIPResult:
     consensus:     str          # "APPROVED" or "REJECTED"
     approve_count: int
     total_validators: int
-    signals:       List[str] = field(default_factory=list)
+    signals:       list[str] = field(default_factory=list)
     shadow:        bool = False  # True = observation only, never blocks
 
     def __str__(self):
@@ -69,14 +67,14 @@ class AAIPResult:
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _get_identity() -> "AgentIdentity":  # noqa: F821
+def _get_identity() -> AgentIdentity:  # noqa: F821
     """Load or create agent identity (cached per process)."""
     from .identity import AgentIdentity
     return AgentIdentity.load_or_create()
 
 
-def _build_and_verify(identity: "AgentIdentity", task: str, output: Any,  # noqa: F821
-                      tools: List[str], model: Optional[str],
+def _build_and_verify(identity: AgentIdentity, task: str, output: Any,  # noqa: F821
+                      tools: list[str], model: str | None,
                       n_validators: int = 3) -> AAIPResult:
     """Build PoE, run validators, return AAIPResult."""
     from .poe.deterministic import DeterministicPoE
@@ -117,10 +115,10 @@ def _build_and_verify(identity: "AgentIdentity", task: str, output: Any,  # noqa
 # ---------------------------------------------------------------------------
 
 def aaip_agent(
-    func: Optional[Callable] = None,
+    func: Callable | None = None,
     *,
-    tools: Optional[List[str]] = None,
-    model: Optional[str] = None,
+    tools: list[str] | None = None,
+    model: str | None = None,
     validators: int = 3,
     task_arg: str = "task",
     shadow: bool = False,
@@ -225,24 +223,24 @@ class aaip_task:
         self._task       = task
         self._validators = validators
         self._shadow     = shadow
-        self._tools: List[str] = []
-        self._model: Optional[str] = None
+        self._tools: list[str] = []
+        self._model: str | None = None
         self._output: Any = None
-        self.result: Optional[AAIPResult] = None
+        self.result: AAIPResult | None = None
 
-    def tool(self, name: str) -> "aaip_task":
+    def tool(self, name: str) -> aaip_task:
         self._tools.append(name)
         return self
 
-    def model(self, name: str) -> "aaip_task":
+    def model(self, name: str) -> aaip_task:
         self._model = name
         return self
 
-    def output(self, value: Any) -> "aaip_task":
+    def output(self, value: Any) -> aaip_task:
         self._output = value
         return self
 
-    def __enter__(self) -> "aaip_task":
+    def __enter__(self) -> aaip_task:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -362,7 +360,7 @@ def aaip_crewai(crew: Any, validators: int = 3) -> Any:
             self._inner = inner
             self.agent_id = identity.agent_id
 
-        def kickoff(self, inputs: Optional[dict] = None, **kwargs) -> AAIPResult:
+        def kickoff(self, inputs: dict | None = None, **kwargs) -> AAIPResult:
             task = str(inputs) if inputs else "crew task"
             raw  = self._inner.kickoff(inputs=inputs, **kwargs)
             out  = getattr(raw, "raw", str(raw))

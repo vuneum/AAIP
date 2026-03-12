@@ -18,10 +18,10 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from ..client import AAIPClient, AsyncAAIPClient
-from ..models import AgentManifest, PoETrace, PoETraceStep
+from ..models import AgentManifest, PoETraceStep
 from ..poe import ProofOfExecution
 
 
@@ -34,7 +34,7 @@ class AAIPCrewAdapter:
     def __init__(
         self,
         crew: Any,
-        aaip_client: Union[AAIPClient, AsyncAAIPClient],
+        aaip_client: AAIPClient | AsyncAAIPClient,
         agent_id: str,
         auto_evaluate: bool = True,
         auto_submit_trace: bool = True,
@@ -47,7 +47,7 @@ class AAIPCrewAdapter:
         self.auto_submit_trace = auto_submit_trace
         self.domain = domain
 
-    def kickoff(self, inputs: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def kickoff(self, inputs: dict[str, Any] | None = None) -> dict[str, Any]:
         """Run the CrewAI crew with AAIP PoE tracing."""
         task_id = f"crew-{uuid.uuid4().hex[:12]}"
         task_desc = str(inputs) if inputs else "CrewAI task execution"
@@ -115,7 +115,7 @@ class AAIPCrewAdapter:
             "evaluation": eval_result,
         }
 
-    async def akickoff(self, inputs: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    async def akickoff(self, inputs: dict[str, Any] | None = None) -> dict[str, Any]:
         """Async kickoff for CrewAI async crews."""
         task_id = f"crew-{uuid.uuid4().hex[:12]}"
         task_desc = str(inputs) if inputs else "CrewAI async task"
@@ -146,7 +146,7 @@ def register_crew(
     agent_name: str,
     owner: str,
     endpoint: str,
-    capabilities: Optional[List[str]] = None,
+    capabilities: list[str] | None = None,
     domain: str = "general",
 ) -> dict:
     """

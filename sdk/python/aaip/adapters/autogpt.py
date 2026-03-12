@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from ..client import AAIPClient, AsyncAAIPClient
 from ..models import AgentManifest
@@ -33,7 +33,7 @@ class AAIPAutoGPTAdapter:
 
     def __init__(
         self,
-        aaip_client: Union[AAIPClient, AsyncAAIPClient],
+        aaip_client: AAIPClient | AsyncAAIPClient,
         agent_id: str,
         auto_evaluate: bool = True,
         auto_submit_trace: bool = True,
@@ -49,10 +49,10 @@ class AAIPAutoGPTAdapter:
         self,
         task: str,
         output: str,
-        commands_used: Optional[List[str]] = None,
-        thoughts: Optional[List[str]] = None,
-        duration_ms: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        commands_used: list[str] | None = None,
+        thoughts: list[str] | None = None,
+        duration_ms: int | None = None,
+    ) -> dict[str, Any]:
         """
         Record a completed AutoGPT task with PoE trace.
         Call this after your AutoGPT task finishes to register execution proof.
@@ -107,7 +107,7 @@ class AAIPAutoGPTAdapter:
             "evaluation": eval_result,
         }
 
-    def wrap_run(self, autogpt_run_fn, task: str, **kwargs) -> Dict[str, Any]:
+    def wrap_run(self, autogpt_run_fn, task: str, **kwargs) -> dict[str, Any]:
         """
         Wrap an AutoGPT run function with automatic PoE tracking.
         Pass the function and task, get back result + trace.
@@ -136,7 +136,7 @@ def register_autogpt_agent(
     agent_name: str,
     owner: str,
     endpoint: str,
-    capabilities: Optional[List[str]] = None,
+    capabilities: list[str] | None = None,
     domain: str = "general",
 ) -> dict:
     """Register an AutoGPT agent with AAIP."""

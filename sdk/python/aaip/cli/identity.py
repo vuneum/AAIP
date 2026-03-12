@@ -8,13 +8,25 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 import click
 
 from ._shared import (
-    banner, get_client, load_manifest, save_manifest,
-    b, c, g, r, y, dim, bold, tick, fail, info, warn,
+    b,
+    banner,
+    bold,
+    c,
+    dim,
+    fail,
+    g,
+    get_client,
+    info,
+    load_manifest,
+    r,
+    save_manifest,
+    tick,
+    warn,
+    y,
 )
 
 
@@ -76,7 +88,7 @@ def init(
 @click.command()
 @click.option("--manifest", default=".aaip.json",  help="Path to manifest file")
 @click.option("--api-key",  envvar="AAIP_API_KEY", help="AAIP API key")
-def register(manifest: str, api_key: Optional[str]) -> None:
+def register(manifest: str, api_key: str | None) -> None:
     """Register your agent with the AAIP network."""
     banner()
     click.echo(bold("  Registering agent...\n"))
@@ -128,7 +140,7 @@ def register(manifest: str, api_key: Optional[str]) -> None:
 @click.command()
 @click.option("--agent-id", envvar="AAIP_AGENT_ID")
 @click.option("--api-key",  envvar="AAIP_API_KEY")
-def status(agent_id: Optional[str], api_key: Optional[str]) -> None:
+def status(agent_id: str | None, api_key: str | None) -> None:
     """Show your agent's reputation score and stats."""
     banner()
 
@@ -170,7 +182,7 @@ def status(agent_id: Optional[str], api_key: Optional[str]) -> None:
 @click.command()
 @click.option("--api-key",  envvar="AAIP_API_KEY")
 @click.option("--base-url", envvar="AAIP_BASE_URL")
-def doctor(api_key: Optional[str], base_url: Optional[str]) -> None:
+def doctor(api_key: str | None, base_url: str | None) -> None:
     """Validate your AAIP config and check network health."""
     banner()
     click.echo(bold("  Running diagnostics...\n"))
