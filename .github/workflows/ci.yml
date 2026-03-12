@@ -41,6 +41,11 @@ jobs:
           python-version: "3.11"
           cache: pip
 
+      - name: Upgrade pip and install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel build
+
       - name: Install SDK dependencies
         working-directory: sdk/python
         run: pip install -e ".[dev]"
@@ -55,11 +60,6 @@ jobs:
 
       - name: Run SDK tests
         run: pytest tests/test_sdk.py tests/test_identity_poe_validators.py -v --tb=short
-
-      - name: Upgrade pip and install build tools
-        run: |
-         python -m pip install --upgrade pip
-         pip install setuptools wheel build
 
       - name: Install backend dependencies
         working-directory: backend
