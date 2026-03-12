@@ -4,7 +4,7 @@
 //! # Quick Start
 //!
 //! ```rust
-//! use aaip::{AAIPClient, AgentManifest, ProofOfExecution};
+//! use aaip::{AAIPClient, AgentManifest};
 //!
 //! #[tokio::main]
 //! async fn main() {
