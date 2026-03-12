@@ -138,7 +138,13 @@ def score_cav_response(output: Optional[str], task: dict) -> float:
     words = len(output.split())
     length_multiplier = min(1.0, words / 50)
 
-    return round(keyword_score * length_multiplier, 1)
+    base_score = keyword_score * length_multiplier
+
+    # Quality bonus: full keyword coverage on a substantive response earns extra points
+    if hits == len(keywords) and words >= 30:
+        base_score = min(100.0, base_score + 5.0)
+
+    return round(base_score, 1)
 
 
 def select_cav_task(domain: str) -> dict:
