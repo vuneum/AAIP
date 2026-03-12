@@ -20,7 +20,6 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy built artifacts
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
