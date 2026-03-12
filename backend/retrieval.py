@@ -112,8 +112,8 @@ async def search_similar_outputs(
     from sqlalchemy import select, text
     from database import Evaluation, Agent
 
-    # Generate embedding for the current output
-    embedding = await generate_embedding(agent_output)
+    # Generate embedding for the current output (unused in MVP, kept for future pgvector use)
+    await generate_embedding(agent_output)
 
     # For MVP, we'll use a simple text-based search
     # In production, you'd use pgvector's cosine similarity

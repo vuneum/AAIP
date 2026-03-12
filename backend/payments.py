@@ -215,7 +215,7 @@ async def create_quote(
         select(Wallet).where(
             Wallet.aaip_agent_id == request.agent_id,
             Wallet.chain == request.chain,
-            Wallet.is_active == True,
+            Wallet.is_active,
         )
     )
     wallet = result.scalar_one_or_none()

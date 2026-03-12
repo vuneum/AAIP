@@ -16,6 +16,7 @@ from functools import wraps
 
 from fastapi import Depends, HTTPException, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel, EmailStr
 from sqlalchemy import select, func, Column, String, DateTime, Integer, Boolean, Text
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -119,7 +120,7 @@ async def get_api_key(
     result = await db.execute(
         select(APIKey).where(
             APIKey.key_hash == token_hash,
-            APIKey.is_active == True,
+            APIKey.is_active,
         )
     )
     key = result.scalar_one_or_none()
@@ -229,8 +230,6 @@ async def log_request(
 # ─────────────────────────────────────────────
 # API Key Management Endpoints (for main.py)
 # ─────────────────────────────────────────────
-
-from pydantic import BaseModel, EmailStr
 
 
 class CreateAPIKeyRequest(BaseModel):

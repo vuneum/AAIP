@@ -190,11 +190,10 @@ async def run_shadow_evaluation(
     if poe_trace_received and request.trace:
         try:
             from poe import (
-                PoETraceInput, PoETraceStepInput, compute_trace_hash,
+                PoETraceInput, PoETraceStepInput,
                 verify_hash, detect_fraud_signals,
             )
             trace_input = PoETraceInput(**request.trace)
-            computed_hash = compute_trace_hash(trace_input)
             poe_hash_verified = verify_hash(trace_input, request.poe_hash or "") if request.poe_hash else False
             poe_fraud_flags = detect_fraud_signals(trace_input)
 

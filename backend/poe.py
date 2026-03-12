@@ -6,6 +6,7 @@ Handles trace submission, cryptographic verification, and fraud detection.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import time
 from datetime import datetime
@@ -321,7 +322,3 @@ async def get_agent_poe_stats(db: AsyncSession, aaip_agent_id: str) -> dict:
         "avg_steps": round(float(row[2] or 0), 1),
     }
 
-
-# fix missing import
-import hmac
-from sqlalchemy import Integer

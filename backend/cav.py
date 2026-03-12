@@ -242,7 +242,7 @@ async def run_cav_for_agent(
         )
         observed_score = float(eval_result.final_score)
         result_status = "passed"
-    except Exception as exc:
+    except Exception:  # noqa: BLE001
         observed_score = score_cav_response(None, task_data)
         result_status = "error"
         simulated_output = None
