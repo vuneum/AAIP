@@ -9,7 +9,8 @@ from datetime import datetime
 from typing import AsyncGenerator
 
 from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import JSON as JSONB  # JSONB on PG, JSON fallback for SQLite
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import create_engine, text

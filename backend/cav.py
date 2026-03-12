@@ -22,7 +22,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 from sqlalchemy import select, func, Column, String, Integer, Float, Boolean, DateTime, Text
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import JSON as JSONB  # JSONB on PG, JSON fallback for SQLite
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 import uuid

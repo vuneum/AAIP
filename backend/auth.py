@@ -18,7 +18,8 @@ from fastapi import Depends, HTTPException, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import select, func, Column, String, DateTime, Integer, Boolean, Text
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import JSON as JSONB  # JSONB on PG, JSON fallback for SQLite
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
