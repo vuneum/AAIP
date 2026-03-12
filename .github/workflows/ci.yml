@@ -75,7 +75,7 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://aaip:aaip_test@localhost:5432/aaip_test
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           AAIP_DEV_MODE: "true"
-        run: pytest tests/backend/ -v --tb=short
+        run: pytest ../tests/backend/ -v --tb=short
 
   # ─────────────────────────────────────────
   # TypeScript SDK
