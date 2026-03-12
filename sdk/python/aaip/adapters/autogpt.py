@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
 from ..client import AAIPClient, AsyncAAIPClient
 from ..models import AgentManifest
@@ -33,7 +33,7 @@ class AAIPAutoGPTAdapter:
 
     def __init__(
         self,
-        aaip_client: AAIPClient | AsyncAAIPClient,
+        aaip_client: Union[AAIPClient, AsyncAAIPClient],
         agent_id: str,
         auto_evaluate: bool = True,
         auto_submit_trace: bool = True,
@@ -49,10 +49,10 @@ class AAIPAutoGPTAdapter:
         self,
         task: str,
         output: str,
-        commands_used: list[str] | None = None,
-        thoughts: list[str] | None = None,
-        duration_ms: int | None = None,
-    ) -> dict[str, Any]:
+        commands_used: Optional[List[str]] = None,
+        thoughts: Optional[List[str]] = None,
+        duration_ms: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """
         Record a completed AutoGPT task with PoE trace.
         Call this after your AutoGPT task finishes to register execution proof.
@@ -107,7 +107,7 @@ class AAIPAutoGPTAdapter:
             "evaluation": eval_result,
         }
 
-    def wrap_run(self, autogpt_run_fn, task: str, **kwargs) -> dict[str, Any]:
+    def wrap_run(self, autogpt_run_fn, task: str, **kwargs) -> Dict[str, Any]:
         """
         Wrap an AutoGPT run function with automatic PoE tracking.
         Pass the function and task, get back result + trace.
@@ -120,7 +120,7 @@ class AAIPAutoGPTAdapter:
             start = int(time.time() * 1000)
             output = autogpt_run_fn(task, **kwargs)
             latency = int(time.time() * 1000) - start
-            poe.tool("autogpt_run", inputs={"task": task[:200]}, output={"result": str(output)[:200]}, latency_ms=latency)  # noqa: E501
+            poe.tool("autogpt_run", inputs={"task": task[:200]}, output={"result": str(output)[:200]}, latency_ms=latency)
 
         if self.auto_submit_trace and isinstance(self.aaip, AAIPClient):
             try:
@@ -136,7 +136,7 @@ def register_autogpt_agent(
     agent_name: str,
     owner: str,
     endpoint: str,
-    capabilities: list[str] | None = None,
+    capabilities: Optional[List[str]] = None,
     domain: str = "general",
 ) -> dict:
     """Register an AutoGPT agent with AAIP."""

@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
 from ..client import AAIPClient, AsyncAAIPClient
 from ..models import AgentManifest, PoETraceStep
@@ -33,7 +33,7 @@ class AAIPOpenAIAgent:
     def __init__(
         self,
         openai_agent: Any,
-        aaip_client: AAIPClient | AsyncAAIPClient,
+        aaip_client: Union[AAIPClient, AsyncAAIPClient],
         agent_id: str,
         client: Any = None,          # openai.OpenAI client
         auto_evaluate: bool = True,
@@ -48,7 +48,7 @@ class AAIPOpenAIAgent:
         self.auto_submit_trace = auto_submit_trace
         self.domain = domain
 
-    def run(self, task: str, context_variables: dict | None = None, **kwargs) -> dict[str, Any]:
+    def run(self, task: str, context_variables: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
         """Run the OpenAI agent with AAIP PoE tracing."""
         task_id = f"oai-{uuid.uuid4().hex[:12]}"
         poe = ProofOfExecution(task_id=task_id, agent_id=self.agent_id, task_description=task)
@@ -77,7 +77,7 @@ class AAIPOpenAIAgent:
                     output = str(self.agent)
 
                 latency = int(time.time() * 1000) - start
-                poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)  # noqa: E501
+                poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)
 
                 # Capture tool calls if available
                 if hasattr(result, "messages"):
@@ -127,7 +127,7 @@ class AAIPOpenAIAgent:
             "evaluation": eval_result,
         }
 
-    async def arun(self, task: str, **kwargs) -> dict[str, Any]:
+    async def arun(self, task: str, **kwargs) -> Dict[str, Any]:
         """Async version."""
         task_id = f"oai-{uuid.uuid4().hex[:12]}"
         poe = ProofOfExecution(task_id=task_id, agent_id=self.agent_id, task_description=task)
@@ -137,10 +137,10 @@ class AAIPOpenAIAgent:
             if hasattr(self.agent, "arun"):
                 result = await self.agent.arun(task, **kwargs)
             else:
-                result = self.agent.run(task, **kwargs) if hasattr(self.agent, "run") else str(self.agent)  # noqa: E501
+                result = self.agent.run(task, **kwargs) if hasattr(self.agent, "run") else str(self.agent)
             output = str(result)
             latency = int(time.time() * 1000) - start
-            poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)  # noqa: E501
+            poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)
 
         if isinstance(self.aaip, AsyncAAIPClient):
             try:
@@ -156,8 +156,8 @@ def register_openai_agent(
     agent_name: str,
     owner: str,
     endpoint: str,
-    capabilities: list[str],
-    tools: list[str] | None = None,
+    capabilities: List[str],
+    tools: Optional[List[str]] = None,
     domain: str = "general",
     model: str = "gpt-4o",
 ) -> dict:

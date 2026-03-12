@@ -5,20 +5,21 @@ Command: simulate
 from __future__ import annotations
 
 import random
+from typing import Optional
 
 import click
 
-from ._shared import banner, bold, dim, g, r, tick, y
+from ._shared import banner, g, r, y, dim, bold, tick
 
 
 @click.command()
-@click.option("--agents",           default=10,     show_default=True, help="Number of agents to simulate")  # noqa: E501
+@click.option("--agents",           default=10,     show_default=True, help="Number of agents to simulate")
 @click.option("--validators",       default=5,      show_default=True, help="Validators per panel")
-@click.option("--malicious-ratio",  default=0.20,   show_default=True, help="Fraction of malicious agents (0-1)")  # noqa: E501
+@click.option("--malicious-ratio",  default=0.20,   show_default=True, help="Fraction of malicious agents (0-1)")
 @click.option("--scenario",         default="mixed", show_default=True,
               type=click.Choice(["honest", "fraud", "mixed", "sybil", "collusion"]),
               help="Simulation scenario")
-@click.option("--tasks",            default=100,    show_default=True, help="Number of tasks to simulate")  # noqa: E501
+@click.option("--tasks",            default=100,    show_default=True, help="Number of tasks to simulate")
 def simulate(
     agents: int,
     validators: int,

@@ -22,15 +22,14 @@ import secrets
 import time
 from pathlib import Path
 
+
 # ---------------------------------------------------------------------------
 # Optional fast path
 # ---------------------------------------------------------------------------
 
 def _has_cryptography() -> bool:
     try:
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-            Ed25519PrivateKey,  # noqa: F401
-        )
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
         return True
     except ImportError:
         return False
@@ -63,15 +62,12 @@ class AgentIdentity:
     # ── factory ──────────────────────────────────────────────────────
 
     @classmethod
-    def generate(cls) -> AgentIdentity:
+    def generate(cls) -> "AgentIdentity":
         seed = secrets.token_bytes(32)
         if HAS_CRYPTOGRAPHY:
             from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
             from cryptography.hazmat.primitives.serialization import (
-                Encoding,
-                NoEncryption,  # noqa: F401
-                PrivateFormat,  # noqa: F401
-                PublicFormat,
+                Encoding, PublicFormat, PrivateFormat, NoEncryption,
             )
             priv = Ed25519PrivateKey.from_private_bytes(seed)
             pub  = priv.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
@@ -80,7 +76,7 @@ class AgentIdentity:
         return cls(seed, pub)
 
     @classmethod
-    def load_or_create(cls, path: str = IDENTITY_FILE) -> AgentIdentity:
+    def load_or_create(cls, path: str = IDENTITY_FILE) -> "AgentIdentity":
         p = Path(path)
         if p.exists():
             d    = json.loads(p.read_text())
@@ -163,7 +159,7 @@ _B  = [_Bx % _P, _By % _P]
 
 def _eadd(P: list, Q: list) -> list:
     """Twisted Edwards addition (a = -1)."""
-    x1, y1 = P; x2, y2 = Q  # noqa: E702
+    x1, y1 = P; x2, y2 = Q
     dxy = _D * x1 * x2 * y1 * y2 % _P
     x3  = (x1 * y2 + x2 * y1) * _inv((1 + dxy) % _P) % _P
     y3  = (y1 * y2 + x1 * x2) * _inv((1 - dxy) % _P) % _P

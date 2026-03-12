@@ -20,8 +20,10 @@ from __future__ import annotations
 import hashlib
 import time
 from dataclasses import dataclass, field
+from typing import List, Optional
 
 from ..poe.deterministic import PoEVerifier
+
 
 # ---------------------------------------------------------------------------
 # Single Validator
@@ -34,7 +36,7 @@ class Validator:
     stake:        float = 100.0    # USDC equivalent
     reputation:   float = 95.0
 
-    def verify(self, poe_dict: dict) -> ValidatorVote:
+    def verify(self, poe_dict: dict) -> "ValidatorVote":
         """Independently verify a PoE object and return a signed vote."""
         verifier = PoEVerifier()
         result   = verifier.verify(poe_dict)
@@ -63,7 +65,7 @@ class ValidatorVote:
     validator_id:       str
     approved:           bool
     verdict:            str
-    signals:            list[str]
+    signals:            List[str]
     hash_verified:      bool
     signature_verified: bool
     stake:              float
@@ -83,7 +85,7 @@ class ConsensusResult:
     reject_count:    int
     total_validators:int
     threshold:       float            # e.g. 0.667
-    votes:           list[ValidatorVote] = field(default_factory=list)
+    votes:           List[ValidatorVote] = field(default_factory=list)
     poe_hash:        str = ""
 
     @property
@@ -106,7 +108,7 @@ class ValidatorPanel:
 
     CONSENSUS_THRESHOLD = 2 / 3   # 67%
 
-    def __init__(self, n: int = 3, threshold: float | None = None) -> None:
+    def __init__(self, n: int = 3, threshold: Optional[float] = None) -> None:
         """
         Parameters
         ----------

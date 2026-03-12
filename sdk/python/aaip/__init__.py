@@ -38,8 +38,7 @@ Quick start:
 __version__ = "1.0.0"
 
 # ── Quick integration (10-minute onboarding) ──────────────────────────────
-from .quick import AAIPResult, aaip_agent, aaip_task, verify  # noqa: F401
-
+from .quick import aaip_agent, aaip_task, verify, AAIPResult
 
 # ── Network client (lazy — only loaded if httpx is installed) ─────────────
 def __getattr__(name):
@@ -49,9 +48,7 @@ def __getattr__(name):
     }
     if name in _lazy:
         try:
-            from . import client as _c
-            from . import models as _m
-            from . import poe as _p
+            from . import client as _c, models as _m, poe as _p
             _map = {
                 "AAIPClient":       _c.AAIPClient,
                 "AsyncAAIPClient":  _c.AsyncAAIPClient,

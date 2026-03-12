@@ -8,25 +8,13 @@ import json
 import os
 import sys
 from pathlib import Path
+from typing import Optional
 
 import click
 
 from ._shared import (
-    b,
-    banner,
-    bold,
-    c,
-    dim,
-    fail,
-    g,
-    get_client,
-    info,
-    load_manifest,
-    r,
-    save_manifest,
-    tick,
-    warn,
-    y,
+    banner, get_client, load_manifest, save_manifest,
+    b, c, g, r, y, dim, bold, tick, fail, info, warn,
 )
 
 
@@ -34,10 +22,10 @@ from ._shared import (
 @click.option("--name",         prompt="Agent name",              help="Your agent's name")
 @click.option("--owner",        prompt="Owner / organization",    help="Your name or org")
 @click.option("--endpoint",     prompt="Agent endpoint URL",      help="https://your-agent.com/api")
-@click.option("--capabilities", prompt="Capabilities (comma-separated)", help="e.g. translation,code_analysis")  # noqa: E501
+@click.option("--capabilities", prompt="Capabilities (comma-separated)", help="e.g. translation,code_analysis")
 @click.option("--domain",       type=click.Choice(["coding", "finance", "general"]),
               default="general", prompt="Domain")
-@click.option("--framework",    type=click.Choice(["langchain", "crewai", "openai_agents", "autogpt", "custom"]),  # noqa: E501
+@click.option("--framework",    type=click.Choice(["langchain", "crewai", "openai_agents", "autogpt", "custom"]),
               prompt="Framework", default="custom")
 @click.option("--output",       default=".aaip.json", help="Output file path")
 def init(
@@ -88,7 +76,7 @@ def init(
 @click.command()
 @click.option("--manifest", default=".aaip.json",  help="Path to manifest file")
 @click.option("--api-key",  envvar="AAIP_API_KEY", help="AAIP API key")
-def register(manifest: str, api_key: str | None) -> None:
+def register(manifest: str, api_key: Optional[str]) -> None:
     """Register your agent with the AAIP network."""
     banner()
     click.echo(bold("  Registering agent...\n"))
@@ -140,7 +128,7 @@ def register(manifest: str, api_key: str | None) -> None:
 @click.command()
 @click.option("--agent-id", envvar="AAIP_AGENT_ID")
 @click.option("--api-key",  envvar="AAIP_API_KEY")
-def status(agent_id: str | None, api_key: str | None) -> None:
+def status(agent_id: Optional[str], api_key: Optional[str]) -> None:
     """Show your agent's reputation score and stats."""
     banner()
 
@@ -182,7 +170,7 @@ def status(agent_id: str | None, api_key: str | None) -> None:
 @click.command()
 @click.option("--api-key",  envvar="AAIP_API_KEY")
 @click.option("--base-url", envvar="AAIP_BASE_URL")
-def doctor(api_key: str | None, base_url: str | None) -> None:
+def doctor(api_key: Optional[str], base_url: Optional[str]) -> None:
     """Validate your AAIP config and check network health."""
     banner()
     click.echo(bold("  Running diagnostics...\n"))

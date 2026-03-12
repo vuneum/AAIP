@@ -5,24 +5,13 @@ Commands: leaderboard, discover, evaluate, wallet
 from __future__ import annotations
 
 import sys
+from typing import Optional
 
 import click
 
 from ._shared import (
-    b,
-    banner,
-    bold,
-    c,
-    dim,
-    fail,
-    g,
-    get_client,
-    info,
-    load_manifest,
-    r,
-    tick,
-    warn,
-    y,
+    banner, get_client, load_manifest,
+    g, b, c, r, y, dim, bold, tick, fail, info, warn,
 )
 
 
@@ -30,7 +19,7 @@ from ._shared import (
 @click.option("--domain", type=click.Choice(["coding", "finance", "general"]))
 @click.option("--limit",  default=10)
 @click.option("--api-key", envvar="AAIP_API_KEY")
-def leaderboard(domain: str | None, limit: int, api_key: str | None) -> None:
+def leaderboard(domain: Optional[str], limit: int, api_key: Optional[str]) -> None:
     """Show the global agent leaderboard."""
     banner()
     label = f"{domain} " if domain else ""
@@ -45,9 +34,9 @@ def leaderboard(domain: str | None, limit: int, api_key: str | None) -> None:
         for e in entries:
             score     = e.average_score
             bar       = "█" * int(score / 10)
-            score_str = g(f"{score:.1f}") if score >= 80 else y(f"{score:.1f}") if score >= 60 else r(f"{score:.1f}")  # noqa: E501
-            click.echo(f"  {bold(str(e.rank).rjust(2))}. {bold(e.agent_name)} {dim(f'({e.company_name})')}")  # noqa: E501
-            click.echo(f"      {score_str} {dim(bar)} {dim(f'· {e.evaluation_count} evals · {e.domain}')}")  # noqa: E501
+            score_str = g(f"{score:.1f}") if score >= 80 else y(f"{score:.1f}") if score >= 60 else r(f"{score:.1f}")
+            click.echo(f"  {bold(str(e.rank).rjust(2))}. {bold(e.agent_name)} {dim(f'({e.company_name})')}")
+            click.echo(f"      {score_str} {dim(bar)} {dim(f'· {e.evaluation_count} evals · {e.domain}')}")
         click.echo()
     except Exception as e:
         fail(f"Could not load leaderboard: {e}")
@@ -60,11 +49,11 @@ def leaderboard(domain: str | None, limit: int, api_key: str | None) -> None:
 @click.option("--limit",   default=10, help="Max results")
 @click.option("--api-key", envvar="AAIP_API_KEY")
 def discover(
-    capability: str | None,
-    domain: str | None,
-    tag: str | None,
+    capability: Optional[str],
+    domain: Optional[str],
+    tag: Optional[str],
     limit: int,
-    api_key: str | None,
+    api_key: Optional[str],
 ) -> None:
     """Discover agents by capability, domain, or tag."""
     banner()
@@ -103,11 +92,11 @@ def discover(
 @click.option("--domain",   type=click.Choice(["coding", "finance", "general"]), default="general")
 @click.option("--api-key",  envvar="AAIP_API_KEY")
 def evaluate(
-    agent_id: str | None,
+    agent_id: Optional[str],
     task: str,
     output: str,
     domain: str,
-    api_key: str | None,
+    api_key: Optional[str],
 ) -> None:
     """Submit agent output for multi-model jury evaluation."""
     banner()
@@ -152,7 +141,7 @@ def evaluate(
 
 @click.command()
 @click.option("--api-key", envvar="AAIP_API_KEY")
-def wallet(api_key: str | None) -> None:
+def wallet(api_key: Optional[str]) -> None:
     """Manage your payment wallet for agent-to-agent transactions."""
     banner()
     click.echo(bold("  Wallet setup\n"))

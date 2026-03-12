@@ -5,28 +5,21 @@ Commands: run, verify, demo
 from __future__ import annotations
 
 import time
+from typing import Optional
 
 import click
 
 from ._shared import (
-    b,
-    banner,
-    bold,
-    c,
-    dim,
-    g,
-    info,
-    r,
-    tick,
+    banner, g, b, c, r, dim, bold, tick, fail, info,
 )
 
 
 @click.command()
 @click.argument("task")
-@click.option("--tools",  default="web_search,read_url", show_default=True, help="Comma-separated tools used")  # noqa: E501
+@click.option("--tools",  default="web_search,read_url", show_default=True, help="Comma-separated tools used")
 @click.option("--model",  default="gpt-4o",              show_default=True, help="Model used")
 @click.option("--output", default=None,                  help="Output text (prompted if omitted)")
-def run(task: str, tools: str, model: str, output: str | None) -> None:
+def run(task: str, tools: str, model: str, output: Optional[str]) -> None:
     """
     Execute a task, record a PoE, and display the signed trace.
 
@@ -72,9 +65,9 @@ def run(task: str, tools: str, model: str, output: str | None) -> None:
 
 
 @click.command()
-@click.option("--task",       default="Analyse the AAIP protocol and summarise key components", show_default=True)  # noqa: E501
-@click.option("--output",     default="AAIP has 8 layers: identity, registry, execution, PoE, jury, CAV, validators, escrow.", show_default=True)  # noqa: E501
-@click.option("--validators", default=3,     show_default=True, help="Number of validators in panel")  # noqa: E501
+@click.option("--task",       default="Analyse the AAIP protocol and summarise key components", show_default=True)
+@click.option("--output",     default="AAIP has 8 layers: identity, registry, execution, PoE, jury, CAV, validators, escrow.", show_default=True)
+@click.option("--validators", default=3,     show_default=True, help="Number of validators in panel")
 @click.option("--json-output", is_flag=True, default=False,     help="Print raw JSON result")
 def verify(task: str, output: str, validators: int, json_output: bool) -> None:
     """
@@ -84,7 +77,6 @@ def verify(task: str, output: str, validators: int, json_output: bool) -> None:
         aaip verify --task "Translate this text" --output "Bonjour le monde"
     """
     import json as _json
-
     from aaip.identity import AgentIdentity
     from aaip.poe.deterministic import DeterministicPoE
     from aaip.validators import ValidatorPanel
@@ -120,9 +112,9 @@ def verify(task: str, output: str, validators: int, json_output: bool) -> None:
 
     click.echo()
     if result.passed:
-        click.echo(f"  {g(bold('VERIFIED'))}  ({result.approve_count}/{result.total_validators} validators approved)\n")  # noqa: E501
+        click.echo(f"  {g(bold('VERIFIED'))}  ({result.approve_count}/{result.total_validators} validators approved)\n")
     else:
-        click.echo(f"  {r(bold('REJECTED'))}  ({result.reject_count}/{result.total_validators} rejected)\n")  # noqa: E501
+        click.echo(f"  {r(bold('REJECTED'))}  ({result.reject_count}/{result.total_validators} rejected)\n")
 
     if json_output:
         click.echo(_json.dumps({
@@ -136,7 +128,7 @@ def verify(task: str, output: str, validators: int, json_output: bool) -> None:
 
 
 @click.command()
-@click.option("--fraud",      is_flag=True, default=False, help="Demo with a fraudulent PoE (shows rejection)")  # noqa: E501
+@click.option("--fraud",      is_flag=True, default=False, help="Demo with a fraudulent PoE (shows rejection)")
 @click.option("--validators", default=3,    show_default=True, help="Number of validators in panel")
 def demo(fraud: bool, validators: int) -> None:
     """
@@ -223,8 +215,8 @@ def demo(fraud: bool, validators: int) -> None:
 
     click.echo()
     ratio_pct = f"{result.approve_ratio * 100:.0f}%"
-    click.echo(f"  Votes:     {g(str(result.approve_count))} approve  /  {r(str(result.reject_count))} reject  ({ratio_pct})")  # noqa: E501
-    click.echo(f"  Threshold: {result.approve_count}/{result.total_validators} ≥ {result.threshold:.0%} required")  # noqa: E501
+    click.echo(f"  Votes:     {g(str(result.approve_count))} approve  /  {r(str(result.reject_count))} reject  ({ratio_pct})")
+    click.echo(f"  Threshold: {result.approve_count}/{result.total_validators} ≥ {result.threshold:.0%} required")
     click.echo()
     time.sleep(0.3)
 
@@ -252,7 +244,7 @@ def demo(fraud: bool, validators: int) -> None:
     click.echo("  └─────────────────────────────────────────────────────┘\n")
 
     if result.passed:
-        click.echo(f"  {g(bold('Consensus reached.'))} Task verified by {result.approve_count}/{result.total_validators} validators.\n")  # noqa: E501
+        click.echo(f"  {g(bold('Consensus reached.'))} Task verified by {result.approve_count}/{result.total_validators} validators.\n")
     else:
         click.echo(f"  {r(bold('Consensus failed.'))} PoE rejected — fraudulent trace detected.\n")
         sigs = set(s for v in result.votes for s in v.signals)
