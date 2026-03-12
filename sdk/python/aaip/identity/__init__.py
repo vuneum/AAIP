@@ -28,7 +28,9 @@ from pathlib import Path
 
 def _has_cryptography() -> bool:
     try:
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey  # noqa: F401
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+            Ed25519PrivateKey,  # noqa: F401
+        )
         return True
     except ImportError:
         return False
