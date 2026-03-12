@@ -5,48 +5,39 @@ All request/response data structures
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
-from typing import Any
+from dataclasses import dataclass, field, asdict
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 
 # ─────────────────────────────────────────────
 # Errors
 # ─────────────────────────────────────────────
 
-
 class AAIPError(Exception):
     """Base AAIP SDK error."""
-
     pass
-
 
 class AuthError(AAIPError):
     """Invalid or missing API key."""
-
     pass
-
 
 class ValidationError(AAIPError):
     """Request validation failed."""
-
     pass
-
 
 class NotFoundError(AAIPError):
     """Resource not found."""
-
     pass
-
 
 class PaymentError(AAIPError):
     """Payment verification failed."""
-
     pass
 
 
 # ─────────────────────────────────────────────
 # Agent Manifest
 # ─────────────────────────────────────────────
-
 
 @dataclass
 class AgentManifest:
@@ -57,7 +48,6 @@ class AgentManifest:
     AAIP does not create your agent — you build it.
     The manifest is how AAIP discovers and indexes it.
     """
-
     agent_name: str
     owner: str
     endpoint: str
@@ -65,39 +55,35 @@ class AgentManifest:
     version: str = "1.0.0"
 
     # What this agent can do
-    capabilities: list[str] = field(default_factory=list)  # ["translation", "code_analysis"]
-    domains: list[str] = field(default_factory=list)  # ["coding", "finance", "general"]
-    tools: list[str] = field(default_factory=list)  # ["python", "search", "sql"]
-    tags: list[str] = field(default_factory=list)  # ["retrieval", "rag", "assistant"]
+    capabilities: List[str] = field(default_factory=list)   # ["translation", "code_analysis"]
+    domains: List[str] = field(default_factory=list)         # ["coding", "finance", "general"]
+    tools: List[str] = field(default_factory=list)           # ["python", "search", "sql"]
+    tags: List[str] = field(default_factory=list)            # ["retrieval", "rag", "assistant"]
 
     # Framework this agent was built with
-    framework: str | None = (
-        None  # "langchain" | "crewai" | "openai_agents" | "autogpt" | "custom"
-    )
-    framework_version: str | None = None
+    framework: Optional[str] = None  # "langchain" | "crewai" | "openai_agents" | "autogpt" | "custom"
+    framework_version: Optional[str] = None
 
     # Payment info (optional — Full integration only)
-    payment: dict[str, Any] | None = None
+    payment: Optional[Dict[str, Any]] = None
 
     # Security
-    public_key: str | None = None
+    public_key: Optional[str] = None
 
     # Metadata
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         d = asdict(self)
         return {k: v for k, v in d.items() if v is not None and v != [] and v != {}}
 
     @classmethod
-    def from_dict(cls, data: dict) -> AgentManifest:
+    def from_dict(cls, data: dict) -> "AgentManifest":
         return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
 
     def to_json_file(self, path: str = ".well-known/aaip-agent.json") -> None:
         """Write manifest to .well-known/aaip-agent.json for auto-discovery."""
-        import json
-        import os
-
+        import json, os
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
             json.dump(self.to_dict(), f, indent=2)
@@ -107,19 +93,17 @@ class AgentManifest:
 # Proof of Execution (PoE)
 # ─────────────────────────────────────────────
 
-
 @dataclass
 class PoETraceStep:
     """A single verifiable step in an agent's execution."""
-
-    step_type: str  # "tool_call" | "llm_call" | "api_call" | "reasoning" | "retrieval"
-    name: str  # tool name, model name, endpoint, etc.
-    timestamp_ms: int  # Unix timestamp in milliseconds
-    input_hash: str | None = None  # SHA-256 hash of input (privacy-preserving)
-    output_hash: str | None = None  # SHA-256 hash of output
-    latency_ms: int | None = None
+    step_type: str           # "tool_call" | "llm_call" | "api_call" | "reasoning" | "retrieval"
+    name: str                # tool name, model name, endpoint, etc.
+    timestamp_ms: int        # Unix timestamp in milliseconds
+    input_hash: Optional[str] = None    # SHA-256 hash of input (privacy-preserving)
+    output_hash: Optional[str] = None   # SHA-256 hash of output
+    latency_ms: Optional[int] = None
     status: str = "success"  # "success" | "error" | "skipped"
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -135,7 +119,6 @@ class PoETrace:
 
     Privacy: sensitive data is stored as hashes, not raw content.
     """
-
     task_id: str
     agent_id: str
     task_description: str
@@ -143,21 +126,21 @@ class PoETrace:
     completed_at_ms: int
 
     # Execution steps
-    steps: list[PoETraceStep] = field(default_factory=list)
+    steps: List[PoETraceStep] = field(default_factory=list)
 
     # Aggregated stats
     total_tool_calls: int = 0
     total_llm_calls: int = 0
     total_api_calls: int = 0
-    total_tokens: int | None = None
-    total_latency_ms: int | None = None
+    total_tokens: Optional[int] = None
+    total_latency_ms: Optional[int] = None
 
     # Raw tool calls (for richer jury context)
-    tool_calls: list[dict[str, Any]] = field(default_factory=list)
-    reasoning_steps: list[dict[str, Any]] = field(default_factory=list)
-    token_usage: dict[str, Any] = field(default_factory=dict)
+    tool_calls: List[Dict[str, Any]] = field(default_factory=list)
+    reasoning_steps: List[Dict[str, Any]] = field(default_factory=list)
+    token_usage: Dict[str, Any] = field(default_factory=dict)
 
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def add_step(self, step: PoETraceStep) -> None:
         """Add an execution step to the trace."""
@@ -171,10 +154,7 @@ class PoETrace:
 
     def add_tool_call(self, tool_name: str, inputs: Any, output: Any, latency_ms: int = 0) -> None:
         """Convenience method to add a tool call step."""
-        import hashlib
-        import json
-        import time
-
+        import hashlib, json, time
         step = PoETraceStep(
             step_type="tool_call",
             name=tool_name,
@@ -184,20 +164,16 @@ class PoETrace:
             latency_ms=latency_ms,
         )
         self.add_step(step)
-        self.tool_calls.append(
-            {
-                "tool": tool_name,
-                "input_hash": step.input_hash,
-                "output_hash": step.output_hash,
-                "latency_ms": latency_ms,
-            }
-        )
+        self.tool_calls.append({
+            "tool": tool_name,
+            "input_hash": step.input_hash,
+            "output_hash": step.output_hash,
+            "latency_ms": latency_ms,
+        })
 
     def add_reasoning(self, thought: str) -> None:
         """Add a reasoning step (stored as hash for privacy)."""
-        import hashlib
-        import time
-
+        import hashlib, time
         thought_hash = hashlib.sha256(thought.encode()).hexdigest()[:16]
         step = PoETraceStep(
             step_type="reasoning",
@@ -214,7 +190,6 @@ class PoETrace:
         This is the cryptographic fingerprint of the execution.
         """
         import hashlib
-
         trace_str = f"{self.task_id}:{self.agent_id}:{self.started_at_ms}:{self.completed_at_ms}"
         for step in self.steps:
             trace_str += f":{step.step_type}:{step.name}:{step.timestamp_ms}:{step.status}"
@@ -238,16 +213,15 @@ class PoETrace:
 # Evaluation
 # ─────────────────────────────────────────────
 
-
 @dataclass
 class EvaluationRequest:
     agent_id: str
     task_domain: str
     task_description: str
     agent_output: str
-    trace: PoETrace | None = None
-    judge_ids: list[str] | None = None
-    benchmark_dataset_id: str | None = None
+    trace: Optional[PoETrace] = None
+    judge_ids: Optional[List[str]] = None
+    benchmark_dataset_id: Optional[str] = None
     async_mode: bool = False
 
 
@@ -256,17 +230,17 @@ class EvaluationResponse:
     evaluation_id: str
     agent_id: str
     task_domain: str
-    judge_scores: dict[str, float]
+    judge_scores: Dict[str, float]
     final_score: float
     score_variance: float
     agreement_level: str  # "high" | "moderate" | "low"
-    confidence_interval: dict[str, float] = field(default_factory=dict)
-    benchmark_score: float | None = None
-    rules_score: float | None = None
-    historical_reliability: float | None = None
+    confidence_interval: Dict[str, float] = field(default_factory=dict)
+    benchmark_score: Optional[float] = None
+    rules_score: Optional[float] = None
+    historical_reliability: Optional[float] = None
     poe_verified: bool = False
-    poe_hash: str | None = None
-    timestamp: str | None = None
+    poe_hash: Optional[str] = None
+    timestamp: Optional[str] = None
 
     def __post_init__(self):
         # Handle nested dict from API
@@ -284,21 +258,16 @@ class EvaluationResponse:
     @property
     def grade(self) -> str:
         s = self.final_score
-        if s >= 95:
-            return "Elite"
-        if s >= 90:
-            return "Gold"
-        if s >= 80:
-            return "Silver"
-        if s >= 70:
-            return "Bronze"
+        if s >= 95: return "Elite"
+        if s >= 90: return "Gold"
+        if s >= 80: return "Silver"
+        if s >= 70: return "Bronze"
         return "Unrated"
 
 
 # ─────────────────────────────────────────────
 # Discovery
 # ─────────────────────────────────────────────
-
 
 @dataclass
 class DiscoveryResult:
@@ -307,13 +276,13 @@ class DiscoveryResult:
     owner: str
     description: str = ""
     endpoint: str = ""
-    capabilities: list[str] = field(default_factory=list)
-    domains: list[str] = field(default_factory=list)
-    tags: list[str] = field(default_factory=list)
-    framework: str | None = None
-    reputation_score: float | None = None
+    capabilities: List[str] = field(default_factory=list)
+    domains: List[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
+    framework: Optional[str] = None
+    reputation_score: Optional[float] = None
     evaluation_count: int = 0
-    last_active: str | None = None
+    last_active: Optional[str] = None
 
     def __post_init__(self):
         # Normalize field names from API
@@ -325,11 +294,10 @@ class DiscoveryResult:
 # Reputation
 # ─────────────────────────────────────────────
 
-
 @dataclass
 class ReputationTimeline:
-    timeline: list[dict[str, Any]] = field(default_factory=list)
-    summary: dict[str, Any] = field(default_factory=dict)
+    timeline: List[Dict[str, Any]] = field(default_factory=list)
+    summary: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def current_score(self) -> float:
@@ -348,7 +316,6 @@ class ReputationTimeline:
 # Leaderboard
 # ─────────────────────────────────────────────
 
-
 @dataclass
 class LeaderboardEntry:
     rank: int
@@ -358,7 +325,7 @@ class LeaderboardEntry:
     domain: str
     average_score: float
     evaluation_count: int
-    last_evaluation: str | None = None
+    last_evaluation: Optional[str] = None
 
     def __post_init__(self):
         if not self.aaip_agent_id:
@@ -369,13 +336,12 @@ class LeaderboardEntry:
 # Payments
 # ─────────────────────────────────────────────
 
-
 @dataclass
 class PaymentQuote:
     agent_id: str
     amount: str
     currency: str  # "USDC" | "USDT"
-    chain: str  # "base" | "ethereum" | "tron" | "solana"
+    chain: str     # "base" | "ethereum" | "tron" | "solana"
     wallet_address: str
     expires_at: str
     quote_id: str = ""

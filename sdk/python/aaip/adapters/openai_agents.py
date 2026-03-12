@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
 from ..client import AAIPClient, AsyncAAIPClient
 from ..models import AgentManifest, PoETraceStep
@@ -33,9 +33,9 @@ class AAIPOpenAIAgent:
     def __init__(
         self,
         openai_agent: Any,
-        aaip_client: AAIPClient | AsyncAAIPClient,
+        aaip_client: Union[AAIPClient, AsyncAAIPClient],
         agent_id: str,
-        client: Any = None,  # openai.OpenAI client
+        client: Any = None,          # openai.OpenAI client
         auto_evaluate: bool = True,
         auto_submit_trace: bool = True,
         domain: str = "general",
@@ -48,7 +48,7 @@ class AAIPOpenAIAgent:
         self.auto_submit_trace = auto_submit_trace
         self.domain = domain
 
-    def run(self, task: str, context_variables: dict | None = None, **kwargs) -> dict[str, Any]:
+    def run(self, task: str, context_variables: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
         """Run the OpenAI agent with AAIP PoE tracing."""
         task_id = f"oai-{uuid.uuid4().hex[:12]}"
         poe = ProofOfExecution(task_id=task_id, agent_id=self.agent_id, task_description=task)
@@ -62,16 +62,11 @@ class AAIPOpenAIAgent:
                 # Try openai-agents SDK (new)
                 if hasattr(self.agent, "run"):
                     from openai import OpenAI
-
                     openai_client = self.openai_client or OpenAI()
-                    result = (
-                        openai_client.beta.threads.create_and_run(
-                            assistant_id=getattr(self.agent, "id", ""),
-                            thread={"messages": [{"role": "user", "content": task}]},
-                        )
-                        if hasattr(openai_client, "beta")
-                        else self.agent.run(task)
-                    )
+                    result = openai_client.beta.threads.create_and_run(
+                        assistant_id=getattr(self.agent, "id", ""),
+                        thread={"messages": [{"role": "user", "content": task}]},
+                    ) if hasattr(openai_client, "beta") else self.agent.run(task)
                     output = str(result)
 
                 # Try Swarm-style run
@@ -82,12 +77,7 @@ class AAIPOpenAIAgent:
                     output = str(self.agent)
 
                 latency = int(time.time() * 1000) - start
-                poe.tool(
-                    "openai_agent",
-                    inputs={"task": task[:200]},
-                    output={"result": output[:200]},
-                    latency_ms=latency,
-                )
+                poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)
 
                 # Capture tool calls if available
                 if hasattr(result, "messages"):
@@ -102,15 +92,13 @@ class AAIPOpenAIAgent:
                 poe.reason("OpenAI agent completed successfully")
 
             except Exception as e:
-                poe.trace.add_step(
-                    PoETraceStep(
-                        step_type="tool_call",
-                        name="openai_agent",
-                        timestamp_ms=int(time.time() * 1000),
-                        status="error",
-                        metadata={"error": str(e)},
-                    )
-                )
+                poe.trace.add_step(PoETraceStep(
+                    step_type="tool_call",
+                    name="openai_agent",
+                    timestamp_ms=int(time.time() * 1000),
+                    status="error",
+                    metadata={"error": str(e)},
+                ))
                 raise
 
         if self.auto_submit_trace and isinstance(self.aaip, AAIPClient):
@@ -139,7 +127,7 @@ class AAIPOpenAIAgent:
             "evaluation": eval_result,
         }
 
-    async def arun(self, task: str, **kwargs) -> dict[str, Any]:
+    async def arun(self, task: str, **kwargs) -> Dict[str, Any]:
         """Async version."""
         task_id = f"oai-{uuid.uuid4().hex[:12]}"
         poe = ProofOfExecution(task_id=task_id, agent_id=self.agent_id, task_description=task)
@@ -149,19 +137,10 @@ class AAIPOpenAIAgent:
             if hasattr(self.agent, "arun"):
                 result = await self.agent.arun(task, **kwargs)
             else:
-                result = (
-                    self.agent.run(task, **kwargs)
-                    if hasattr(self.agent, "run")
-                    else str(self.agent)
-                )
+                result = self.agent.run(task, **kwargs) if hasattr(self.agent, "run") else str(self.agent)
             output = str(result)
             latency = int(time.time() * 1000) - start
-            poe.tool(
-                "openai_agent",
-                inputs={"task": task[:200]},
-                output={"result": output[:200]},
-                latency_ms=latency,
-            )
+            poe.tool("openai_agent", inputs={"task": task[:200]}, output={"result": output[:200]}, latency_ms=latency)
 
         if isinstance(self.aaip, AsyncAAIPClient):
             try:
@@ -177,8 +156,8 @@ def register_openai_agent(
     agent_name: str,
     owner: str,
     endpoint: str,
-    capabilities: list[str],
-    tools: list[str] | None = None,
+    capabilities: List[str],
+    tools: Optional[List[str]] = None,
     domain: str = "general",
     model: str = "gpt-4o",
 ) -> dict:

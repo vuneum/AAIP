@@ -4,11 +4,11 @@ aaip.quick — Zero-friction AAIP integration.
 The entire integration in 3 lines:
 
     from aaip.quick import aaip_agent, verify
-
+    
     @aaip_agent
     def run(task: str) -> str:
         ...your agent logic...
-
+    
     result = run("Analyse AI frameworks")
     print(result.verified)   # True
     print(result.agent_id)   # "8f21d3a4..."
@@ -19,7 +19,7 @@ Framework-specific (one line each):
     chain = aaip_langchain(your_chain)
     result = chain.invoke({"input": "your task"})
 
-    # CrewAI
+    # CrewAI  
     crew = aaip_crewai(your_crew)
     result = crew.kickoff(inputs={"topic": "AI"})
 
@@ -31,38 +31,35 @@ Framework-specific (one line each):
 from __future__ import annotations
 
 import functools
+import time
 from dataclasses import dataclass, field
-from typing import Any, Callable
-from .identity import AgentIdentity
+from typing import Any, Callable, List, Optional
+
 
 # ---------------------------------------------------------------------------
 # Result object returned from every aaip-wrapped call
 # ---------------------------------------------------------------------------
 
-
 @dataclass
 class AAIPResult:
     """Returned from every aaip-wrapped agent call."""
-
-    output: Any
-    agent_id: str
-    poe_hash: str
-    signature: str
-    verified: bool
-    consensus: str  # "APPROVED" or "REJECTED"
+    output:        Any
+    agent_id:      str
+    poe_hash:      str
+    signature:     str
+    verified:      bool
+    consensus:     str          # "APPROVED" or "REJECTED"
     approve_count: int
     total_validators: int
-    signals: list[str] = field(default_factory=list)
-    shadow: bool = False  # True = observation only, never blocks
+    signals:       List[str] = field(default_factory=list)
+    shadow:        bool = False  # True = observation only, never blocks
 
     def __str__(self):
-        mode = " [shadow]" if self.shadow else ""
+        mode   = " [shadow]" if self.shadow else ""
         status = "✔ VERIFIED" if self.verified else "✘ REJECTED"
-        return (
-            f"[AAIP {status}{mode}] agent={self.agent_id} "
-            f"validators={self.approve_count}/{self.total_validators} "
-            f"hash={self.poe_hash[:12]}..."
-        )
+        return (f"[AAIP {status}{mode}] agent={self.agent_id} "
+                f"validators={self.approve_count}/{self.total_validators} "
+                f"hash={self.poe_hash[:12]}...")
 
     def __repr__(self):
         return self.__str__()
@@ -72,22 +69,15 @@ class AAIPResult:
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-
-def _get_identity() -> AgentIdentity:  # noqa: F821
+def _get_identity() -> "AgentIdentity":  # noqa: F821
     """Load or create agent identity (cached per process)."""
     from .identity import AgentIdentity
-
     return AgentIdentity.load_or_create()
 
 
-def _build_and_verify(
-    identity: AgentIdentity,
-    task: str,
-    output: Any,  # noqa: F821
-    tools: list[str],
-    model: str | None,
-    n_validators: int = 3,
-) -> AAIPResult:
+def _build_and_verify(identity: "AgentIdentity", task: str, output: Any,  # noqa: F821
+                      tools: List[str], model: Optional[str],
+                      n_validators: int = 3) -> AAIPResult:
     """Build PoE, run validators, return AAIPResult."""
     from .poe.deterministic import DeterministicPoE
     from .validators import ValidatorPanel
@@ -103,22 +93,22 @@ def _build_and_verify(
     poe.finish()
 
     poe_dict = poe.to_dict()
-    result = ValidatorPanel(n=n_validators).vote(poe_dict)
+    result   = ValidatorPanel(n=n_validators).vote(poe_dict)
 
     all_signals = []
     for vote in result.votes:
         all_signals.extend(vote.signals)
 
     return AAIPResult(
-        output=output,
-        agent_id=identity.agent_id,
-        poe_hash=poe_dict["poe_hash"],
-        signature=poe_dict["signature"],
-        verified=result.passed,
-        consensus=result.consensus,
-        approve_count=result.approve_count,
-        total_validators=result.total_validators,
-        signals=list(set(all_signals)),
+        output        = output,
+        agent_id      = identity.agent_id,
+        poe_hash      = poe_dict["poe_hash"],
+        signature     = poe_dict["signature"],
+        verified      = result.passed,
+        consensus     = result.consensus,
+        approve_count = result.approve_count,
+        total_validators = result.total_validators,
+        signals       = list(set(all_signals)),
     )
 
 
@@ -126,12 +116,11 @@ def _build_and_verify(
 # @aaip_agent decorator — wraps any callable
 # ---------------------------------------------------------------------------
 
-
 def aaip_agent(
-    func: Callable | None = None,
+    func: Optional[Callable] = None,
     *,
-    tools: list[str] | None = None,
-    model: str | None = None,
+    tools: Optional[List[str]] = None,
+    model: Optional[str] = None,
     validators: int = 3,
     task_arg: str = "task",
     shadow: bool = False,
@@ -163,13 +152,12 @@ def aaip_agent(
         print(result.verified)   # True/False — for auditing only
         print(result.signals)    # fraud signals detected, if any
     """
-
     def decorator(fn: Callable) -> Callable:
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
-            identity = _get_identity()
-            _tools = tools or []
-            _model = model
+            identity    = _get_identity()
+            _tools      = tools or []
+            _model      = model
 
             # Extract task string from first positional arg or task_arg kwarg
             if args:
@@ -187,29 +175,22 @@ def aaip_agent(
                 # Shadow mode: run verification but never raise or block.
                 # Always return the original output wrapped in AAIPResult.
                 try:
-                    result = _build_and_verify(
-                        identity, task_str, output, effective_tools, _model, validators
-                    )
+                    result = _build_and_verify(identity, task_str, output,
+                                               effective_tools, _model, validators)
                     result.shadow = True
                     return result
                 except Exception:
                     # Verification failure must never affect the agent's output
                     return AAIPResult(
-                        output=output,
-                        agent_id=identity.agent_id,
-                        poe_hash="",
-                        signature="",
-                        verified=False,
-                        consensus="SHADOW_ERROR",
-                        approve_count=0,
-                        total_validators=validators,
-                        signals=["SHADOW_VERIFICATION_ERROR"],
+                        output=output, agent_id=identity.agent_id,
+                        poe_hash="", signature="", verified=False,
+                        consensus="SHADOW_ERROR", approve_count=0,
+                        total_validators=validators, signals=["SHADOW_VERIFICATION_ERROR"],
                         shadow=True,
                     )
 
-            return _build_and_verify(
-                identity, task_str, output, effective_tools, _model, validators
-            )
+            return _build_and_verify(identity, task_str, output,
+                                     effective_tools, _model, validators)
 
         wrapper.aaip = True
         wrapper.shadow = shadow
@@ -226,7 +207,6 @@ def aaip_agent(
 # aaip_task context manager — manual tool recording
 # ---------------------------------------------------------------------------
 
-
 class aaip_task:
     """
     Context manager for manual tool recording.
@@ -242,27 +222,27 @@ class aaip_task:
     """
 
     def __init__(self, task: str, validators: int = 3, shadow: bool = False):
-        self._task = task
+        self._task       = task
         self._validators = validators
-        self._shadow = shadow
-        self._tools: list[str] = []
-        self._model: str | None = None
+        self._shadow     = shadow
+        self._tools: List[str] = []
+        self._model: Optional[str] = None
         self._output: Any = None
-        self.result: AAIPResult | None = None
+        self.result: Optional[AAIPResult] = None
 
-    def tool(self, name: str) -> aaip_task:
+    def tool(self, name: str) -> "aaip_task":
         self._tools.append(name)
         return self
 
-    def model(self, name: str) -> aaip_task:
+    def model(self, name: str) -> "aaip_task":
         self._model = name
         return self
 
-    def output(self, value: Any) -> aaip_task:
+    def output(self, value: Any) -> "aaip_task":
         self._output = value
         return self
 
-    def __enter__(self) -> aaip_task:
+    def __enter__(self) -> "aaip_task":
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -272,30 +252,22 @@ class aaip_task:
         if self._shadow:
             try:
                 self.result = _build_and_verify(
-                    identity,
-                    self._task,
-                    self._output or "",
-                    self._tools,
-                    self._model,
-                    self._validators,
+                    identity, self._task, self._output or "",
+                    self._tools, self._model, self._validators
                 )
                 self.result.shadow = True
             except Exception:
                 self.result = AAIPResult(
-                    output=self._output,
-                    agent_id=identity.agent_id,
-                    poe_hash="",
-                    signature="",
-                    verified=False,
-                    consensus="SHADOW_ERROR",
-                    approve_count=0,
+                    output=self._output, agent_id=identity.agent_id,
+                    poe_hash="", signature="", verified=False,
+                    consensus="SHADOW_ERROR", approve_count=0,
                     total_validators=self._validators,
-                    signals=["SHADOW_VERIFICATION_ERROR"],
-                    shadow=True,
+                    signals=["SHADOW_VERIFICATION_ERROR"], shadow=True,
                 )
         else:
             self.result = _build_and_verify(
-                identity, self._task, self._output or "", self._tools, self._model, self._validators
+                identity, self._task, self._output or "",
+                self._tools, self._model, self._validators
             )
         return False
 
@@ -303,7 +275,6 @@ class aaip_task:
 # ---------------------------------------------------------------------------
 # verify() — verify any poe_dict directly
 # ---------------------------------------------------------------------------
-
 
 def verify(poe_dict: dict, validators: int = 3) -> AAIPResult:
     """
@@ -315,7 +286,7 @@ def verify(poe_dict: dict, validators: int = 3) -> AAIPResult:
     """
     from .validators import ValidatorPanel
 
-    panel = ValidatorPanel(n=validators)
+    panel  = ValidatorPanel(n=validators)
     result = panel.vote(poe_dict)
 
     all_signals = []
@@ -325,22 +296,21 @@ def verify(poe_dict: dict, validators: int = 3) -> AAIPResult:
     identity = _get_identity()
 
     return AAIPResult(
-        output=poe_dict.get("output_hash", ""),
-        agent_id=poe_dict.get("agent_id", identity.agent_id),
-        poe_hash=poe_dict.get("poe_hash", ""),
-        signature=poe_dict.get("signature", ""),
-        verified=result.passed,
-        consensus=result.consensus,
-        approve_count=result.approve_count,
-        total_validators=result.total_validators,
-        signals=list(set(all_signals)),
+        output        = poe_dict.get("output_hash", ""),
+        agent_id      = poe_dict.get("agent_id", identity.agent_id),
+        poe_hash      = poe_dict.get("poe_hash", ""),
+        signature     = poe_dict.get("signature", ""),
+        verified      = result.passed,
+        consensus     = result.consensus,
+        approve_count = result.approve_count,
+        total_validators = result.total_validators,
+        signals       = list(set(all_signals)),
     )
 
 
 # ---------------------------------------------------------------------------
 # Framework one-liners
 # ---------------------------------------------------------------------------
-
 
 def aaip_langchain(chain: Any, validators: int = 3) -> Any:
     """
@@ -360,13 +330,15 @@ def aaip_langchain(chain: Any, validators: int = 3) -> Any:
 
         def invoke(self, inputs: Any, **kwargs) -> AAIPResult:
             task = inputs.get("input", str(inputs)) if isinstance(inputs, dict) else str(inputs)
-            raw = self._inner.invoke(inputs, **kwargs)
-            out = raw.get("output", str(raw)) if isinstance(raw, dict) else str(raw)
-            return _build_and_verify(identity, task, out, ["langchain_invoke"], None, validators)
+            raw  = self._inner.invoke(inputs, **kwargs)
+            out  = raw.get("output", str(raw)) if isinstance(raw, dict) else str(raw)
+            return _build_and_verify(identity, task, out,
+                                     ["langchain_invoke"], None, validators)
 
         def run(self, task: str, **kwargs) -> AAIPResult:
             raw = self._inner.run(task, **kwargs) if hasattr(self._inner, "run") else str(task)
-            return _build_and_verify(identity, task, raw, ["langchain_run"], None, validators)
+            return _build_and_verify(identity, task, raw,
+                                     ["langchain_run"], None, validators)
 
         def __getattr__(self, name):
             return getattr(self._inner, name)
@@ -390,14 +362,12 @@ def aaip_crewai(crew: Any, validators: int = 3) -> Any:
             self._inner = inner
             self.agent_id = identity.agent_id
 
-        def kickoff(self, inputs: dict | None = None, **kwargs) -> AAIPResult:
+        def kickoff(self, inputs: Optional[dict] = None, **kwargs) -> AAIPResult:
             task = str(inputs) if inputs else "crew task"
-            raw = self._inner.kickoff(inputs=inputs, **kwargs)
-            out = getattr(raw, "raw", str(raw))
+            raw  = self._inner.kickoff(inputs=inputs, **kwargs)
+            out  = getattr(raw, "raw", str(raw))
             agent_roles = [a.role for a in getattr(self._inner, "agents", [])]
-            tools = [f"crew_agent:{r.lower().replace(' ', '_')}" for r in agent_roles] or [
-                "crewai_kickoff"
-            ]
+            tools = [f"crew_agent:{r.lower().replace(' ','_')}" for r in agent_roles] or ["crewai_kickoff"]
             return _build_and_verify(identity, task, out, tools, None, validators)
 
         def __getattr__(self, name):

@@ -7,30 +7,38 @@ https://aaip.dev
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import json
 import os
 import time
-from typing import Any
+from dataclasses import dataclass, field, asdict
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
+from urllib.parse import urljoin
 
 import httpx
 
 from .models import (
-    AAIPError,
     AgentManifest,
-    AuthError,
-    DiscoveryResult,
+    EvaluationRequest,
     EvaluationResponse,
-    LeaderboardEntry,
-    NotFoundError,
-    PaymentQuote,
     PoETrace,
+    PoETraceStep,
+    DiscoveryResult,
     ReputationTimeline,
+    PaymentQuote,
+    LeaderboardEntry,
+    AAIPError,
     ValidationError,
+    AuthError,
+    NotFoundError,
 )
+from .poe import ProofOfExecution
+
 
 # ─────────────────────────────────────────────
 # Base Client (shared logic)
 # ─────────────────────────────────────────────
-
 
 class _BaseClient:
     """Shared configuration and helpers."""
@@ -39,17 +47,15 @@ class _BaseClient:
 
     def __init__(
         self,
-        api_key: str | None = None,
-        base_url: str | None = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
         timeout: float = 30.0,
     ):
         self.api_key = api_key or os.environ.get("AAIP_API_KEY", "")
-        self.base_url = (base_url or os.environ.get("AAIP_BASE_URL", self.DEFAULT_BASE_URL)).rstrip(
-            "/"
-        )
+        self.base_url = (base_url or os.environ.get("AAIP_BASE_URL", self.DEFAULT_BASE_URL)).rstrip("/")
         self.timeout = timeout
 
-    def _headers(self) -> dict[str, str]:
+    def _headers(self) -> Dict[str, str]:
         h = {
             "Content-Type": "application/json",
             "User-Agent": "aaip-python-sdk/1.0.0",
@@ -77,7 +83,6 @@ class _BaseClient:
 # Async Client
 # ─────────────────────────────────────────────
 
-
 class AsyncAAIPClient(_BaseClient):
     """
     Async AAIP client for Python async/await environments.
@@ -90,7 +95,7 @@ class AsyncAAIPClient(_BaseClient):
 
     def __init__(self, api_key=None, base_url=None, timeout=30.0):
         super().__init__(api_key, base_url, timeout)
-        self._client: httpx.AsyncClient | None = None
+        self._client: Optional[httpx.AsyncClient] = None
 
     async def __aenter__(self):
         self._client = httpx.AsyncClient(headers=self._headers(), timeout=self.timeout)
@@ -125,7 +130,7 @@ class AsyncAAIPClient(_BaseClient):
 
     # ── Identity & Registration ──────────────
 
-    async def register(self, manifest: AgentManifest | dict) -> dict:
+    async def register(self, manifest: Union[AgentManifest, dict]) -> dict:
         """
         Register your agent with AAIP. Returns agent_id and registration details.
         AAIP does not create your agent — it registers an agent you already built.
@@ -142,7 +147,7 @@ class AsyncAAIPClient(_BaseClient):
             body = {"manifest": manifest}
         return await self._post("/discovery/register", body)
 
-    async def update_manifest(self, agent_id: str, manifest: AgentManifest | dict) -> dict:
+    async def update_manifest(self, agent_id: str, manifest: Union[AgentManifest, dict]) -> dict:
         """Update an existing agent's manifest."""
         body = manifest.to_dict() if isinstance(manifest, AgentManifest) else manifest
         return await self._post(f"/agents/{agent_id}/manifest/update", body)
@@ -155,12 +160,12 @@ class AsyncAAIPClient(_BaseClient):
 
     async def discover(
         self,
-        capability: str | None = None,
-        domain: str | None = None,
-        tag: str | None = None,
-        min_reputation: float | None = None,
+        capability: Optional[str] = None,
+        domain: Optional[str] = None,
+        tag: Optional[str] = None,
+        min_reputation: Optional[float] = None,
         limit: int = 20,
-    ) -> list[DiscoveryResult]:
+    ) -> List[DiscoveryResult]:
         """
         Discover agents by capability, domain, or tag.
         Results ranked by reputation score.
@@ -200,9 +205,9 @@ class AsyncAAIPClient(_BaseClient):
         task_description: str,
         agent_output: str,
         domain: str = "general",
-        trace: PoETrace | None = None,
-        judge_ids: list[str] | None = None,
-        benchmark_dataset_id: str | None = None,
+        trace: Optional[PoETrace] = None,
+        judge_ids: Optional[List[str]] = None,
+        benchmark_dataset_id: Optional[str] = None,
         async_mode: bool = False,
     ) -> EvaluationResponse:
         """
@@ -248,9 +253,7 @@ class AsyncAAIPClient(_BaseClient):
         """Poll async evaluation job status."""
         return await self._get(f"/jobs/{job_id}")
 
-    async def wait_for_job(
-        self, job_id: str, poll_interval: float = 2.0, timeout: float = 120.0
-    ) -> dict:
+    async def wait_for_job(self, job_id: str, poll_interval: float = 2.0, timeout: float = 120.0) -> dict:
         """Poll until async job completes or times out."""
         start = time.time()
         while True:
@@ -286,7 +289,7 @@ class AsyncAAIPClient(_BaseClient):
         """Verify a previously submitted PoE trace."""
         return await self._get(f"/traces/{trace_id}/verify")
 
-    async def get_traces(self, agent_id: str, limit: int = 20) -> list[dict]:
+    async def get_traces(self, agent_id: str, limit: int = 20) -> List[dict]:
         """Get execution trace history for an agent."""
         return await self._get(f"/agents/{agent_id}/traces", {"limit": limit})
 
@@ -298,8 +301,10 @@ class AsyncAAIPClient(_BaseClient):
         return ReputationTimeline(**data)
 
     async def get_leaderboard(
-        self, domain: str | None = None, limit: int = 20
-    ) -> list[LeaderboardEntry]:
+        self,
+        domain: Optional[str] = None,
+        limit: int = 20
+    ) -> List[LeaderboardEntry]:
         """Get global leaderboard, optionally filtered by domain."""
         params = {"limit": limit}
         if domain:
@@ -313,7 +318,7 @@ class AsyncAAIPClient(_BaseClient):
 
     # ── Payments ─────────────────────────────
 
-    async def get_quote(self, agent_id: str, task: str | None = None) -> PaymentQuote:
+    async def get_quote(self, agent_id: str, task: Optional[str] = None) -> PaymentQuote:
         """Get payment quote for calling an agent."""
         body = {"agent_id": agent_id}
         if task:
@@ -333,34 +338,29 @@ class AsyncAAIPClient(_BaseClient):
         chain: str = "base",
     ) -> dict:
         """Execute a task after payment verification."""
-        return await self._post(
-            "/tasks/execute-paid",
-            {
-                "agent_id": agent_id,
-                "task": task,
-                "payment_tx_hash": payment_tx_hash,
-                "chain": chain,
-            },
-        )
+        return await self._post("/tasks/execute-paid", {
+            "agent_id": agent_id,
+            "task": task,
+            "payment_tx_hash": payment_tx_hash,
+            "chain": chain,
+        })
 
     # ── Judges & Benchmarks ──────────────────
 
-    async def list_judges(self, domain: str | None = None) -> dict:
+    async def list_judges(self, domain: Optional[str] = None) -> dict:
         """List available judge models for a domain."""
         if domain:
             return await self._get(f"/benchmarks/{domain}/judges")
         return await self._get("/judges/custom")
 
-    async def create_judge(
-        self, name: str, model_id: str, domain: str, system_prompt: str | None = None
-    ) -> dict:
+    async def create_judge(self, name: str, model_id: str, domain: str, system_prompt: Optional[str] = None) -> dict:
         """Create a custom judge model."""
         body = {"name": name, "model_id": model_id, "domain": domain}
         if system_prompt:
             body["system_prompt"] = system_prompt
         return await self._post("/judges/custom", body)
 
-    async def list_datasets(self, domain: str | None = None) -> dict:
+    async def list_datasets(self, domain: Optional[str] = None) -> dict:
         """List benchmark datasets."""
         params = {}
         if domain:
@@ -382,7 +382,6 @@ class AsyncAAIPClient(_BaseClient):
 # Sync Client (wraps async)
 # ─────────────────────────────────────────────
 
-
 class AAIPClient(_BaseClient):
     """
     Synchronous AAIP client.
@@ -396,14 +395,13 @@ class AAIPClient(_BaseClient):
     def __init__(self, api_key=None, base_url=None, timeout=30.0):
         super().__init__(api_key, base_url, timeout)
         self._async = AsyncAAIPClient(api_key, base_url, timeout)
-        self._loop: asyncio.AbstractEventLoop | None = None
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
 
     def _run(self, coro):
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
                 import concurrent.futures
-
                 with concurrent.futures.ThreadPoolExecutor() as pool:
                     future = pool.submit(asyncio.run, coro)
                     return future.result()
@@ -412,92 +410,31 @@ class AAIPClient(_BaseClient):
             return asyncio.run(coro)
 
     # Mirror all async methods synchronously
-    def register(self, manifest):
-        return self._run(self._async.register(manifest))
-
-    def update_manifest(self, agent_id, manifest):
-        return self._run(self._async.update_manifest(agent_id, manifest))
-
-    def get_agent(self, agent_id):
-        return self._run(self._async.get_agent(agent_id))
-
+    def register(self, manifest): return self._run(self._async.register(manifest))
+    def update_manifest(self, agent_id, manifest): return self._run(self._async.update_manifest(agent_id, manifest))
+    def get_agent(self, agent_id): return self._run(self._async.get_agent(agent_id))
     def discover(self, capability=None, domain=None, tag=None, min_reputation=None, limit=20):
         return self._run(self._async.discover(capability, domain, tag, min_reputation, limit))
-
-    def crawl(self, base_url):
-        return self._run(self._async.crawl(base_url))
-
-    def evaluate(
-        self,
-        agent_id,
-        task_description,
-        agent_output,
-        domain="general",
-        trace=None,
-        judge_ids=None,
-        benchmark_dataset_id=None,
-        async_mode=False,
-    ):
-        return self._run(
-            self._async.evaluate(
-                agent_id,
-                task_description,
-                agent_output,
-                domain,
-                trace,
-                judge_ids,
-                benchmark_dataset_id,
-                async_mode,
-            )
-        )
-
-    def get_evaluation(self, evaluation_id):
-        return self._run(self._async.get_evaluation(evaluation_id))
-
-    def get_job(self, job_id):
-        return self._run(self._async.get_job(job_id))
-
+    def crawl(self, base_url): return self._run(self._async.crawl(base_url))
+    def evaluate(self, agent_id, task_description, agent_output, domain="general", trace=None, judge_ids=None, benchmark_dataset_id=None, async_mode=False):
+        return self._run(self._async.evaluate(agent_id, task_description, agent_output, domain, trace, judge_ids, benchmark_dataset_id, async_mode))
+    def get_evaluation(self, evaluation_id): return self._run(self._async.get_evaluation(evaluation_id))
+    def get_job(self, job_id): return self._run(self._async.get_job(job_id))
     def wait_for_job(self, job_id, poll_interval=2.0, timeout=120.0):
         return self._run(self._async.wait_for_job(job_id, poll_interval, timeout))
-
-    def submit_trace(self, agent_id, trace):
-        return self._run(self._async.submit_trace(agent_id, trace))
-
-    def verify_trace(self, trace_id):
-        return self._run(self._async.verify_trace(trace_id))
-
-    def get_traces(self, agent_id, limit=20):
-        return self._run(self._async.get_traces(agent_id, limit))
-
-    def get_reputation(self, agent_id, days=30):
-        return self._run(self._async.get_reputation(agent_id, days))
-
-    def get_leaderboard(self, domain=None, limit=20):
-        return self._run(self._async.get_leaderboard(domain, limit))
-
-    def get_badge(self, agent_id):
-        return self._run(self._async.get_badge(agent_id))
-
-    def get_quote(self, agent_id, task=None):
-        return self._run(self._async.get_quote(agent_id, task))
-
-    def verify_payment(self, tx_hash, chain="base"):
-        return self._run(self._async.verify_payment(tx_hash, chain))
-
+    def submit_trace(self, agent_id, trace): return self._run(self._async.submit_trace(agent_id, trace))
+    def verify_trace(self, trace_id): return self._run(self._async.verify_trace(trace_id))
+    def get_traces(self, agent_id, limit=20): return self._run(self._async.get_traces(agent_id, limit))
+    def get_reputation(self, agent_id, days=30): return self._run(self._async.get_reputation(agent_id, days))
+    def get_leaderboard(self, domain=None, limit=20): return self._run(self._async.get_leaderboard(domain, limit))
+    def get_badge(self, agent_id): return self._run(self._async.get_badge(agent_id))
+    def get_quote(self, agent_id, task=None): return self._run(self._async.get_quote(agent_id, task))
+    def verify_payment(self, tx_hash, chain="base"): return self._run(self._async.verify_payment(tx_hash, chain))
     def execute_paid_task(self, agent_id, task, payment_tx_hash, chain="base"):
         return self._run(self._async.execute_paid_task(agent_id, task, payment_tx_hash, chain))
-
-    def list_judges(self, domain=None):
-        return self._run(self._async.list_judges(domain))
-
+    def list_judges(self, domain=None): return self._run(self._async.list_judges(domain))
     def create_judge(self, name, model_id, domain, system_prompt=None):
         return self._run(self._async.create_judge(name, model_id, domain, system_prompt))
-
-    def list_datasets(self, domain=None):
-        return self._run(self._async.list_datasets(domain))
-
-    def network_stats(self):
-        return self._run(self._async.network_stats())
-
-    def health(self):
-        return self._run(self._async.health())
+    def list_datasets(self, domain=None): return self._run(self._async.list_datasets(domain))
+    def network_stats(self): return self._run(self._async.network_stats())
+    def health(self): return self._run(self._async.health())
