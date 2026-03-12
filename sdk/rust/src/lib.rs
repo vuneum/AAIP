@@ -257,7 +257,7 @@ impl AAIPClient {
     fn headers(&self) -> header::HeaderMap {
         let mut map = header::HeaderMap::new();
         map.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
-        map.insert("User-Agent", format!("aaip-rust-sdk/1.0.0").parse().unwrap());
+        map.insert("User-Agent", "aaip-rust-sdk/1.0.0".parse().unwrap());
         map.insert("X-AAIP-Version", "1".parse().unwrap());
         if !self.api_key.is_empty() {
             map.insert(
