@@ -404,3 +404,39 @@ fn sha256_short(data: &str) -> String {
     hasher.update(data.as_bytes());
     format!("{:x}", hasher.finalize())[..16].to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic_test() {
+        assert_eq!(2 + 2, 4);
+    }
+
+    #[test]
+    fn test_sha256_short() {
+        let hash = sha256_short("test");
+        assert_eq!(hash.len(), 16);
+        assert!(hash.chars().all(|c| c.is_ascii_hexdigit()));
+    }
+
+    #[test]
+    fn test_poe_trace_new() {
+        let trace = PoETrace::new("task1", "agent1", "Test task");
+        assert_eq!(trace.task_id, "task1");
+        assert_eq!(trace.agent_id, "agent1");
+        assert_eq!(trace.task_description, "Test task");
+        assert!(trace.started_at_ms > 0);
+        assert_eq!(trace.completed_at_ms, 0);
+        assert!(trace.steps.is_empty());
+    }
+
+    #[test]
+    fn test_agent_manifest_default() {
+        let manifest = AgentManifest::default();
+        assert!(manifest.agent_name.is_empty());
+        assert!(manifest.owner.is_empty());
+        assert!(manifest.endpoint.is_empty());
+    }
+}
