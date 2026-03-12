@@ -80,7 +80,7 @@ class AAIPLangChainAgent:
                         tool_name = getattr(action, "tool", "unknown_tool")
                         poe.tool(tool_name, inputs={"input": str(getattr(action, "tool_input", ""))[:100]}, output={"obs": str(obs)[:100]})
 
-                poe.reason(f"Task completed successfully")
+                poe.reason("Task completed successfully")
 
             except Exception as e:
                 poe.trace.add_step(PoETraceStep(

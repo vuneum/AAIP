@@ -5,8 +5,7 @@ All request/response data structures
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional
 
 
@@ -83,7 +82,8 @@ class AgentManifest:
 
     def to_json_file(self, path: str = ".well-known/aaip-agent.json") -> None:
         """Write manifest to .well-known/aaip-agent.json for auto-discovery."""
-        import json, os
+        import json
+        import os
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
             json.dump(self.to_dict(), f, indent=2)
@@ -154,7 +154,9 @@ class PoETrace:
 
     def add_tool_call(self, tool_name: str, inputs: Any, output: Any, latency_ms: int = 0) -> None:
         """Convenience method to add a tool call step."""
-        import hashlib, json, time
+        import hashlib
+        import json
+        import time
         step = PoETraceStep(
             step_type="tool_call",
             name=tool_name,
@@ -173,7 +175,8 @@ class PoETrace:
 
     def add_reasoning(self, thought: str) -> None:
         """Add a reasoning step (stored as hash for privacy)."""
-        import hashlib, time
+        import hashlib
+        import time
         thought_hash = hashlib.sha256(thought.encode()).hexdigest()[:16]
         step = PoETraceStep(
             step_type="reasoning",

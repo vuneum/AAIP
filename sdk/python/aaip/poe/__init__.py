@@ -5,10 +5,9 @@ Utilities for generating verifiable execution traces.
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import time
-import functools
-from contextlib import asynccontextmanager, contextmanager
 from typing import Any, Callable, Optional
 
 from ..models import PoETrace, PoETraceStep

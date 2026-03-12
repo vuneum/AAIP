@@ -65,10 +65,8 @@ class AgentIdentity:
     def generate(cls) -> "AgentIdentity":
         seed = secrets.token_bytes(32)
         if HAS_CRYPTOGRAPHY:
-            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-            from cryptography.hazmat.primitives.serialization import (
-                Encoding, PublicFormat, PrivateFormat, NoEncryption,
-            )
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey  # noqa: I001
+            from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
             priv = Ed25519PrivateKey.from_private_bytes(seed)
             pub  = priv.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
         else:
