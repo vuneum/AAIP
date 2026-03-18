@@ -99,7 +99,7 @@ class AgentIdentity:
                         "Identity is encrypted but AAIP_IDENTITY_PASSPHRASE is not set."
                     )
                 # Validate required fields
-                required = ("public_key_hex",)
+                required: tuple[str, ...] = ("public_key_hex",)
                 for field in required:
                     if field not in d:
                         from ..exceptions import IdentityDecryptionError
