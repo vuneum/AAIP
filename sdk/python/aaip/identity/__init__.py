@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import os
 import secrets
 import time
 from pathlib import Path
@@ -26,6 +28,9 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Optional fast path
 # ---------------------------------------------------------------------------
+
+logger = logging.getLogger(__name__)
+
 
 def _has_cryptography() -> bool:
     try:
@@ -77,22 +82,117 @@ class AgentIdentity:
     def load_or_create(cls, path: str = IDENTITY_FILE) -> "AgentIdentity":
         p = Path(path)
         if p.exists():
-            d    = json.loads(p.read_text())
-            seed = bytes.fromhex(d["private_key_hex"])
-            pub  = bytes.fromhex(d["public_key_hex"])
-            return cls(seed, pub)
+            try:
+                d = json.loads(p.read_text())
+            except json.JSONDecodeError as e:
+                from ..exceptions import IdentityDecryptionError
+                raise IdentityDecryptionError(
+                    f"Identity file contains invalid JSON: {e}"
+                ) from e
+            # Check if identity is encrypted
+            if "private_key_encrypted" in d:
+                # Encrypted identity requires passphrase
+                passphrase = os.environ.get("AAIP_IDENTITY_PASSPHRASE")
+                if not passphrase or passphrase.strip() == "":
+                    from ..exceptions import IdentityDecryptionError
+                    raise IdentityDecryptionError(
+                        "Identity is encrypted but AAIP_IDENTITY_PASSPHRASE is not set."
+                    )
+                # Validate required fields
+                required = ("public_key_hex",)
+                for field in required:
+                    if field not in d:
+                        from ..exceptions import IdentityDecryptionError
+                        raise IdentityDecryptionError(
+                            f"Encrypted identity missing required field: {field}"
+                        )
+                # Decrypt the seed
+                from ._encryption import decrypt_seed
+                try:
+                    seed = decrypt_seed(d, passphrase)
+                except Exception as e:
+                    from ..exceptions import IdentityDecryptionError
+                    raise IdentityDecryptionError(
+                        f"Decryption failed: {e}"
+                    ) from e
+                try:
+                    pub = bytes.fromhex(d["public_key_hex"])
+                except ValueError as e:
+                    from ..exceptions import IdentityDecryptionError
+                    raise IdentityDecryptionError(
+                        f"Invalid hex in public_key_hex: {e}"
+                    ) from e
+                identity = cls(seed, pub)
+                logger.info("Loaded encrypted identity")
+                return identity
+            else:
+                # Plaintext identity
+                required = ("private_key_hex", "public_key_hex")
+                for field in required:
+                    if field not in d:
+                        from ..exceptions import IdentityDecryptionError
+                        raise IdentityDecryptionError(
+                            f"Plaintext identity missing required field: {field}"
+                        )
+                try:
+                    seed = bytes.fromhex(d["private_key_hex"])
+                except ValueError as e:
+                    from ..exceptions import IdentityDecryptionError
+                    raise IdentityDecryptionError(
+                        f"Invalid hex in private_key_hex: {e}"
+                    ) from e
+                try:
+                    pub = bytes.fromhex(d["public_key_hex"])
+                except ValueError as e:
+                    from ..exceptions import IdentityDecryptionError
+                    raise IdentityDecryptionError(
+                        f"Invalid hex in public_key_hex: {e}"
+                    ) from e
+                identity = cls(seed, pub)
+                # Warn if passphrase is set (should encrypt)
+                passphrase = os.environ.get("AAIP_IDENTITY_PASSPHRASE")
+                if passphrase and passphrase.strip() != "":
+                    logger.info(
+                        "Identity is plaintext; it will be encrypted on next save."
+                    )
+                else:
+                    logger.warning(
+                        "Private key stored without encryption. "
+                        "Set AAIP_IDENTITY_PASSPHRASE for production security."
+                    )
+                return identity
         identity = cls.generate()
         identity.save(path)
         return identity
 
     def save(self, path: str = IDENTITY_FILE) -> None:
-        Path(path).write_text(json.dumps({
+        passphrase = os.environ.get("AAIP_IDENTITY_PASSPHRASE")
+        if passphrase is not None:
+            stripped = passphrase.strip()
+            if stripped and len(stripped) < 8:
+                raise ValueError("Passphrase must be at least 8 characters")
+        data = {
             "aaip_version":    "1.0",
             "created_at":      int(time.time()),
             "agent_id":        self.agent_id,
             "public_key_hex":  self.public_key_hex,
-            "private_key_hex": self._seed.hex(),
-        }, indent=2))
+        }
+        if passphrase and passphrase.strip() != "":
+            # Encrypt the seed
+            from ._encryption import encrypt_seed
+            encrypted = encrypt_seed(self._seed, passphrase)
+            data.update(encrypted)
+            # Keep private_key_hex empty to avoid confusion
+            data["private_key_hex"] = ""
+            logger.info("Saved encrypted identity")
+        else:
+            # Plaintext storage (backward compatibility)
+            data["private_key_hex"] = self._seed.hex()
+            logger.warning(
+                "Private key stored without encryption. "
+                "Set AAIP_IDENTITY_PASSPHRASE for production security."
+            )
+        Path(path).write_text(json.dumps(data, indent=2))
 
     # ── sign / verify ────────────────────────────────────────────────
 
