@@ -11,3 +11,8 @@ class AAIPError(Exception):
 class IdentityDecryptionError(AAIPError):
     """Raised when identity decryption fails (e.g., wrong passphrase)."""
     pass
+
+
+class IdentityCorruptedError(AAIPError):
+    """Raised when identity file is corrupted or unreadable."""
+    pass
