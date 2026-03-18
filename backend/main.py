@@ -11,6 +11,8 @@ Routes are organised into focused routers:
 """
 from __future__ import annotations
 
+import logging
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import AsyncIterator
@@ -64,9 +66,35 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# ── CORS Configuration ────────────────────────────────────────────────────────
+logger = logging.getLogger(__name__)
+
+# Safe ENV handling
+env = os.getenv("ENV", "development").strip().lower()
+
+# Parse AAIP_ALLOWED_ORIGINS
+origins = os.getenv("AAIP_ALLOWED_ORIGINS", "")
+origin_list = [o.strip() for o in origins.split(",") if o.strip()]
+
+# Development defaults
+if not origin_list and env != "production":
+    origin_list = ["http://localhost:3000", "http://localhost:8000"]
+
+# Empty origins protection
+if not origin_list:
+    raise ValueError("CORS configuration error: AAIP_ALLOWED_ORIGINS is empty or invalid")
+
+# Production validation
+if env == "production":
+    if "*" in origin_list:
+        raise ValueError("Wildcard '*' not allowed in production CORS configuration")
+
+# Log only count (privacy)
+logger.info(f"CORS configured with {len(origin_list)} allowed origin(s)")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
