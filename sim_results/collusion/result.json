@@ -1,0 +1,3865 @@
+{
+  "scenario": "collusion",
+  "config": {
+    "validators": 40,
+    "agents": 20,
+    "malicious_ratio": 0.2,
+    "malicious_validators": 0.1,
+    "tasks": 1500,
+    "task_value_mean": 0.002,
+    "task_value_std": 0.001,
+    "tasks_per_tick": 10,
+    "consensus_threshold": 0.67,
+    "jury_size": 5,
+    "cav_threshold": 10.0,
+    "reputation_weight": 0.3,
+    "escrow_fee_rate": 0.005,
+    "scenario": "collusion",
+    "attack_params": {
+      "collusion_rate": 0.3,
+      "sybil_validators": 100,
+      "validator_selection_method": "random",
+      "bribe_ratio": 2.0,
+      "technique": "prompt_injection",
+      "spam_task_count": 10000
+    },
+    "seed": 42,
+    "parallel": false,
+    "ticks": 150,
+    "verbose": false
+  },
+  "total_tasks": 1500,
+  "completed_tasks": 1500,
+  "fraudulent_tasks": 221,
+  "detected_fraud": 219,
+  "validation_accuracy": 0.991,
+  "collusion_success_rate": 0.2344,
+  "consensus_disagreement": 0.116,
+  "economic_loss": 0.002516,
+  "task_latency_mean": 78.9,
+  "task_latency_p95": 114.43,
+  "system_throughput": 10.0,
+  "validator_reputation_drift": 16.6419,
+  "attack_success_rate": 0.009,
+  "false_approval_rate": 0.009,
+  "sybil_capture_probability": 0.0,
+  "bribery_success_rate": 0.0,
+  "judge_failure_rate": 0.0,
+  "spam_overload_rate": 0.0,
+  "protocol_revenue": 0.015064,
+  "total_value_at_risk": 0,
+  "slashed_stake": 1222.6457,
+  "validator_reward_gini": 0.044,
+  "tick_series": [
+    {
+      "tick": 0,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 77.07,
+      "consensus_failures": 1
+    },
+    {
+      "tick": 1,
+      "tasks": 10,
+      "fraud_detected": 4,
+      "attacks": 4,
+      "avg_latency_ms": 90.71,
+      "consensus_failures": 3
+    },
+    {
+      "tick": 2,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 95.1,
+      "consensus_failures": 4
+    },
+    {
+      "tick": 3,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 72.75,
+      "consensus_failures": 4
+    },
+    {
+      "tick": 4,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 84.9,
+      "consensus_failures": 4
+    },
+    {
+      "tick": 5,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 69.35,
+      "consensus_failures": 5
+    },
+    {
+      "tick": 6,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 89.25,
+      "consensus_failures": 5
+    },
+    {
+      "tick": 7,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 72.65,
+      "consensus_failures": 5
+    },
+    {
+      "tick": 8,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 83.68,
+      "consensus_failures": 6
+    },
+    {
+      "tick": 9,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 70.25,
+      "consensus_failures": 7
+    },
+    {
+      "tick": 10,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 92.31,
+      "consensus_failures": 10
+    },
+    {
+      "tick": 11,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 82.32,
+      "consensus_failures": 10
+    },
+    {
+      "tick": 12,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 89.7,
+      "consensus_failures": 11
+    },
+    {
+      "tick": 13,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 80.43,
+      "consensus_failures": 12
+    },
+    {
+      "tick": 14,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 79.22,
+      "consensus_failures": 16
+    },
+    {
+      "tick": 15,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 79.17,
+      "consensus_failures": 16
+    },
+    {
+      "tick": 16,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 74.78,
+      "consensus_failures": 16
+    },
+    {
+      "tick": 17,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 84.12,
+      "consensus_failures": 18
+    },
+    {
+      "tick": 18,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 82.11,
+      "consensus_failures": 21
+    },
+    {
+      "tick": 19,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 87.88,
+      "consensus_failures": 21
+    },
+    {
+      "tick": 20,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 75.16,
+      "consensus_failures": 23
+    },
+    {
+      "tick": 21,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 85.81,
+      "consensus_failures": 23
+    },
+    {
+      "tick": 22,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 80.11,
+      "consensus_failures": 25
+    },
+    {
+      "tick": 23,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 73.99,
+      "consensus_failures": 25
+    },
+    {
+      "tick": 24,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 74.26,
+      "consensus_failures": 27
+    },
+    {
+      "tick": 25,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 89.99,
+      "consensus_failures": 28
+    },
+    {
+      "tick": 26,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 83.13,
+      "consensus_failures": 30
+    },
+    {
+      "tick": 27,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 81.82,
+      "consensus_failures": 31
+    },
+    {
+      "tick": 28,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 67.38,
+      "consensus_failures": 32
+    },
+    {
+      "tick": 29,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 81.65,
+      "consensus_failures": 32
+    },
+    {
+      "tick": 30,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 84.99,
+      "consensus_failures": 34
+    },
+    {
+      "tick": 31,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 80.46,
+      "consensus_failures": 35
+    },
+    {
+      "tick": 32,
+      "tasks": 10,
+      "fraud_detected": 4,
+      "attacks": 4,
+      "avg_latency_ms": 78.25,
+      "consensus_failures": 37
+    },
+    {
+      "tick": 33,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 83.9,
+      "consensus_failures": 39
+    },
+    {
+      "tick": 34,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 71.28,
+      "consensus_failures": 39
+    },
+    {
+      "tick": 35,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 78.76,
+      "consensus_failures": 39
+    },
+    {
+      "tick": 36,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 84.23,
+      "consensus_failures": 40
+    },
+    {
+      "tick": 37,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 82.89,
+      "consensus_failures": 41
+    },
+    {
+      "tick": 38,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 71.57,
+      "consensus_failures": 41
+    },
+    {
+      "tick": 39,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 78.64,
+      "consensus_failures": 43
+    },
+    {
+      "tick": 40,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 76.33,
+      "consensus_failures": 43
+    },
+    {
+      "tick": 41,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 75.02,
+      "consensus_failures": 45
+    },
+    {
+      "tick": 42,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 93.62,
+      "consensus_failures": 48
+    },
+    {
+      "tick": 43,
+      "tasks": 10,
+      "fraud_detected": 4,
+      "attacks": 4,
+      "avg_latency_ms": 74.95,
+      "consensus_failures": 51
+    },
+    {
+      "tick": 44,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 77.66,
+      "consensus_failures": 51
+    },
+    {
+      "tick": 45,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 77.01,
+      "consensus_failures": 54
+    },
+    {
+      "tick": 46,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 73.01,
+      "consensus_failures": 56
+    },
+    {
+      "tick": 47,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 70.5,
+      "consensus_failures": 56
+    },
+    {
+      "tick": 48,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 57.66,
+      "consensus_failures": 59
+    },
+    {
+      "tick": 49,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 83.87,
+      "consensus_failures": 60
+    },
+    {
+      "tick": 50,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 76.41,
+      "consensus_failures": 63
+    },
+    {
+      "tick": 51,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 79.11,
+      "consensus_failures": 63
+    },
+    {
+      "tick": 52,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 78.94,
+      "consensus_failures": 63
+    },
+    {
+      "tick": 53,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 85.55,
+      "consensus_failures": 65
+    },
+    {
+      "tick": 54,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 76.9,
+      "consensus_failures": 66
+    },
+    {
+      "tick": 55,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 76.82,
+      "consensus_failures": 66
+    },
+    {
+      "tick": 56,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 81.7,
+      "consensus_failures": 67
+    },
+    {
+      "tick": 57,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 85.68,
+      "consensus_failures": 67
+    },
+    {
+      "tick": 58,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 79.61,
+      "consensus_failures": 68
+    },
+    {
+      "tick": 59,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 84.06,
+      "consensus_failures": 69
+    },
+    {
+      "tick": 60,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 73.62,
+      "consensus_failures": 70
+    },
+    {
+      "tick": 61,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 65.5,
+      "consensus_failures": 70
+    },
+    {
+      "tick": 62,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 75.76,
+      "consensus_failures": 72
+    },
+    {
+      "tick": 63,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 72.4,
+      "consensus_failures": 74
+    },
+    {
+      "tick": 64,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 75.31,
+      "consensus_failures": 77
+    },
+    {
+      "tick": 65,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 67.89,
+      "consensus_failures": 78
+    },
+    {
+      "tick": 66,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 76.35,
+      "consensus_failures": 80
+    },
+    {
+      "tick": 67,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 84.38,
+      "consensus_failures": 84
+    },
+    {
+      "tick": 68,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 83.48,
+      "consensus_failures": 84
+    },
+    {
+      "tick": 69,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 73.49,
+      "consensus_failures": 86
+    },
+    {
+      "tick": 70,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 3,
+      "avg_latency_ms": 72.51,
+      "consensus_failures": 87
+    },
+    {
+      "tick": 71,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 72.14,
+      "consensus_failures": 88
+    },
+    {
+      "tick": 72,
+      "tasks": 10,
+      "fraud_detected": 4,
+      "attacks": 4,
+      "avg_latency_ms": 83.98,
+      "consensus_failures": 89
+    },
+    {
+      "tick": 73,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 82.45,
+      "consensus_failures": 90
+    },
+    {
+      "tick": 74,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 76.51,
+      "consensus_failures": 90
+    },
+    {
+      "tick": 75,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 77.27,
+      "consensus_failures": 91
+    },
+    {
+      "tick": 76,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 73.01,
+      "consensus_failures": 95
+    },
+    {
+      "tick": 77,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 79.33,
+      "consensus_failures": 95
+    },
+    {
+      "tick": 78,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 76.02,
+      "consensus_failures": 98
+    },
+    {
+      "tick": 79,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 83.3,
+      "consensus_failures": 99
+    },
+    {
+      "tick": 80,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 93.78,
+      "consensus_failures": 99
+    },
+    {
+      "tick": 81,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 83.52,
+      "consensus_failures": 101
+    },
+    {
+      "tick": 82,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 74.07,
+      "consensus_failures": 103
+    },
+    {
+      "tick": 83,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 82.89,
+      "consensus_failures": 105
+    },
+    {
+      "tick": 84,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 80.72,
+      "consensus_failures": 106
+    },
+    {
+      "tick": 85,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 88.34,
+      "consensus_failures": 107
+    },
+    {
+      "tick": 86,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 77.32,
+      "consensus_failures": 107
+    },
+    {
+      "tick": 87,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 76.95,
+      "consensus_failures": 109
+    },
+    {
+      "tick": 88,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 78.23,
+      "consensus_failures": 110
+    },
+    {
+      "tick": 89,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 71.42,
+      "consensus_failures": 111
+    },
+    {
+      "tick": 90,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 83.73,
+      "consensus_failures": 113
+    },
+    {
+      "tick": 91,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 73.89,
+      "consensus_failures": 113
+    },
+    {
+      "tick": 92,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 80.11,
+      "consensus_failures": 113
+    },
+    {
+      "tick": 93,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 81.32,
+      "consensus_failures": 114
+    },
+    {
+      "tick": 94,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 84.78,
+      "consensus_failures": 116
+    },
+    {
+      "tick": 95,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 77.08,
+      "consensus_failures": 118
+    },
+    {
+      "tick": 96,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 70.7,
+      "consensus_failures": 118
+    },
+    {
+      "tick": 97,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 74.55,
+      "consensus_failures": 118
+    },
+    {
+      "tick": 98,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 76.55,
+      "consensus_failures": 120
+    },
+    {
+      "tick": 99,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 71.75,
+      "consensus_failures": 123
+    },
+    {
+      "tick": 100,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 80.31,
+      "consensus_failures": 124
+    },
+    {
+      "tick": 101,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 65.8,
+      "consensus_failures": 124
+    },
+    {
+      "tick": 102,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 76.94,
+      "consensus_failures": 124
+    },
+    {
+      "tick": 103,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 80.52,
+      "consensus_failures": 124
+    },
+    {
+      "tick": 104,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 79.18,
+      "consensus_failures": 128
+    },
+    {
+      "tick": 105,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 74.74,
+      "consensus_failures": 131
+    },
+    {
+      "tick": 106,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 70.57,
+      "consensus_failures": 131
+    },
+    {
+      "tick": 107,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 77.91,
+      "consensus_failures": 132
+    },
+    {
+      "tick": 108,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 82.14,
+      "consensus_failures": 134
+    },
+    {
+      "tick": 109,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 83.26,
+      "consensus_failures": 136
+    },
+    {
+      "tick": 110,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 70.37,
+      "consensus_failures": 138
+    },
+    {
+      "tick": 111,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 78.56,
+      "consensus_failures": 138
+    },
+    {
+      "tick": 112,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 72.7,
+      "consensus_failures": 139
+    },
+    {
+      "tick": 113,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 74.82,
+      "consensus_failures": 139
+    },
+    {
+      "tick": 114,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 86.46,
+      "consensus_failures": 139
+    },
+    {
+      "tick": 115,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 80.92,
+      "consensus_failures": 139
+    },
+    {
+      "tick": 116,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 69.51,
+      "consensus_failures": 141
+    },
+    {
+      "tick": 117,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 89.65,
+      "consensus_failures": 142
+    },
+    {
+      "tick": 118,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 78.42,
+      "consensus_failures": 142
+    },
+    {
+      "tick": 119,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 62.26,
+      "consensus_failures": 143
+    },
+    {
+      "tick": 120,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 78.34,
+      "consensus_failures": 143
+    },
+    {
+      "tick": 121,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 73.79,
+      "consensus_failures": 145
+    },
+    {
+      "tick": 122,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 86.24,
+      "consensus_failures": 147
+    },
+    {
+      "tick": 123,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 76.62,
+      "consensus_failures": 147
+    },
+    {
+      "tick": 124,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 80.24,
+      "consensus_failures": 147
+    },
+    {
+      "tick": 125,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 72.49,
+      "consensus_failures": 148
+    },
+    {
+      "tick": 126,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 89.51,
+      "consensus_failures": 149
+    },
+    {
+      "tick": 127,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 74.35,
+      "consensus_failures": 149
+    },
+    {
+      "tick": 128,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 83.07,
+      "consensus_failures": 151
+    },
+    {
+      "tick": 129,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 1,
+      "avg_latency_ms": 76.35,
+      "consensus_failures": 152
+    },
+    {
+      "tick": 130,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 80.02,
+      "consensus_failures": 152
+    },
+    {
+      "tick": 131,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 64.31,
+      "consensus_failures": 153
+    },
+    {
+      "tick": 132,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 83.69,
+      "consensus_failures": 154
+    },
+    {
+      "tick": 133,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 80.13,
+      "consensus_failures": 155
+    },
+    {
+      "tick": 134,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 79.83,
+      "consensus_failures": 156
+    },
+    {
+      "tick": 135,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 88.79,
+      "consensus_failures": 156
+    },
+    {
+      "tick": 136,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 89.49,
+      "consensus_failures": 157
+    },
+    {
+      "tick": 137,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 77.1,
+      "consensus_failures": 158
+    },
+    {
+      "tick": 138,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 78.37,
+      "consensus_failures": 159
+    },
+    {
+      "tick": 139,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 83.55,
+      "consensus_failures": 160
+    },
+    {
+      "tick": 140,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 84.75,
+      "consensus_failures": 164
+    },
+    {
+      "tick": 141,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 73.29,
+      "consensus_failures": 166
+    },
+    {
+      "tick": 142,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 87.29,
+      "consensus_failures": 168
+    },
+    {
+      "tick": 143,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 92.21,
+      "consensus_failures": 168
+    },
+    {
+      "tick": 144,
+      "tasks": 10,
+      "fraud_detected": 3,
+      "attacks": 3,
+      "avg_latency_ms": 81.43,
+      "consensus_failures": 169
+    },
+    {
+      "tick": 145,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 79.75,
+      "consensus_failures": 170
+    },
+    {
+      "tick": 146,
+      "tasks": 10,
+      "fraud_detected": 0,
+      "attacks": 0,
+      "avg_latency_ms": 78.07,
+      "consensus_failures": 170
+    },
+    {
+      "tick": 147,
+      "tasks": 10,
+      "fraud_detected": 2,
+      "attacks": 2,
+      "avg_latency_ms": 76.79,
+      "consensus_failures": 173
+    },
+    {
+      "tick": 148,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 76.46,
+      "consensus_failures": 174
+    },
+    {
+      "tick": 149,
+      "tasks": 10,
+      "fraud_detected": 1,
+      "attacks": 1,
+      "avg_latency_ms": 76.61,
+      "consensus_failures": 174
+    }
+  ],
+  "reputation_series": [
+    {
+      "tick": 0,
+      "honest_rep": 79.44,
+      "malicious_rep": 40.21,
+      "separation": 39.24
+    },
+    {
+      "tick": 1,
+      "honest_rep": 79.49,
+      "malicious_rep": 40.03,
+      "separation": 39.46
+    },
+    {
+      "tick": 2,
+      "honest_rep": 79.53,
+      "malicious_rep": 39.88,
+      "separation": 39.65
+    },
+    {
+      "tick": 3,
+      "honest_rep": 79.58,
+      "malicious_rep": 39.68,
+      "separation": 39.9
+    },
+    {
+      "tick": 4,
+      "honest_rep": 79.62,
+      "malicious_rep": 39.48,
+      "separation": 40.14
+    },
+    {
+      "tick": 5,
+      "honest_rep": 79.67,
+      "malicious_rep": 39.25,
+      "separation": 40.42
+    },
+    {
+      "tick": 6,
+      "honest_rep": 79.74,
+      "malicious_rep": 39.1,
+      "separation": 40.63
+    },
+    {
+      "tick": 7,
+      "honest_rep": 79.8,
+      "malicious_rep": 38.95,
+      "separation": 40.85
+    },
+    {
+      "tick": 8,
+      "honest_rep": 79.86,
+      "malicious_rep": 38.79,
+      "separation": 41.07
+    },
+    {
+      "tick": 9,
+      "honest_rep": 79.9,
+      "malicious_rep": 38.56,
+      "separation": 41.34
+    },
+    {
+      "tick": 10,
+      "honest_rep": 79.94,
+      "malicious_rep": 38.37,
+      "separation": 41.57
+    },
+    {
+      "tick": 11,
+      "honest_rep": 79.99,
+      "malicious_rep": 38.18,
+      "separation": 41.81
+    },
+    {
+      "tick": 12,
+      "honest_rep": 80.04,
+      "malicious_rep": 38.08,
+      "separation": 41.96
+    },
+    {
+      "tick": 13,
+      "honest_rep": 80.09,
+      "malicious_rep": 37.84,
+      "separation": 42.25
+    },
+    {
+      "tick": 14,
+      "honest_rep": 80.15,
+      "malicious_rep": 37.72,
+      "separation": 42.42
+    },
+    {
+      "tick": 15,
+      "honest_rep": 80.19,
+      "malicious_rep": 37.53,
+      "separation": 42.66
+    },
+    {
+      "tick": 16,
+      "honest_rep": 80.23,
+      "malicious_rep": 37.39,
+      "separation": 42.84
+    },
+    {
+      "tick": 17,
+      "honest_rep": 80.28,
+      "malicious_rep": 37.25,
+      "separation": 43.03
+    },
+    {
+      "tick": 18,
+      "honest_rep": 80.32,
+      "malicious_rep": 37.04,
+      "separation": 43.29
+    },
+    {
+      "tick": 19,
+      "honest_rep": 80.38,
+      "malicious_rep": 36.88,
+      "separation": 43.5
+    },
+    {
+      "tick": 20,
+      "honest_rep": 80.42,
+      "malicious_rep": 36.71,
+      "separation": 43.71
+    },
+    {
+      "tick": 21,
+      "honest_rep": 80.48,
+      "malicious_rep": 36.61,
+      "separation": 43.87
+    },
+    {
+      "tick": 22,
+      "honest_rep": 80.52,
+      "malicious_rep": 36.43,
+      "separation": 44.09
+    },
+    {
+      "tick": 23,
+      "honest_rep": 80.58,
+      "malicious_rep": 36.27,
+      "separation": 44.3
+    },
+    {
+      "tick": 24,
+      "honest_rep": 80.64,
+      "malicious_rep": 36.21,
+      "separation": 44.43
+    },
+    {
+      "tick": 25,
+      "honest_rep": 80.69,
+      "malicious_rep": 36.14,
+      "separation": 44.55
+    },
+    {
+      "tick": 26,
+      "honest_rep": 80.74,
+      "malicious_rep": 36.0,
+      "separation": 44.74
+    },
+    {
+      "tick": 27,
+      "honest_rep": 80.79,
+      "malicious_rep": 35.82,
+      "separation": 44.97
+    },
+    {
+      "tick": 28,
+      "honest_rep": 80.84,
+      "malicious_rep": 35.74,
+      "separation": 45.1
+    },
+    {
+      "tick": 29,
+      "honest_rep": 80.89,
+      "malicious_rep": 35.59,
+      "separation": 45.3
+    },
+    {
+      "tick": 30,
+      "honest_rep": 80.94,
+      "malicious_rep": 35.48,
+      "separation": 45.46
+    },
+    {
+      "tick": 31,
+      "honest_rep": 80.98,
+      "malicious_rep": 35.33,
+      "separation": 45.65
+    },
+    {
+      "tick": 32,
+      "honest_rep": 81.02,
+      "malicious_rep": 35.22,
+      "separation": 45.79
+    },
+    {
+      "tick": 33,
+      "honest_rep": 81.06,
+      "malicious_rep": 35.14,
+      "separation": 45.92
+    },
+    {
+      "tick": 34,
+      "honest_rep": 81.11,
+      "malicious_rep": 35.04,
+      "separation": 46.07
+    },
+    {
+      "tick": 35,
+      "honest_rep": 81.16,
+      "malicious_rep": 34.85,
+      "separation": 46.31
+    },
+    {
+      "tick": 36,
+      "honest_rep": 81.2,
+      "malicious_rep": 34.74,
+      "separation": 46.46
+    },
+    {
+      "tick": 37,
+      "honest_rep": 81.24,
+      "malicious_rep": 34.56,
+      "separation": 46.69
+    },
+    {
+      "tick": 38,
+      "honest_rep": 81.29,
+      "malicious_rep": 34.48,
+      "separation": 46.81
+    },
+    {
+      "tick": 39,
+      "honest_rep": 81.35,
+      "malicious_rep": 34.37,
+      "separation": 46.98
+    },
+    {
+      "tick": 40,
+      "honest_rep": 81.39,
+      "malicious_rep": 34.24,
+      "separation": 47.15
+    },
+    {
+      "tick": 41,
+      "honest_rep": 81.44,
+      "malicious_rep": 34.12,
+      "separation": 47.32
+    },
+    {
+      "tick": 42,
+      "honest_rep": 81.49,
+      "malicious_rep": 34.02,
+      "separation": 47.46
+    },
+    {
+      "tick": 43,
+      "honest_rep": 81.52,
+      "malicious_rep": 33.86,
+      "separation": 47.66
+    },
+    {
+      "tick": 44,
+      "honest_rep": 81.56,
+      "malicious_rep": 33.79,
+      "separation": 47.77
+    },
+    {
+      "tick": 45,
+      "honest_rep": 81.6,
+      "malicious_rep": 33.69,
+      "separation": 47.9
+    },
+    {
+      "tick": 46,
+      "honest_rep": 81.64,
+      "malicious_rep": 33.55,
+      "separation": 48.08
+    },
+    {
+      "tick": 47,
+      "honest_rep": 81.68,
+      "malicious_rep": 33.36,
+      "separation": 48.32
+    },
+    {
+      "tick": 48,
+      "honest_rep": 81.71,
+      "malicious_rep": 33.17,
+      "separation": 48.54
+    },
+    {
+      "tick": 49,
+      "honest_rep": 81.76,
+      "malicious_rep": 33.03,
+      "separation": 48.72
+    },
+    {
+      "tick": 50,
+      "honest_rep": 81.81,
+      "malicious_rep": 32.94,
+      "separation": 48.87
+    },
+    {
+      "tick": 51,
+      "honest_rep": 81.86,
+      "malicious_rep": 32.76,
+      "separation": 49.1
+    },
+    {
+      "tick": 52,
+      "honest_rep": 81.9,
+      "malicious_rep": 32.71,
+      "separation": 49.2
+    },
+    {
+      "tick": 53,
+      "honest_rep": 81.95,
+      "malicious_rep": 32.57,
+      "separation": 49.37
+    },
+    {
+      "tick": 54,
+      "honest_rep": 82.0,
+      "malicious_rep": 32.52,
+      "separation": 49.48
+    },
+    {
+      "tick": 55,
+      "honest_rep": 82.04,
+      "malicious_rep": 32.42,
+      "separation": 49.62
+    },
+    {
+      "tick": 56,
+      "honest_rep": 82.09,
+      "malicious_rep": 32.31,
+      "separation": 49.78
+    },
+    {
+      "tick": 57,
+      "honest_rep": 82.14,
+      "malicious_rep": 32.2,
+      "separation": 49.94
+    },
+    {
+      "tick": 58,
+      "honest_rep": 82.19,
+      "malicious_rep": 32.07,
+      "separation": 50.12
+    },
+    {
+      "tick": 59,
+      "honest_rep": 82.23,
+      "malicious_rep": 31.91,
+      "separation": 50.32
+    },
+    {
+      "tick": 60,
+      "honest_rep": 82.27,
+      "malicious_rep": 31.75,
+      "separation": 50.52
+    },
+    {
+      "tick": 61,
+      "honest_rep": 82.32,
+      "malicious_rep": 31.53,
+      "separation": 50.79
+    },
+    {
+      "tick": 62,
+      "honest_rep": 82.38,
+      "malicious_rep": 31.41,
+      "separation": 50.97
+    },
+    {
+      "tick": 63,
+      "honest_rep": 82.42,
+      "malicious_rep": 31.28,
+      "separation": 51.14
+    },
+    {
+      "tick": 64,
+      "honest_rep": 82.46,
+      "malicious_rep": 31.14,
+      "separation": 51.32
+    },
+    {
+      "tick": 65,
+      "honest_rep": 82.51,
+      "malicious_rep": 30.99,
+      "separation": 51.52
+    },
+    {
+      "tick": 66,
+      "honest_rep": 82.57,
+      "malicious_rep": 30.86,
+      "separation": 51.71
+    },
+    {
+      "tick": 67,
+      "honest_rep": 82.63,
+      "malicious_rep": 30.74,
+      "separation": 51.89
+    },
+    {
+      "tick": 68,
+      "honest_rep": 82.68,
+      "malicious_rep": 30.59,
+      "separation": 52.08
+    },
+    {
+      "tick": 69,
+      "honest_rep": 82.72,
+      "malicious_rep": 30.42,
+      "separation": 52.3
+    },
+    {
+      "tick": 70,
+      "honest_rep": 82.77,
+      "malicious_rep": 30.23,
+      "separation": 52.53
+    },
+    {
+      "tick": 71,
+      "honest_rep": 82.81,
+      "malicious_rep": 30.14,
+      "separation": 52.67
+    },
+    {
+      "tick": 72,
+      "honest_rep": 82.86,
+      "malicious_rep": 29.98,
+      "separation": 52.87
+    },
+    {
+      "tick": 73,
+      "honest_rep": 82.9,
+      "malicious_rep": 29.86,
+      "separation": 53.04
+    },
+    {
+      "tick": 74,
+      "honest_rep": 82.94,
+      "malicious_rep": 29.71,
+      "separation": 53.23
+    },
+    {
+      "tick": 75,
+      "honest_rep": 82.98,
+      "malicious_rep": 29.61,
+      "separation": 53.37
+    },
+    {
+      "tick": 76,
+      "honest_rep": 83.02,
+      "malicious_rep": 29.5,
+      "separation": 53.52
+    },
+    {
+      "tick": 77,
+      "honest_rep": 83.07,
+      "malicious_rep": 29.35,
+      "separation": 53.72
+    },
+    {
+      "tick": 78,
+      "honest_rep": 83.13,
+      "malicious_rep": 29.24,
+      "separation": 53.89
+    },
+    {
+      "tick": 79,
+      "honest_rep": 83.16,
+      "malicious_rep": 29.1,
+      "separation": 54.06
+    },
+    {
+      "tick": 80,
+      "honest_rep": 83.22,
+      "malicious_rep": 28.91,
+      "separation": 54.31
+    },
+    {
+      "tick": 81,
+      "honest_rep": 83.26,
+      "malicious_rep": 28.82,
+      "separation": 54.45
+    },
+    {
+      "tick": 82,
+      "honest_rep": 83.33,
+      "malicious_rep": 28.68,
+      "separation": 54.65
+    },
+    {
+      "tick": 83,
+      "honest_rep": 83.38,
+      "malicious_rep": 28.41,
+      "separation": 54.97
+    },
+    {
+      "tick": 84,
+      "honest_rep": 83.43,
+      "malicious_rep": 28.25,
+      "separation": 55.18
+    },
+    {
+      "tick": 85,
+      "honest_rep": 83.48,
+      "malicious_rep": 28.11,
+      "separation": 55.37
+    },
+    {
+      "tick": 86,
+      "honest_rep": 83.53,
+      "malicious_rep": 27.95,
+      "separation": 55.58
+    },
+    {
+      "tick": 87,
+      "honest_rep": 83.57,
+      "malicious_rep": 27.84,
+      "separation": 55.73
+    },
+    {
+      "tick": 88,
+      "honest_rep": 83.61,
+      "malicious_rep": 27.61,
+      "separation": 56.0
+    },
+    {
+      "tick": 89,
+      "honest_rep": 83.65,
+      "malicious_rep": 27.48,
+      "separation": 56.17
+    },
+    {
+      "tick": 90,
+      "honest_rep": 83.69,
+      "malicious_rep": 27.32,
+      "separation": 56.38
+    },
+    {
+      "tick": 91,
+      "honest_rep": 83.74,
+      "malicious_rep": 27.17,
+      "separation": 56.56
+    },
+    {
+      "tick": 92,
+      "honest_rep": 83.78,
+      "malicious_rep": 27.1,
+      "separation": 56.68
+    },
+    {
+      "tick": 93,
+      "honest_rep": 83.83,
+      "malicious_rep": 26.98,
+      "separation": 56.84
+    },
+    {
+      "tick": 94,
+      "honest_rep": 83.86,
+      "malicious_rep": 26.84,
+      "separation": 57.02
+    },
+    {
+      "tick": 95,
+      "honest_rep": 83.91,
+      "malicious_rep": 26.74,
+      "separation": 57.18
+    },
+    {
+      "tick": 96,
+      "honest_rep": 83.94,
+      "malicious_rep": 26.63,
+      "separation": 57.32
+    },
+    {
+      "tick": 97,
+      "honest_rep": 83.99,
+      "malicious_rep": 26.55,
+      "separation": 57.44
+    },
+    {
+      "tick": 98,
+      "honest_rep": 84.03,
+      "malicious_rep": 26.4,
+      "separation": 57.64
+    },
+    {
+      "tick": 99,
+      "honest_rep": 84.07,
+      "malicious_rep": 26.27,
+      "separation": 57.81
+    },
+    {
+      "tick": 100,
+      "honest_rep": 84.11,
+      "malicious_rep": 26.18,
+      "separation": 57.93
+    },
+    {
+      "tick": 101,
+      "honest_rep": 84.15,
+      "malicious_rep": 26.06,
+      "separation": 58.09
+    },
+    {
+      "tick": 102,
+      "honest_rep": 84.19,
+      "malicious_rep": 25.94,
+      "separation": 58.26
+    },
+    {
+      "tick": 103,
+      "honest_rep": 84.23,
+      "malicious_rep": 25.79,
+      "separation": 58.44
+    },
+    {
+      "tick": 104,
+      "honest_rep": 84.28,
+      "malicious_rep": 25.69,
+      "separation": 58.58
+    },
+    {
+      "tick": 105,
+      "honest_rep": 84.31,
+      "malicious_rep": 25.57,
+      "separation": 58.75
+    },
+    {
+      "tick": 106,
+      "honest_rep": 84.36,
+      "malicious_rep": 25.41,
+      "separation": 58.95
+    },
+    {
+      "tick": 107,
+      "honest_rep": 84.39,
+      "malicious_rep": 25.28,
+      "separation": 59.11
+    },
+    {
+      "tick": 108,
+      "honest_rep": 84.41,
+      "malicious_rep": 25.12,
+      "separation": 59.3
+    },
+    {
+      "tick": 109,
+      "honest_rep": 84.46,
+      "malicious_rep": 24.98,
+      "separation": 59.49
+    },
+    {
+      "tick": 110,
+      "honest_rep": 84.51,
+      "malicious_rep": 24.79,
+      "separation": 59.72
+    },
+    {
+      "tick": 111,
+      "honest_rep": 84.56,
+      "malicious_rep": 24.61,
+      "separation": 59.95
+    },
+    {
+      "tick": 112,
+      "honest_rep": 84.6,
+      "malicious_rep": 24.53,
+      "separation": 60.07
+    },
+    {
+      "tick": 113,
+      "honest_rep": 84.64,
+      "malicious_rep": 24.47,
+      "separation": 60.17
+    },
+    {
+      "tick": 114,
+      "honest_rep": 84.69,
+      "malicious_rep": 24.39,
+      "separation": 60.3
+    },
+    {
+      "tick": 115,
+      "honest_rep": 84.73,
+      "malicious_rep": 24.25,
+      "separation": 60.48
+    },
+    {
+      "tick": 116,
+      "honest_rep": 84.77,
+      "malicious_rep": 24.15,
+      "separation": 60.62
+    },
+    {
+      "tick": 117,
+      "honest_rep": 84.82,
+      "malicious_rep": 24.04,
+      "separation": 60.78
+    },
+    {
+      "tick": 118,
+      "honest_rep": 84.87,
+      "malicious_rep": 23.88,
+      "separation": 60.99
+    },
+    {
+      "tick": 119,
+      "honest_rep": 84.92,
+      "malicious_rep": 23.78,
+      "separation": 61.13
+    },
+    {
+      "tick": 120,
+      "honest_rep": 84.95,
+      "malicious_rep": 23.69,
+      "separation": 61.26
+    },
+    {
+      "tick": 121,
+      "honest_rep": 84.99,
+      "malicious_rep": 23.61,
+      "separation": 61.38
+    },
+    {
+      "tick": 122,
+      "honest_rep": 85.03,
+      "malicious_rep": 23.53,
+      "separation": 61.51
+    },
+    {
+      "tick": 123,
+      "honest_rep": 85.09,
+      "malicious_rep": 23.41,
+      "separation": 61.68
+    },
+    {
+      "tick": 124,
+      "honest_rep": 85.13,
+      "malicious_rep": 23.27,
+      "separation": 61.86
+    },
+    {
+      "tick": 125,
+      "honest_rep": 85.16,
+      "malicious_rep": 23.11,
+      "separation": 62.05
+    },
+    {
+      "tick": 126,
+      "honest_rep": 85.2,
+      "malicious_rep": 23.05,
+      "separation": 62.15
+    },
+    {
+      "tick": 127,
+      "honest_rep": 85.23,
+      "malicious_rep": 22.9,
+      "separation": 62.33
+    },
+    {
+      "tick": 128,
+      "honest_rep": 85.26,
+      "malicious_rep": 22.87,
+      "separation": 62.4
+    },
+    {
+      "tick": 129,
+      "honest_rep": 85.3,
+      "malicious_rep": 22.78,
+      "separation": 62.52
+    },
+    {
+      "tick": 130,
+      "honest_rep": 85.35,
+      "malicious_rep": 22.67,
+      "separation": 62.68
+    },
+    {
+      "tick": 131,
+      "honest_rep": 85.39,
+      "malicious_rep": 22.56,
+      "separation": 62.84
+    },
+    {
+      "tick": 132,
+      "honest_rep": 85.44,
+      "malicious_rep": 22.45,
+      "separation": 62.99
+    },
+    {
+      "tick": 133,
+      "honest_rep": 85.48,
+      "malicious_rep": 22.39,
+      "separation": 63.09
+    },
+    {
+      "tick": 134,
+      "honest_rep": 85.51,
+      "malicious_rep": 22.26,
+      "separation": 63.25
+    },
+    {
+      "tick": 135,
+      "honest_rep": 85.56,
+      "malicious_rep": 22.19,
+      "separation": 63.37
+    },
+    {
+      "tick": 136,
+      "honest_rep": 85.61,
+      "malicious_rep": 22.14,
+      "separation": 63.46
+    },
+    {
+      "tick": 137,
+      "honest_rep": 85.64,
+      "malicious_rep": 21.96,
+      "separation": 63.68
+    },
+    {
+      "tick": 138,
+      "honest_rep": 85.68,
+      "malicious_rep": 21.88,
+      "separation": 63.8
+    },
+    {
+      "tick": 139,
+      "honest_rep": 85.72,
+      "malicious_rep": 21.83,
+      "separation": 63.88
+    },
+    {
+      "tick": 140,
+      "honest_rep": 85.77,
+      "malicious_rep": 21.71,
+      "separation": 64.06
+    },
+    {
+      "tick": 141,
+      "honest_rep": 85.81,
+      "malicious_rep": 21.58,
+      "separation": 64.23
+    },
+    {
+      "tick": 142,
+      "honest_rep": 85.85,
+      "malicious_rep": 21.46,
+      "separation": 64.4
+    },
+    {
+      "tick": 143,
+      "honest_rep": 85.88,
+      "malicious_rep": 21.36,
+      "separation": 64.52
+    },
+    {
+      "tick": 144,
+      "honest_rep": 85.91,
+      "malicious_rep": 21.2,
+      "separation": 64.72
+    },
+    {
+      "tick": 145,
+      "honest_rep": 85.95,
+      "malicious_rep": 21.04,
+      "separation": 64.91
+    },
+    {
+      "tick": 146,
+      "honest_rep": 85.98,
+      "malicious_rep": 20.97,
+      "separation": 65.01
+    },
+    {
+      "tick": 147,
+      "honest_rep": 86.02,
+      "malicious_rep": 20.85,
+      "separation": 65.17
+    },
+    {
+      "tick": 148,
+      "honest_rep": 86.07,
+      "malicious_rep": 20.71,
+      "separation": 65.35
+    },
+    {
+      "tick": 149,
+      "honest_rep": 86.11,
+      "malicious_rep": 20.62,
+      "separation": 65.49
+    }
+  ],
+  "latency_series": [
+    {
+      "tick": 0,
+      "latency_ms": 6.06
+    },
+    {
+      "tick": 10,
+      "latency_ms": 36.38
+    },
+    {
+      "tick": 20,
+      "latency_ms": 42.94
+    },
+    {
+      "tick": 30,
+      "latency_ms": 46.78
+    },
+    {
+      "tick": 40,
+      "latency_ms": 49.54
+    },
+    {
+      "tick": 50,
+      "latency_ms": 51.92
+    },
+    {
+      "tick": 60,
+      "latency_ms": 54.53
+    },
+    {
+      "tick": 70,
+      "latency_ms": 56.16
+    },
+    {
+      "tick": 80,
+      "latency_ms": 58.28
+    },
+    {
+      "tick": 90,
+      "latency_ms": 59.64
+    },
+    {
+      "tick": 100,
+      "latency_ms": 61.67
+    },
+    {
+      "tick": 110,
+      "latency_ms": 63.19
+    },
+    {
+      "tick": 120,
+      "latency_ms": 64.14
+    },
+    {
+      "tick": 130,
+      "latency_ms": 65.73
+    },
+    {
+      "tick": 140,
+      "latency_ms": 66.95
+    },
+    {
+      "tick": 150,
+      "latency_ms": 68.57
+    },
+    {
+      "tick": 160,
+      "latency_ms": 69.56
+    },
+    {
+      "tick": 170,
+      "latency_ms": 70.47
+    },
+    {
+      "tick": 180,
+      "latency_ms": 71.48
+    },
+    {
+      "tick": 190,
+      "latency_ms": 72.63
+    },
+    {
+      "tick": 200,
+      "latency_ms": 73.48
+    },
+    {
+      "tick": 210,
+      "latency_ms": 74.65
+    },
+    {
+      "tick": 220,
+      "latency_ms": 75.76
+    },
+    {
+      "tick": 230,
+      "latency_ms": 76.57
+    },
+    {
+      "tick": 240,
+      "latency_ms": 77.59
+    },
+    {
+      "tick": 250,
+      "latency_ms": 78.65
+    },
+    {
+      "tick": 260,
+      "latency_ms": 79.81
+    },
+    {
+      "tick": 270,
+      "latency_ms": 80.97
+    },
+    {
+      "tick": 280,
+      "latency_ms": 82.03
+    },
+    {
+      "tick": 290,
+      "latency_ms": 82.95
+    },
+    {
+      "tick": 300,
+      "latency_ms": 83.72
+    },
+    {
+      "tick": 310,
+      "latency_ms": 84.84
+    },
+    {
+      "tick": 320,
+      "latency_ms": 85.73
+    },
+    {
+      "tick": 330,
+      "latency_ms": 86.94
+    },
+    {
+      "tick": 340,
+      "latency_ms": 88.22
+    },
+    {
+      "tick": 350,
+      "latency_ms": 89.39
+    },
+    {
+      "tick": 360,
+      "latency_ms": 90.7
+    },
+    {
+      "tick": 370,
+      "latency_ms": 92.07
+    },
+    {
+      "tick": 380,
+      "latency_ms": 93.22
+    },
+    {
+      "tick": 390,
+      "latency_ms": 94.43
+    },
+    {
+      "tick": 400,
+      "latency_ms": 96.35
+    },
+    {
+      "tick": 410,
+      "latency_ms": 98.13
+    },
+    {
+      "tick": 420,
+      "latency_ms": 100.13
+    },
+    {
+      "tick": 430,
+      "latency_ms": 101.87
+    },
+    {
+      "tick": 440,
+      "latency_ms": 103.98
+    },
+    {
+      "tick": 450,
+      "latency_ms": 106.61
+    },
+    {
+      "tick": 460,
+      "latency_ms": 109.12
+    },
+    {
+      "tick": 470,
+      "latency_ms": 112.66
+    },
+    {
+      "tick": 480,
+      "latency_ms": 116.22
+    },
+    {
+      "tick": 490,
+      "latency_ms": 122.15
+    }
+  ],
+  "consensus_series": [
+    {
+      "tick": 0,
+      "consensus_rate": 0.9
+    },
+    {
+      "tick": 1,
+      "consensus_rate": 0.7
+    },
+    {
+      "tick": 2,
+      "consensus_rate": 0.6
+    },
+    {
+      "tick": 3,
+      "consensus_rate": 0.6
+    },
+    {
+      "tick": 4,
+      "consensus_rate": 0.6
+    },
+    {
+      "tick": 5,
+      "consensus_rate": 0.5
+    },
+    {
+      "tick": 6,
+      "consensus_rate": 0.5
+    },
+    {
+      "tick": 7,
+      "consensus_rate": 0.5
+    },
+    {
+      "tick": 8,
+      "consensus_rate": 0.4
+    },
+    {
+      "tick": 9,
+      "consensus_rate": 0.3
+    },
+    {
+      "tick": 10,
+      "consensus_rate": 0.0
+    },
+    {
+      "tick": 11,
+      "consensus_rate": 0.0
+    },
+    {
+      "tick": 12,
+      "consensus_rate": -0.1
+    },
+    {
+      "tick": 13,
+      "consensus_rate": -0.2
+    },
+    {
+      "tick": 14,
+      "consensus_rate": -0.6
+    },
+    {
+      "tick": 15,
+      "consensus_rate": -0.6
+    },
+    {
+      "tick": 16,
+      "consensus_rate": -0.6
+    },
+    {
+      "tick": 17,
+      "consensus_rate": -0.8
+    },
+    {
+      "tick": 18,
+      "consensus_rate": -1.1
+    },
+    {
+      "tick": 19,
+      "consensus_rate": -1.1
+    },
+    {
+      "tick": 20,
+      "consensus_rate": -1.3
+    },
+    {
+      "tick": 21,
+      "consensus_rate": -1.3
+    },
+    {
+      "tick": 22,
+      "consensus_rate": -1.5
+    },
+    {
+      "tick": 23,
+      "consensus_rate": -1.5
+    },
+    {
+      "tick": 24,
+      "consensus_rate": -1.7
+    },
+    {
+      "tick": 25,
+      "consensus_rate": -1.8
+    },
+    {
+      "tick": 26,
+      "consensus_rate": -2.0
+    },
+    {
+      "tick": 27,
+      "consensus_rate": -2.1
+    },
+    {
+      "tick": 28,
+      "consensus_rate": -2.2
+    },
+    {
+      "tick": 29,
+      "consensus_rate": -2.2
+    },
+    {
+      "tick": 30,
+      "consensus_rate": -2.4
+    },
+    {
+      "tick": 31,
+      "consensus_rate": -2.5
+    },
+    {
+      "tick": 32,
+      "consensus_rate": -2.7
+    },
+    {
+      "tick": 33,
+      "consensus_rate": -2.9
+    },
+    {
+      "tick": 34,
+      "consensus_rate": -2.9
+    },
+    {
+      "tick": 35,
+      "consensus_rate": -2.9
+    },
+    {
+      "tick": 36,
+      "consensus_rate": -3.0
+    },
+    {
+      "tick": 37,
+      "consensus_rate": -3.1
+    },
+    {
+      "tick": 38,
+      "consensus_rate": -3.1
+    },
+    {
+      "tick": 39,
+      "consensus_rate": -3.3
+    },
+    {
+      "tick": 40,
+      "consensus_rate": -3.3
+    },
+    {
+      "tick": 41,
+      "consensus_rate": -3.5
+    },
+    {
+      "tick": 42,
+      "consensus_rate": -3.8
+    },
+    {
+      "tick": 43,
+      "consensus_rate": -4.1
+    },
+    {
+      "tick": 44,
+      "consensus_rate": -4.1
+    },
+    {
+      "tick": 45,
+      "consensus_rate": -4.4
+    },
+    {
+      "tick": 46,
+      "consensus_rate": -4.6
+    },
+    {
+      "tick": 47,
+      "consensus_rate": -4.6
+    },
+    {
+      "tick": 48,
+      "consensus_rate": -4.9
+    },
+    {
+      "tick": 49,
+      "consensus_rate": -5.0
+    },
+    {
+      "tick": 50,
+      "consensus_rate": -5.3
+    },
+    {
+      "tick": 51,
+      "consensus_rate": -5.3
+    },
+    {
+      "tick": 52,
+      "consensus_rate": -5.3
+    },
+    {
+      "tick": 53,
+      "consensus_rate": -5.5
+    },
+    {
+      "tick": 54,
+      "consensus_rate": -5.6
+    },
+    {
+      "tick": 55,
+      "consensus_rate": -5.6
+    },
+    {
+      "tick": 56,
+      "consensus_rate": -5.7
+    },
+    {
+      "tick": 57,
+      "consensus_rate": -5.7
+    },
+    {
+      "tick": 58,
+      "consensus_rate": -5.8
+    },
+    {
+      "tick": 59,
+      "consensus_rate": -5.9
+    },
+    {
+      "tick": 60,
+      "consensus_rate": -6.0
+    },
+    {
+      "tick": 61,
+      "consensus_rate": -6.0
+    },
+    {
+      "tick": 62,
+      "consensus_rate": -6.2
+    },
+    {
+      "tick": 63,
+      "consensus_rate": -6.4
+    },
+    {
+      "tick": 64,
+      "consensus_rate": -6.7
+    },
+    {
+      "tick": 65,
+      "consensus_rate": -6.8
+    },
+    {
+      "tick": 66,
+      "consensus_rate": -7.0
+    },
+    {
+      "tick": 67,
+      "consensus_rate": -7.4
+    },
+    {
+      "tick": 68,
+      "consensus_rate": -7.4
+    },
+    {
+      "tick": 69,
+      "consensus_rate": -7.6
+    },
+    {
+      "tick": 70,
+      "consensus_rate": -7.7
+    },
+    {
+      "tick": 71,
+      "consensus_rate": -7.8
+    },
+    {
+      "tick": 72,
+      "consensus_rate": -7.9
+    },
+    {
+      "tick": 73,
+      "consensus_rate": -8.0
+    },
+    {
+      "tick": 74,
+      "consensus_rate": -8.0
+    },
+    {
+      "tick": 75,
+      "consensus_rate": -8.1
+    },
+    {
+      "tick": 76,
+      "consensus_rate": -8.5
+    },
+    {
+      "tick": 77,
+      "consensus_rate": -8.5
+    },
+    {
+      "tick": 78,
+      "consensus_rate": -8.8
+    },
+    {
+      "tick": 79,
+      "consensus_rate": -8.9
+    },
+    {
+      "tick": 80,
+      "consensus_rate": -8.9
+    },
+    {
+      "tick": 81,
+      "consensus_rate": -9.1
+    },
+    {
+      "tick": 82,
+      "consensus_rate": -9.3
+    },
+    {
+      "tick": 83,
+      "consensus_rate": -9.5
+    },
+    {
+      "tick": 84,
+      "consensus_rate": -9.6
+    },
+    {
+      "tick": 85,
+      "consensus_rate": -9.7
+    },
+    {
+      "tick": 86,
+      "consensus_rate": -9.7
+    },
+    {
+      "tick": 87,
+      "consensus_rate": -9.9
+    },
+    {
+      "tick": 88,
+      "consensus_rate": -10.0
+    },
+    {
+      "tick": 89,
+      "consensus_rate": -10.1
+    },
+    {
+      "tick": 90,
+      "consensus_rate": -10.3
+    },
+    {
+      "tick": 91,
+      "consensus_rate": -10.3
+    },
+    {
+      "tick": 92,
+      "consensus_rate": -10.3
+    },
+    {
+      "tick": 93,
+      "consensus_rate": -10.4
+    },
+    {
+      "tick": 94,
+      "consensus_rate": -10.6
+    },
+    {
+      "tick": 95,
+      "consensus_rate": -10.8
+    },
+    {
+      "tick": 96,
+      "consensus_rate": -10.8
+    },
+    {
+      "tick": 97,
+      "consensus_rate": -10.8
+    },
+    {
+      "tick": 98,
+      "consensus_rate": -11.0
+    },
+    {
+      "tick": 99,
+      "consensus_rate": -11.3
+    },
+    {
+      "tick": 100,
+      "consensus_rate": -11.4
+    },
+    {
+      "tick": 101,
+      "consensus_rate": -11.4
+    },
+    {
+      "tick": 102,
+      "consensus_rate": -11.4
+    },
+    {
+      "tick": 103,
+      "consensus_rate": -11.4
+    },
+    {
+      "tick": 104,
+      "consensus_rate": -11.8
+    },
+    {
+      "tick": 105,
+      "consensus_rate": -12.1
+    },
+    {
+      "tick": 106,
+      "consensus_rate": -12.1
+    },
+    {
+      "tick": 107,
+      "consensus_rate": -12.2
+    },
+    {
+      "tick": 108,
+      "consensus_rate": -12.4
+    },
+    {
+      "tick": 109,
+      "consensus_rate": -12.6
+    },
+    {
+      "tick": 110,
+      "consensus_rate": -12.8
+    },
+    {
+      "tick": 111,
+      "consensus_rate": -12.8
+    },
+    {
+      "tick": 112,
+      "consensus_rate": -12.9
+    },
+    {
+      "tick": 113,
+      "consensus_rate": -12.9
+    },
+    {
+      "tick": 114,
+      "consensus_rate": -12.9
+    },
+    {
+      "tick": 115,
+      "consensus_rate": -12.9
+    },
+    {
+      "tick": 116,
+      "consensus_rate": -13.1
+    },
+    {
+      "tick": 117,
+      "consensus_rate": -13.2
+    },
+    {
+      "tick": 118,
+      "consensus_rate": -13.2
+    },
+    {
+      "tick": 119,
+      "consensus_rate": -13.3
+    },
+    {
+      "tick": 120,
+      "consensus_rate": -13.3
+    },
+    {
+      "tick": 121,
+      "consensus_rate": -13.5
+    },
+    {
+      "tick": 122,
+      "consensus_rate": -13.7
+    },
+    {
+      "tick": 123,
+      "consensus_rate": -13.7
+    },
+    {
+      "tick": 124,
+      "consensus_rate": -13.7
+    },
+    {
+      "tick": 125,
+      "consensus_rate": -13.8
+    },
+    {
+      "tick": 126,
+      "consensus_rate": -13.9
+    },
+    {
+      "tick": 127,
+      "consensus_rate": -13.9
+    },
+    {
+      "tick": 128,
+      "consensus_rate": -14.1
+    },
+    {
+      "tick": 129,
+      "consensus_rate": -14.2
+    },
+    {
+      "tick": 130,
+      "consensus_rate": -14.2
+    },
+    {
+      "tick": 131,
+      "consensus_rate": -14.3
+    },
+    {
+      "tick": 132,
+      "consensus_rate": -14.4
+    },
+    {
+      "tick": 133,
+      "consensus_rate": -14.5
+    },
+    {
+      "tick": 134,
+      "consensus_rate": -14.6
+    },
+    {
+      "tick": 135,
+      "consensus_rate": -14.6
+    },
+    {
+      "tick": 136,
+      "consensus_rate": -14.7
+    },
+    {
+      "tick": 137,
+      "consensus_rate": -14.8
+    },
+    {
+      "tick": 138,
+      "consensus_rate": -14.9
+    },
+    {
+      "tick": 139,
+      "consensus_rate": -15.0
+    },
+    {
+      "tick": 140,
+      "consensus_rate": -15.4
+    },
+    {
+      "tick": 141,
+      "consensus_rate": -15.6
+    },
+    {
+      "tick": 142,
+      "consensus_rate": -15.8
+    },
+    {
+      "tick": 143,
+      "consensus_rate": -15.8
+    },
+    {
+      "tick": 144,
+      "consensus_rate": -15.9
+    },
+    {
+      "tick": 145,
+      "consensus_rate": -16.0
+    },
+    {
+      "tick": 146,
+      "consensus_rate": -16.0
+    },
+    {
+      "tick": 147,
+      "consensus_rate": -16.3
+    },
+    {
+      "tick": 148,
+      "consensus_rate": -16.4
+    },
+    {
+      "tick": 149,
+      "consensus_rate": -16.4
+    }
+  ],
+  "attack_series": [
+    {
+      "tick": 0,
+      "attack_attempts": 1,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 1,
+      "attack_attempts": 5,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 2,
+      "attack_attempts": 6,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 3,
+      "attack_attempts": 7,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 4,
+      "attack_attempts": 9,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 5,
+      "attack_attempts": 12,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 6,
+      "attack_attempts": 15,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 7,
+      "attack_attempts": 16,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 8,
+      "attack_attempts": 16,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 9,
+      "attack_attempts": 17,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 10,
+      "attack_attempts": 20,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 11,
+      "attack_attempts": 21,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 12,
+      "attack_attempts": 22,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 13,
+      "attack_attempts": 23,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 14,
+      "attack_attempts": 25,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 15,
+      "attack_attempts": 26,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 16,
+      "attack_attempts": 27,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 17,
+      "attack_attempts": 29,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 18,
+      "attack_attempts": 32,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 19,
+      "attack_attempts": 33,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 20,
+      "attack_attempts": 36,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 21,
+      "attack_attempts": 36,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 22,
+      "attack_attempts": 39,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 23,
+      "attack_attempts": 39,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 24,
+      "attack_attempts": 41,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 25,
+      "attack_attempts": 44,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 26,
+      "attack_attempts": 44,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 27,
+      "attack_attempts": 46,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 28,
+      "attack_attempts": 48,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 29,
+      "attack_attempts": 49,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 30,
+      "attack_attempts": 50,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 31,
+      "attack_attempts": 51,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 32,
+      "attack_attempts": 55,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 33,
+      "attack_attempts": 57,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 34,
+      "attack_attempts": 59,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 35,
+      "attack_attempts": 59,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 36,
+      "attack_attempts": 60,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 37,
+      "attack_attempts": 61,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 38,
+      "attack_attempts": 64,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 39,
+      "attack_attempts": 67,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 40,
+      "attack_attempts": 69,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 41,
+      "attack_attempts": 70,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 42,
+      "attack_attempts": 71,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 43,
+      "attack_attempts": 75,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 44,
+      "attack_attempts": 76,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 45,
+      "attack_attempts": 78,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 46,
+      "attack_attempts": 80,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 47,
+      "attack_attempts": 81,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 48,
+      "attack_attempts": 83,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 49,
+      "attack_attempts": 84,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 50,
+      "attack_attempts": 87,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 51,
+      "attack_attempts": 88,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 52,
+      "attack_attempts": 88,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 53,
+      "attack_attempts": 90,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 54,
+      "attack_attempts": 91,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 55,
+      "attack_attempts": 92,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 56,
+      "attack_attempts": 95,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 57,
+      "attack_attempts": 97,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 58,
+      "attack_attempts": 98,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 59,
+      "attack_attempts": 99,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 60,
+      "attack_attempts": 101,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 61,
+      "attack_attempts": 102,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 62,
+      "attack_attempts": 104,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 63,
+      "attack_attempts": 105,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 64,
+      "attack_attempts": 108,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 65,
+      "attack_attempts": 110,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 66,
+      "attack_attempts": 111,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 67,
+      "attack_attempts": 114,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 68,
+      "attack_attempts": 114,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 69,
+      "attack_attempts": 116,
+      "attack_successes": 0,
+      "success_rate": 0.0
+    },
+    {
+      "tick": 70,
+      "attack_attempts": 119,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 71,
+      "attack_attempts": 120,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 72,
+      "attack_attempts": 124,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 73,
+      "attack_attempts": 126,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 74,
+      "attack_attempts": 127,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 75,
+      "attack_attempts": 128,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 76,
+      "attack_attempts": 130,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 77,
+      "attack_attempts": 130,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 78,
+      "attack_attempts": 132,
+      "attack_successes": 1,
+      "success_rate": 0.008
+    },
+    {
+      "tick": 79,
+      "attack_attempts": 134,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 80,
+      "attack_attempts": 134,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 81,
+      "attack_attempts": 135,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 82,
+      "attack_attempts": 137,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 83,
+      "attack_attempts": 139,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 84,
+      "attack_attempts": 141,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 85,
+      "attack_attempts": 142,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 86,
+      "attack_attempts": 143,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 87,
+      "attack_attempts": 143,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 88,
+      "attack_attempts": 143,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 89,
+      "attack_attempts": 144,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 90,
+      "attack_attempts": 146,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 91,
+      "attack_attempts": 146,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 92,
+      "attack_attempts": 146,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 93,
+      "attack_attempts": 149,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 94,
+      "attack_attempts": 150,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 95,
+      "attack_attempts": 151,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 96,
+      "attack_attempts": 152,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 97,
+      "attack_attempts": 153,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 98,
+      "attack_attempts": 153,
+      "attack_successes": 1,
+      "success_rate": 0.007
+    },
+    {
+      "tick": 99,
+      "attack_attempts": 154,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 100,
+      "attack_attempts": 154,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 101,
+      "attack_attempts": 154,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 102,
+      "attack_attempts": 154,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 103,
+      "attack_attempts": 156,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 104,
+      "attack_attempts": 158,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 105,
+      "attack_attempts": 161,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 106,
+      "attack_attempts": 162,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 107,
+      "attack_attempts": 164,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 108,
+      "attack_attempts": 165,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 109,
+      "attack_attempts": 167,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 110,
+      "attack_attempts": 169,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 111,
+      "attack_attempts": 171,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 112,
+      "attack_attempts": 172,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 113,
+      "attack_attempts": 173,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 114,
+      "attack_attempts": 173,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 115,
+      "attack_attempts": 174,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 116,
+      "attack_attempts": 177,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 117,
+      "attack_attempts": 178,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 118,
+      "attack_attempts": 180,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 119,
+      "attack_attempts": 181,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 120,
+      "attack_attempts": 181,
+      "attack_successes": 1,
+      "success_rate": 0.006
+    },
+    {
+      "tick": 121,
+      "attack_attempts": 184,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 122,
+      "attack_attempts": 185,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 123,
+      "attack_attempts": 187,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 124,
+      "attack_attempts": 187,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 125,
+      "attack_attempts": 188,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 126,
+      "attack_attempts": 189,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 127,
+      "attack_attempts": 190,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 128,
+      "attack_attempts": 190,
+      "attack_successes": 1,
+      "success_rate": 0.005
+    },
+    {
+      "tick": 129,
+      "attack_attempts": 191,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 130,
+      "attack_attempts": 192,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 131,
+      "attack_attempts": 194,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 132,
+      "attack_attempts": 195,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 133,
+      "attack_attempts": 196,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 134,
+      "attack_attempts": 199,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 135,
+      "attack_attempts": 199,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 136,
+      "attack_attempts": 201,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 137,
+      "attack_attempts": 203,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 138,
+      "attack_attempts": 205,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 139,
+      "attack_attempts": 206,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 140,
+      "attack_attempts": 209,
+      "attack_successes": 2,
+      "success_rate": 0.01
+    },
+    {
+      "tick": 141,
+      "attack_attempts": 211,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 142,
+      "attack_attempts": 213,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 143,
+      "attack_attempts": 213,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 144,
+      "attack_attempts": 216,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 145,
+      "attack_attempts": 217,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 146,
+      "attack_attempts": 217,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 147,
+      "attack_attempts": 219,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 148,
+      "attack_attempts": 220,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    },
+    {
+      "tick": 149,
+      "attack_attempts": 221,
+      "attack_successes": 2,
+      "success_rate": 0.009
+    }
+  ],
+  "wall_time_seconds": 0.046,
+  "completed_at": "2026-03-10T16:32:46.113553"
+}

@@ -1,0 +1,54 @@
+# ── AAIP Identity (NEVER commit private keys) ──────────────────────
+.aaip-identity.json
+.aaip-config.json
+
+# ── Environment / secrets ──────────────────────────────────────────
+.env
+.env.*
+.env.local
+!.env.example
+backend/.env
+docker/.env
+
+# ── Python ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+venv/
+.venv/
+env/
+
+# ── Node / Frontend ────────────────────────────────────────────────
+node_modules/
+nodejs/
+.next/
+out/
+frontend/.next/
+*.tsbuildinfo
+
+# ── IDE ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Misc ───────────────────────────────────────────────────────────
+*.bak
+*.tmp
+sim_results/*/result_*.json

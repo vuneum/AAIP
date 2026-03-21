@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAIP Research Lab — Adversarial Simulation Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg0: #050709;
+  --bg1: #0a0d12;
+  --bg2: #0f141c;
+  --bg3: #151c28;
+  --border: #1e2a3a;
+  --border2: #253347;
+  --green: #00ff88;
+  --green-dim: #00cc6a;
+  --green-faint: rgba(0,255,136,0.08);
+  --blue: #00b4ff;
+  --blue-dim: #0090cc;
+  --blue-faint: rgba(0,180,255,0.08);
+  --amber: #ffb800;
+  --amber-faint: rgba(255,184,0,0.1);
+  --red: #ff4060;
+  --red-faint: rgba(255,64,96,0.1);
+  --purple: #9b6cff;
+  --text: #c8d8e8;
+  --text-dim: #6a8098;
+  --text-bright: #e8f4ff;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg0);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark {
+  width: 32px; height: 32px;
+  border: 2px solid var(--green);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600;
+  color: var(--green);
+  font-size: 12px;
+  box-shadow: 0 0 12px rgba(0,255,136,0.3);
+  animation: pulse-border 3s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 12px rgba(0,255,136,0.3); }
+  50%       { box-shadow: 0 0 22px rgba(0,255,136,0.6); }
+}
+
+.logo-text { font-size: 14px; font-weight: 600; color: var(--text-bright); letter-spacing: 0.05em; }
+.logo-sub  { font-size: 11px; color: var(--text-dim); letter-spacing: 0.1em; }
+
+.header-status {
+  display: flex; align-items: center; gap: 20px;
+}
+
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  border: 1px solid;
+}
+.status-pill.ok   { border-color: var(--green); color: var(--green); background: var(--green-faint); }
+.status-pill.warn { border-color: var(--amber); color: var(--amber); background: var(--amber-faint); }
+
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: blink 1.5s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Layout */
+.app { display: flex; height: calc(100vh - 57px); }
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+.sidebar-section { padding: 0 12px 16px; }
+.sidebar-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 8px;
+}
+
+.scenario-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.scenario-btn:hover { background: var(--bg3); color: var(--text); border-color: var(--border); }
+.scenario-btn.active {
+  background: var(--green-faint);
+  color: var(--green);
+  border-color: rgba(0,255,136,0.3);
+}
+.scenario-btn .badge {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(255,64,96,0.2);
+  color: var(--red);
+  border: 1px solid rgba(255,64,96,0.3);
+}
+.scenario-btn.active .badge { background: rgba(0,255,136,0.15); color: var(--green); border-color: rgba(0,255,136,0.3); }
+.scenario-btn .badge.safe { background: rgba(0,180,255,0.1); color: var(--blue); border-color: rgba(0,180,255,0.3); }
+
+.scenario-icon { font-size: 14px; }
+
+/* Main content */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--bg0);
+}
+
+/* Page tabs */
+.page-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.page-tab {
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  background: none;
+  border-top: none; border-left: none; border-right: none;
+  margin-bottom: -1px;
+}
+.page-tab:hover { color: var(--text); }
+.page-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* Grid layouts */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.charts-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.charts-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Stat cards */
+.stat-card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 60%, rgba(0,180,255,0.03));
+  pointer-events: none;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+.stat-value.green  { color: var(--green); }
+.stat-value.blue   { color: var(--blue); }
+.stat-value.amber  { color: var(--amber); }
+.stat-value.red    { color: var(--red); }
+.stat-value.purple { color: var(--purple); }
+.stat-sub { font-size: 11px; color: var(--text-dim); }
+
+/* Chart cards */
+.chart-card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+}
+.chart-title {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chart-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--blue-faint);
+  color: var(--blue);
+  border: 1px solid rgba(0,180,255,0.25);
+}
+.chart-container { position: relative; height: 200px; }
+.chart-container-lg { position: relative; height: 260px; }
+.chart-container-sm { position: relative; height: 150px; }
+
+/* Attack cards */
+.attack-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.attack-card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.attack-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--card-color, var(--blue));
+  transform: scaleX(0);
+  transition: transform 0.2s;
+  transform-origin: left;
+}
+.attack-card:hover { border-color: var(--border2); }
+.attack-card:hover::after { transform: scaleX(1); }
+.attack-card.active { border-color: rgba(0,255,136,0.4); background: rgba(0,255,136,0.04); }
+.attack-card.active::after { transform: scaleX(1); background: var(--green); }
+
+.attack-icon { font-size: 22px; margin-bottom: 10px; }
+.attack-name { font-size: 13px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; font-family: var(--font-sans); }
+.attack-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px; font-family: var(--font-sans); }
+.attack-metrics { display: flex; flex-direction: column; gap: 4px; }
+.attack-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+.attack-metric-label { color: var(--text-dim); }
+.attack-metric-value { font-weight: 600; }
+.attack-metric-value.danger { color: var(--red); }
+.attack-metric-value.ok    { color: var(--green); }
+.attack-metric-value.warn  { color: var(--amber); }
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-fill.green  { background: var(--green); }
+.progress-fill.red    { background: var(--red); }
+.progress-fill.amber  { background: var(--amber); }
+.progress-fill.blue   { background: var(--blue); }
+.progress-fill.purple { background: var(--purple); }
+
+/* Network viz */
+.network-canvas-wrap {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+#networkCanvas {
+  width: 100%;
+  height: 400px;
+  border-radius: 6px;
+  background: var(--bg2);
+  display: block;
+}
+
+/* Comparison table */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.comparison-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.comparison-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.comparison-table tr:hover td { background: var(--bg2); }
+.comparison-table td:first-child { color: var(--text-bright); font-weight: 500; }
+
+/* Chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  border: 1px solid;
+}
+.chip.green  { background: var(--green-faint);  color: var(--green);  border-color: rgba(0,255,136,0.3); }
+.chip.red    { background: var(--red-faint);    color: var(--red);    border-color: rgba(255,64,96,0.3); }
+.chip.amber  { background: var(--amber-faint);  color: var(--amber);  border-color: rgba(255,184,0,0.3); }
+.chip.blue   { background: var(--blue-faint);   color: var(--blue);   border-color: rgba(0,180,255,0.3); }
+
+/* Control panel */
+.control-panel {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.control-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.control-group label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.control-group input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--border2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.control-group input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(0,255,136,0.5);
+  cursor: pointer;
+}
+.control-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--green);
+  margin-top: 4px;
+}
+
+.run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: var(--green-faint);
+  color: var(--green);
+  border: 1px solid rgba(0,255,136,0.4);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s;
+  letter-spacing: 0.05em;
+}
+.run-btn:hover {
+  background: rgba(0,255,136,0.15);
+  box-shadow: 0 0 20px rgba(0,255,136,0.2);
+}
+
+/* Ticker */
+.ticker {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-inner {
+  display: inline-flex;
+  gap: 48px;
+  animation: scroll-ticker 30s linear infinite;
+  padding-left: 24px;
+}
+@keyframes scroll-ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.ticker-item .lbl { color: var(--text-dim); }
+.ticker-item .val { font-weight: 600; }
+.ticker-item .val.up   { color: var(--green); }
+.ticker-item .val.down { color: var(--red); }
+
+/* Page visibility */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Animated counter */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stat-value { animation: count-up 0.4s ease; }
+
+/* Tooltip */
+.tooltip-container { position: relative; display: inline-block; }
+.tooltip-box {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--text);
+  z-index: 200;
+}
+.tooltip-container:hover .tooltip-box { display: block; }
+
+/* Animated scanning line for network view */
+@keyframes scan {
+  0%   { top: 0; }
+  100% { top: 100%; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .attack-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Data -->
+<script>
+const SIM_DATA = {"baseline":{"validation_accuracy":1.0,"attack_success_rate":0.0,"false_approval_rate":0.0,"consensus_disagreement":0.043,"economic_loss":0.0,"task_latency_mean":80.3,"task_latency_p95":112.03,"system_throughput":10.0,"validator_reputation_drift":12.8201,"collusion_success_rate":0.0,"sybil_capture_probability":0.0,"bribery_success_rate":0.0,"judge_failure_rate":0.0,"spam_overload_rate":0.0,"protocol_revenue":0.02,"slashed_stake":0.0,"validator_reward_gini":0.0379,"total_tasks":2000,"rep_series":[{"tick":0,"honest_rep":80.49,"malicious_rep":58.54,"separation":21.95},{"tick":1,"honest_rep":80.54,"malicious_rep":58.41,"separation":22.12},{"tick":2,"honest_rep":80.58,"malicious_rep":58.23,"separation":22.35},{"tick":3,"honest_rep":80.62,"malicious_rep":58.12,"separation":22.5},{"tick":4,"honest_rep":80.67,"malicious_rep":58.03,"separation":22.64},{"tick":5,"honest_rep":80.72,"malicious_rep":57.87,"separation":22.85},{"tick":6,"honest_rep":80.77,"malicious_rep":57.71,"separation":23.05},{"tick":7,"honest_rep":80.82,"malicious_rep":57.54,"separation":23.28},{"tick":8,"honest_rep":80.86,"malicious_rep":57.46,"separation":23.4},{"tick":9,"honest_rep":80.91,"malicious_rep":57.35,"separation":23.56},{"tick":10,"honest_rep":80.95,"malicious_rep":57.26,"separation":23.7},{"tick":11,"honest_rep":81.0,"malicious_rep":57.1,"separation":23.9},{"tick":12,"honest_rep":81.04,"malicious_rep":56.94,"separation":24.1},{"tick":13,"honest_rep":81.08,"malicious_rep":56.75,"separation":24.33},{"tick":14,"honest_rep":81.14,"malicious_rep":56.55,"separation":24.59},{"tick":15,"honest_rep":81.18,"malicious_rep":56.32,"separation":24.85},{"tick":16,"honest_rep":81.21,"malicious_rep":56.08,"separation":25.13},{"tick":17,"honest_rep":81.25,"malicious_rep":55.95,"separation":25.31},{"tick":18,"honest_rep":81.31,"malicious_rep":55.77,"separation":25.53},{"tick":19,"honest_rep":81.35,"malicious_rep":55.62,"separation":25.73},{"tick":20,"honest_rep":81.4,"malicious_rep":55.51,"separation":25.89},{"tick":21,"honest_rep":81.45,"malicious_rep":55.4,"separation":26.06},{"tick":22,"honest_rep":81.5,"malicious_rep":55.16,"separation":26.34},{"tick":23,"honest_rep":81.54,"malicious_rep":55.02,"separation":26.52},{"tick":24,"honest_rep":81.6,"malicious_rep":54.85,"separation":26.75},{"tick":25,"honest_rep":81.64,"malicious_rep":54.7,"separation":26.94},{"tick":26,"honest_rep":81.69,"malicious_rep":54.54,"separation":27.15},{"tick":27,"honest_rep":81.75,"malicious_rep":54.51,"separation":27.24},{"tick":28,"honest_rep":81.78,"malicious_rep":54.36,"separation":27.42},{"tick":29,"honest_rep":81.82,"malicious_rep":54.28,"separation":27.54}],"atk_series":[{"tick":0,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":1,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":2,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":3,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":4,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":5,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":6,"attack_attempts":6,"attack_successes":0,"success_rate":0.0},{"tick":7,"attack_attempts":9,"attack_successes":0,"success_rate":0.0},{"tick":8,"attack_attempts":11,"attack_successes":0,"success_rate":0.0},{"tick":9,"attack_attempts":13,"attack_successes":0,"success_rate":0.0},{"tick":10,"attack_attempts":16,"attack_successes":0,"success_rate":0.0},{"tick":11,"attack_attempts":17,"attack_successes":0,"success_rate":0.0},{"tick":12,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":13,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":14,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":15,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":16,"attack_attempts":21,"attack_successes":0,"success_rate":0.0},{"tick":17,"attack_attempts":25,"attack_successes":0,"success_rate":0.0},{"tick":18,"attack_attempts":27,"attack_successes":0,"success_rate":0.0},{"tick":19,"attack_attempts":29,"attack_successes":0,"success_rate":0.0},{"tick":20,"attack_attempts":31,"attack_successes":0,"success_rate":0.0},{"tick":21,"attack_attempts":31,"attack_successes":0,"success_rate":0.0},{"tick":22,"attack_attempts":31,"attack_successes":0,"success_rate":0.0},{"tick":23,"attack_attempts":33,"attack_successes":0,"success_rate":0.0},{"tick":24,"attack_attempts":33,"attack_successes":0,"success_rate":0.0},{"tick":25,"attack_attempts":34,"attack_successes":0,"success_rate":0.0},{"tick":26,"attack_attempts":34,"attack_successes":0,"success_rate":0.0},{"tick":27,"attack_attempts":36,"attack_successes":0,"success_rate":0.0},{"tick":28,"attack_attempts":38,"attack_successes":0,"success_rate":0.0},{"tick":29,"attack_attempts":40,"attack_successes":0,"success_rate":0.0}],"tick_series":[{"tick":0,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":88.25,"consensus_failures":0},{"tick":1,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":74.79,"consensus_failures":0},{"tick":2,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":83.92,"consensus_failures":0},{"tick":3,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.28,"consensus_failures":0},{"tick":4,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":80.02,"consensus_failures":0},{"tick":5,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":83.63,"consensus_failures":0},{"tick":6,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":80.68,"consensus_failures":1},{"tick":7,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":95.08,"consensus_failures":1},{"tick":8,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":93.91,"consensus_failures":1},{"tick":9,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":72.92,"consensus_failures":1},{"tick":10,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":76.27,"consensus_failures":1},{"tick":11,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.07,"consensus_failures":3},{"tick":12,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":79.29,"consensus_failures":3},{"tick":13,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":76.99,"consensus_failures":3},{"tick":14,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":74.37,"consensus_failures":3},{"tick":15,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":82.51,"consensus_failures":3},{"tick":16,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":85.58,"consensus_failures":4},{"tick":17,"tasks":10,"fraud_detected":4,"attacks":4,"avg_latency_ms":77.91,"consensus_failures":5},{"tick":18,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":80.03,"consensus_failures":5},{"tick":19,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":93.4,"consensus_failures":6},{"tick":20,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":77.37,"consensus_failures":6},{"tick":21,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":69.33,"consensus_failures":6},{"tick":22,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.84,"consensus_failures":6},{"tick":23,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":89.65,"consensus_failures":7},{"tick":24,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":79.69,"consensus_failures":7},{"tick":25,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.43,"consensus_failures":7},{"tick":26,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":79.35,"consensus_failures":7},{"tick":27,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.85,"consensus_failures":7},{"tick":28,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":90.4,"consensus_failures":7},{"tick":29,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":74.18,"consensus_failures":7}]},"collusion":{"validation_accuracy":0.9623,"attack_success_rate":0.0377,"false_approval_rate":0.0377,"consensus_disagreement":0.1105,"economic_loss":0.0257,"task_latency_mean":79.46,"task_latency_p95":112.54,"system_throughput":10.0,"validator_reputation_drift":21.8535,"collusion_success_rate":0.2404,"sybil_capture_probability":0.0,"bribery_success_rate":0.0,"judge_failure_rate":0.0,"spam_overload_rate":0.0,"protocol_revenue":0.0199,"slashed_stake":2075.48,"validator_reward_gini":0.051,"total_tasks":2000,"rep_series":[{"tick":0,"honest_rep":80.49,"malicious_rep":58.49,"separation":22.0},{"tick":1,"honest_rep":80.54,"malicious_rep":58.33,"separation":22.21},{"tick":2,"honest_rep":80.59,"malicious_rep":58.17,"separation":22.42},{"tick":3,"honest_rep":80.65,"malicious_rep":58.05,"separation":22.6},{"tick":4,"honest_rep":80.69,"malicious_rep":57.89,"separation":22.8},{"tick":5,"honest_rep":80.73,"malicious_rep":57.69,"separation":23.05},{"tick":6,"honest_rep":80.78,"malicious_rep":57.62,"separation":23.16},{"tick":7,"honest_rep":80.82,"malicious_rep":57.47,"separation":23.35},{"tick":8,"honest_rep":80.87,"malicious_rep":57.21,"separation":23.66},{"tick":9,"honest_rep":80.91,"malicious_rep":57.05,"separation":23.86},{"tick":10,"honest_rep":80.95,"malicious_rep":56.9,"separation":24.05},{"tick":11,"honest_rep":81.0,"malicious_rep":56.73,"separation":24.27},{"tick":12,"honest_rep":81.05,"malicious_rep":56.6,"separation":24.45},{"tick":13,"honest_rep":81.1,"malicious_rep":56.46,"separation":24.64},{"tick":14,"honest_rep":81.14,"malicious_rep":56.25,"separation":24.89},{"tick":15,"honest_rep":81.19,"malicious_rep":56.13,"separation":25.07},{"tick":16,"honest_rep":81.24,"malicious_rep":55.97,"separation":25.27},{"tick":17,"honest_rep":81.29,"malicious_rep":55.85,"separation":25.44},{"tick":18,"honest_rep":81.34,"malicious_rep":55.71,"separation":25.63},{"tick":19,"honest_rep":81.39,"malicious_rep":55.56,"separation":25.83},{"tick":20,"honest_rep":81.44,"malicious_rep":55.41,"separation":26.03},{"tick":21,"honest_rep":81.48,"malicious_rep":55.27,"separation":26.21},{"tick":22,"honest_rep":81.53,"malicious_rep":55.2,"separation":26.33},{"tick":23,"honest_rep":81.57,"malicious_rep":54.97,"separation":26.6},{"tick":24,"honest_rep":81.61,"malicious_rep":54.87,"separation":26.74},{"tick":25,"honest_rep":81.66,"malicious_rep":54.66,"separation":27.0},{"tick":26,"honest_rep":81.71,"malicious_rep":54.55,"separation":27.15},{"tick":27,"honest_rep":81.74,"malicious_rep":54.4,"separation":27.35},{"tick":28,"honest_rep":81.79,"malicious_rep":54.28,"separation":27.51},{"tick":29,"honest_rep":81.83,"malicious_rep":54.12,"separation":27.71}],"atk_series":[{"tick":0,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":1,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":2,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":3,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":4,"attack_attempts":5,"attack_successes":0,"success_rate":0.0},{"tick":5,"attack_attempts":7,"attack_successes":0,"success_rate":0.0},{"tick":6,"attack_attempts":9,"attack_successes":0,"success_rate":0.0},{"tick":7,"attack_attempts":10,"attack_successes":0,"success_rate":0.0},{"tick":8,"attack_attempts":11,"attack_successes":0,"success_rate":0.0},{"tick":9,"attack_attempts":13,"attack_successes":0,"success_rate":0.0},{"tick":10,"attack_attempts":13,"attack_successes":0,"success_rate":0.0},{"tick":11,"attack_attempts":16,"attack_successes":0,"success_rate":0.0},{"tick":12,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":13,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":14,"attack_attempts":19,"attack_successes":0,"success_rate":0.0},{"tick":15,"attack_attempts":19,"attack_successes":0,"success_rate":0.0},{"tick":16,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":17,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":18,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":19,"attack_attempts":21,"attack_successes":0,"success_rate":0.0},{"tick":20,"attack_attempts":23,"attack_successes":0,"success_rate":0.0},{"tick":21,"attack_attempts":24,"attack_successes":0,"success_rate":0.0},{"tick":22,"attack_attempts":25,"attack_successes":0,"success_rate":0.0},{"tick":23,"attack_attempts":27,"attack_successes":0,"success_rate":0.0},{"tick":24,"attack_attempts":28,"attack_successes":0,"success_rate":0.0},{"tick":25,"attack_attempts":28,"attack_successes":0,"success_rate":0.0},{"tick":26,"attack_attempts":28,"attack_successes":0,"success_rate":0.0},{"tick":27,"attack_attempts":30,"attack_successes":0,"success_rate":0.0},{"tick":28,"attack_attempts":32,"attack_successes":0,"success_rate":0.0},{"tick":29,"attack_attempts":32,"attack_successes":0,"success_rate":0.0}],"tick_series":[{"tick":0,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":72.4,"consensus_failures":3},{"tick":1,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":72.33,"consensus_failures":3},{"tick":2,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":88.21,"consensus_failures":3},{"tick":3,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":83.65,"consensus_failures":3},{"tick":4,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":66.45,"consensus_failures":3},{"tick":5,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.67,"consensus_failures":5},{"tick":6,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.95,"consensus_failures":6},{"tick":7,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":78.09,"consensus_failures":7},{"tick":8,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":85.96,"consensus_failures":9},{"tick":9,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":79.16,"consensus_failures":11},{"tick":10,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":82.21,"consensus_failures":11},{"tick":11,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":84.76,"consensus_failures":13},{"tick":12,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":79.05,"consensus_failures":13},{"tick":13,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.62,"consensus_failures":14},{"tick":14,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":71.67,"consensus_failures":15},{"tick":15,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":76.26,"consensus_failures":15},{"tick":16,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":87.4,"consensus_failures":16},{"tick":17,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.46,"consensus_failures":16},{"tick":18,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.84,"consensus_failures":17},{"tick":19,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":82.08,"consensus_failures":17},{"tick":20,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.4,"consensus_failures":18},{"tick":21,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":75.28,"consensus_failures":18},{"tick":22,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":80.04,"consensus_failures":18},{"tick":23,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":86.6,"consensus_failures":19},{"tick":24,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.06,"consensus_failures":21},{"tick":25,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":72.04,"consensus_failures":23},{"tick":26,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":74.27,"consensus_failures":24},{"tick":27,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.54,"consensus_failures":25},{"tick":28,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.91,"consensus_failures":25},{"tick":29,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.29,"consensus_failures":27}]},"sybil":{"validation_accuracy":0.605,"attack_success_rate":0.395,"false_approval_rate":0.395,"consensus_disagreement":0.1305,"economic_loss":0.2166,"task_latency_mean":80.15,"task_latency_p95":111.6,"system_throughput":10.0,"validator_reputation_drift":23.8331,"collusion_success_rate":0.0,"sybil_capture_probability":0.776,"bribery_success_rate":0.0,"judge_failure_rate":0.0,"spam_overload_rate":0.0,"protocol_revenue":0.0203,"slashed_stake":0.0,"validator_reward_gini":0.0764,"total_tasks":2000,"rep_series":[{"tick":0,"honest_rep":80.49,"malicious_rep":58.56,"separation":21.93},{"tick":1,"honest_rep":80.53,"malicious_rep":58.35,"separation":22.18},{"tick":2,"honest_rep":80.59,"malicious_rep":58.22,"separation":22.37},{"tick":3,"honest_rep":80.64,"malicious_rep":58.08,"separation":22.56},{"tick":4,"honest_rep":80.68,"malicious_rep":57.92,"separation":22.75},{"tick":5,"honest_rep":80.72,"malicious_rep":57.71,"separation":23.01},{"tick":6,"honest_rep":80.77,"malicious_rep":57.56,"separation":23.22},{"tick":7,"honest_rep":80.83,"malicious_rep":57.45,"separation":23.38},{"tick":8,"honest_rep":80.87,"malicious_rep":57.37,"separation":23.49},{"tick":9,"honest_rep":80.91,"malicious_rep":57.24,"separation":23.67},{"tick":10,"honest_rep":80.96,"malicious_rep":57.15,"separation":23.82},{"tick":11,"honest_rep":81.02,"malicious_rep":57.02,"separation":23.99},{"tick":12,"honest_rep":81.06,"malicious_rep":56.88,"separation":24.18},{"tick":13,"honest_rep":81.11,"malicious_rep":56.65,"separation":24.45},{"tick":14,"honest_rep":81.15,"malicious_rep":56.46,"separation":24.69},{"tick":15,"honest_rep":81.21,"malicious_rep":56.27,"separation":24.94},{"tick":16,"honest_rep":81.26,"malicious_rep":56.1,"separation":25.16},{"tick":17,"honest_rep":81.29,"malicious_rep":55.97,"separation":25.33},{"tick":18,"honest_rep":81.34,"malicious_rep":55.74,"separation":25.6},{"tick":19,"honest_rep":81.38,"malicious_rep":55.68,"separation":25.71},{"tick":20,"honest_rep":81.44,"malicious_rep":55.61,"separation":25.83},{"tick":21,"honest_rep":81.48,"malicious_rep":55.48,"separation":25.99},{"tick":22,"honest_rep":81.53,"malicious_rep":55.35,"separation":26.19},{"tick":23,"honest_rep":81.57,"malicious_rep":55.21,"separation":26.37},{"tick":24,"honest_rep":81.62,"malicious_rep":55.05,"separation":26.57},{"tick":25,"honest_rep":81.66,"malicious_rep":54.95,"separation":26.71},{"tick":26,"honest_rep":81.71,"malicious_rep":54.82,"separation":26.9},{"tick":27,"honest_rep":81.76,"malicious_rep":54.73,"separation":27.03},{"tick":28,"honest_rep":81.81,"malicious_rep":54.63,"separation":27.18},{"tick":29,"honest_rep":81.85,"malicious_rep":54.39,"separation":27.46}],"atk_series":[{"tick":0,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":1,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":2,"attack_attempts":5,"attack_successes":0,"success_rate":0.0},{"tick":3,"attack_attempts":5,"attack_successes":0,"success_rate":0.0},{"tick":4,"attack_attempts":5,"attack_successes":0,"success_rate":0.0},{"tick":5,"attack_attempts":8,"attack_successes":2,"success_rate":0.25},{"tick":6,"attack_attempts":10,"attack_successes":3,"success_rate":0.3},{"tick":7,"attack_attempts":12,"attack_successes":5,"success_rate":0.417},{"tick":8,"attack_attempts":16,"attack_successes":8,"success_rate":0.5},{"tick":9,"attack_attempts":16,"attack_successes":8,"success_rate":0.5},{"tick":10,"attack_attempts":18,"attack_successes":9,"success_rate":0.5},{"tick":11,"attack_attempts":20,"attack_successes":10,"success_rate":0.5},{"tick":12,"attack_attempts":20,"attack_successes":10,"success_rate":0.5},{"tick":13,"attack_attempts":20,"attack_successes":10,"success_rate":0.5},{"tick":14,"attack_attempts":23,"attack_successes":10,"success_rate":0.435},{"tick":15,"attack_attempts":26,"attack_successes":12,"success_rate":0.462},{"tick":16,"attack_attempts":27,"attack_successes":13,"success_rate":0.481},{"tick":17,"attack_attempts":28,"attack_successes":14,"success_rate":0.5},{"tick":18,"attack_attempts":29,"attack_successes":14,"success_rate":0.483},{"tick":19,"attack_attempts":29,"attack_successes":14,"success_rate":0.483},{"tick":20,"attack_attempts":31,"attack_successes":14,"success_rate":0.452},{"tick":21,"attack_attempts":31,"attack_successes":14,"success_rate":0.452},{"tick":22,"attack_attempts":32,"attack_successes":15,"success_rate":0.469},{"tick":23,"attack_attempts":34,"attack_successes":15,"success_rate":0.441},{"tick":24,"attack_attempts":34,"attack_successes":15,"success_rate":0.441},{"tick":25,"attack_attempts":36,"attack_successes":15,"success_rate":0.417},{"tick":26,"attack_attempts":38,"attack_successes":15,"success_rate":0.395},{"tick":27,"attack_attempts":39,"attack_successes":16,"success_rate":0.41},{"tick":28,"attack_attempts":40,"attack_successes":16,"success_rate":0.4},{"tick":29,"attack_attempts":42,"attack_successes":16,"success_rate":0.381}],"tick_series":[{"tick":0,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":75.21,"consensus_failures":5},{"tick":1,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.77,"consensus_failures":6},{"tick":2,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":80.53,"consensus_failures":9},{"tick":3,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":84.57,"consensus_failures":9},{"tick":4,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":87.62,"consensus_failures":10},{"tick":5,"tasks":10,"fraud_detected":1,"attacks":3,"avg_latency_ms":75.35,"consensus_failures":11},{"tick":6,"tasks":10,"fraud_detected":1,"attacks":2,"avg_latency_ms":75.67,"consensus_failures":13},{"tick":7,"tasks":10,"fraud_detected":0,"attacks":2,"avg_latency_ms":79.5,"consensus_failures":13},{"tick":8,"tasks":10,"fraud_detected":1,"attacks":4,"avg_latency_ms":89.5,"consensus_failures":14},{"tick":9,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":73.86,"consensus_failures":15},{"tick":10,"tasks":10,"fraud_detected":1,"attacks":2,"avg_latency_ms":82.44,"consensus_failures":16},{"tick":11,"tasks":10,"fraud_detected":1,"attacks":2,"avg_latency_ms":83.86,"consensus_failures":17},{"tick":12,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":71.98,"consensus_failures":17},{"tick":13,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":90.35,"consensus_failures":17},{"tick":14,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":77.28,"consensus_failures":21},{"tick":15,"tasks":10,"fraud_detected":1,"attacks":3,"avg_latency_ms":75.52,"consensus_failures":23},{"tick":16,"tasks":10,"fraud_detected":0,"attacks":1,"avg_latency_ms":80.16,"consensus_failures":23},{"tick":17,"tasks":10,"fraud_detected":0,"attacks":1,"avg_latency_ms":80.53,"consensus_failures":24},{"tick":18,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":94.96,"consensus_failures":25},{"tick":19,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":68.22,"consensus_failures":27},{"tick":20,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":81.89,"consensus_failures":28},{"tick":21,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.14,"consensus_failures":29},{"tick":22,"tasks":10,"fraud_detected":0,"attacks":1,"avg_latency_ms":71.36,"consensus_failures":30},{"tick":23,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":82.33,"consensus_failures":32},{"tick":24,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":80.56,"consensus_failures":32},{"tick":25,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":79.43,"consensus_failures":35},{"tick":26,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":76.73,"consensus_failures":37},{"tick":27,"tasks":10,"fraud_detected":0,"attacks":1,"avg_latency_ms":74.38,"consensus_failures":37},{"tick":28,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":83.66,"consensus_failures":39},{"tick":29,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":79.79,"consensus_failures":40}]},"bribery":{"validation_accuracy":1.0,"attack_success_rate":0.0,"false_approval_rate":0.0,"consensus_disagreement":0.055,"economic_loss":0.0,"task_latency_mean":80.45,"task_latency_p95":114.95,"system_throughput":10.0,"validator_reputation_drift":12.8201,"collusion_success_rate":0.0,"sybil_capture_probability":0.0,"bribery_success_rate":0.0,"judge_failure_rate":0.0,"spam_overload_rate":0.0,"protocol_revenue":0.0203,"slashed_stake":0.0,"validator_reward_gini":0.04,"total_tasks":2000,"rep_series":[{"tick":0,"honest_rep":80.49,"malicious_rep":58.56,"separation":21.93},{"tick":1,"honest_rep":80.55,"malicious_rep":58.39,"separation":22.16},{"tick":2,"honest_rep":80.59,"malicious_rep":58.29,"separation":22.29},{"tick":3,"honest_rep":80.63,"malicious_rep":58.16,"separation":22.47},{"tick":4,"honest_rep":80.68,"malicious_rep":58.1,"separation":22.57},{"tick":5,"honest_rep":80.74,"malicious_rep":58.01,"separation":22.73},{"tick":6,"honest_rep":80.79,"malicious_rep":57.94,"separation":22.86},{"tick":7,"honest_rep":80.84,"malicious_rep":57.82,"separation":23.02},{"tick":8,"honest_rep":80.89,"malicious_rep":57.64,"separation":23.25},{"tick":9,"honest_rep":80.93,"malicious_rep":57.5,"separation":23.43},{"tick":10,"honest_rep":80.98,"malicious_rep":57.35,"separation":23.63},{"tick":11,"honest_rep":81.03,"malicious_rep":57.22,"separation":23.81},{"tick":12,"honest_rep":81.08,"malicious_rep":57.08,"separation":24.0},{"tick":13,"honest_rep":81.12,"malicious_rep":56.92,"separation":24.21},{"tick":14,"honest_rep":81.17,"malicious_rep":56.75,"separation":24.42},{"tick":15,"honest_rep":81.22,"malicious_rep":56.57,"separation":24.65},{"tick":16,"honest_rep":81.27,"malicious_rep":56.47,"separation":24.8},{"tick":17,"honest_rep":81.3,"malicious_rep":56.24,"separation":25.06},{"tick":18,"honest_rep":81.35,"malicious_rep":56.19,"separation":25.16},{"tick":19,"honest_rep":81.4,"malicious_rep":56.05,"separation":25.35},{"tick":20,"honest_rep":81.45,"malicious_rep":55.91,"separation":25.54},{"tick":21,"honest_rep":81.5,"malicious_rep":55.76,"separation":25.74},{"tick":22,"honest_rep":81.54,"malicious_rep":55.61,"separation":25.93},{"tick":23,"honest_rep":81.59,"malicious_rep":55.44,"separation":26.15},{"tick":24,"honest_rep":81.64,"malicious_rep":55.29,"separation":26.35},{"tick":25,"honest_rep":81.69,"malicious_rep":55.13,"separation":26.56},{"tick":26,"honest_rep":81.74,"malicious_rep":55.01,"separation":26.73},{"tick":27,"honest_rep":81.79,"malicious_rep":54.88,"separation":26.91},{"tick":28,"honest_rep":81.84,"malicious_rep":54.79,"separation":27.06},{"tick":29,"honest_rep":81.89,"malicious_rep":54.56,"separation":27.32}],"atk_series":[{"tick":0,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":1,"attack_attempts":7,"attack_successes":0,"success_rate":0.0},{"tick":2,"attack_attempts":8,"attack_successes":0,"success_rate":0.0},{"tick":3,"attack_attempts":11,"attack_successes":0,"success_rate":0.0},{"tick":4,"attack_attempts":13,"attack_successes":0,"success_rate":0.0},{"tick":5,"attack_attempts":14,"attack_successes":0,"success_rate":0.0},{"tick":6,"attack_attempts":15,"attack_successes":0,"success_rate":0.0},{"tick":7,"attack_attempts":16,"attack_successes":0,"success_rate":0.0},{"tick":8,"attack_attempts":17,"attack_successes":0,"success_rate":0.0},{"tick":9,"attack_attempts":17,"attack_successes":0,"success_rate":0.0},{"tick":10,"attack_attempts":17,"attack_successes":0,"success_rate":0.0},{"tick":11,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":12,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":13,"attack_attempts":19,"attack_successes":0,"success_rate":0.0},{"tick":14,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":15,"attack_attempts":21,"attack_successes":0,"success_rate":0.0},{"tick":16,"attack_attempts":22,"attack_successes":0,"success_rate":0.0},{"tick":17,"attack_attempts":22,"attack_successes":0,"success_rate":0.0},{"tick":18,"attack_attempts":25,"attack_successes":0,"success_rate":0.0},{"tick":19,"attack_attempts":27,"attack_successes":0,"success_rate":0.0},{"tick":20,"attack_attempts":29,"attack_successes":0,"success_rate":0.0},{"tick":21,"attack_attempts":32,"attack_successes":0,"success_rate":0.0},{"tick":22,"attack_attempts":36,"attack_successes":0,"success_rate":0.0},{"tick":23,"attack_attempts":37,"attack_successes":0,"success_rate":0.0},{"tick":24,"attack_attempts":40,"attack_successes":0,"success_rate":0.0},{"tick":25,"attack_attempts":41,"attack_successes":0,"success_rate":0.0},{"tick":26,"attack_attempts":43,"attack_successes":0,"success_rate":0.0},{"tick":27,"attack_attempts":45,"attack_successes":0,"success_rate":0.0},{"tick":28,"attack_attempts":46,"attack_successes":0,"success_rate":0.0},{"tick":29,"attack_attempts":47,"attack_successes":0,"success_rate":0.0}],"tick_series":[{"tick":0,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":78.02,"consensus_failures":1},{"tick":1,"tasks":10,"fraud_detected":4,"attacks":4,"avg_latency_ms":83.51,"consensus_failures":2},{"tick":2,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":82.42,"consensus_failures":3},{"tick":3,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":81.85,"consensus_failures":3},{"tick":4,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":85.39,"consensus_failures":4},{"tick":5,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":82.07,"consensus_failures":6},{"tick":6,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":74.88,"consensus_failures":7},{"tick":7,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":76.95,"consensus_failures":7},{"tick":8,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":85.49,"consensus_failures":7},{"tick":9,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":72.51,"consensus_failures":7},{"tick":10,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.63,"consensus_failures":7},{"tick":11,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":87.67,"consensus_failures":10},{"tick":12,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":80.1,"consensus_failures":10},{"tick":13,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":88.16,"consensus_failures":10},{"tick":14,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":83.15,"consensus_failures":12},{"tick":15,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":78.96,"consensus_failures":12},{"tick":16,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.54,"consensus_failures":12},{"tick":17,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":75.54,"consensus_failures":14},{"tick":18,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":75.23,"consensus_failures":15},{"tick":19,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":75.55,"consensus_failures":18},{"tick":20,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":85.3,"consensus_failures":19},{"tick":21,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":77.46,"consensus_failures":21},{"tick":22,"tasks":10,"fraud_detected":4,"attacks":4,"avg_latency_ms":78.51,"consensus_failures":21},{"tick":23,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":81.15,"consensus_failures":21},{"tick":24,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":73.49,"consensus_failures":21},{"tick":25,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":82.55,"consensus_failures":21},{"tick":26,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":80.32,"consensus_failures":22},{"tick":27,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":77.82,"consensus_failures":22},{"tick":28,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":88.54,"consensus_failures":22},{"tick":29,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":83.0,"consensus_failures":22}]},"adversarial":{"validation_accuracy":0.8596,"attack_success_rate":0.1404,"false_approval_rate":0.1404,"consensus_disagreement":0.08,"economic_loss":0.0851,"task_latency_mean":79.46,"task_latency_p95":112.54,"system_throughput":10.0,"validator_reputation_drift":12.8201,"collusion_success_rate":0.0,"sybil_capture_probability":0.0,"bribery_success_rate":0.0,"judge_failure_rate":0.058,"spam_overload_rate":0.0,"protocol_revenue":0.0199,"slashed_stake":0.0,"validator_reward_gini":0.051,"total_tasks":2000,"rep_series":[{"tick":0,"honest_rep":80.49,"malicious_rep":58.49,"separation":22.0},{"tick":1,"honest_rep":80.54,"malicious_rep":58.33,"separation":22.21},{"tick":2,"honest_rep":80.59,"malicious_rep":58.17,"separation":22.42},{"tick":3,"honest_rep":80.65,"malicious_rep":58.05,"separation":22.6},{"tick":4,"honest_rep":80.69,"malicious_rep":57.89,"separation":22.8},{"tick":5,"honest_rep":80.73,"malicious_rep":57.69,"separation":23.05},{"tick":6,"honest_rep":80.78,"malicious_rep":57.62,"separation":23.16},{"tick":7,"honest_rep":80.82,"malicious_rep":57.47,"separation":23.35},{"tick":8,"honest_rep":80.87,"malicious_rep":57.21,"separation":23.66},{"tick":9,"honest_rep":80.91,"malicious_rep":57.05,"separation":23.86},{"tick":10,"honest_rep":80.95,"malicious_rep":56.9,"separation":24.05},{"tick":11,"honest_rep":81.0,"malicious_rep":56.73,"separation":24.27},{"tick":12,"honest_rep":81.05,"malicious_rep":56.6,"separation":24.45},{"tick":13,"honest_rep":81.1,"malicious_rep":56.46,"separation":24.64},{"tick":14,"honest_rep":81.14,"malicious_rep":56.25,"separation":24.89},{"tick":15,"honest_rep":81.19,"malicious_rep":56.13,"separation":25.07},{"tick":16,"honest_rep":81.24,"malicious_rep":55.97,"separation":25.27},{"tick":17,"honest_rep":81.29,"malicious_rep":55.85,"separation":25.44},{"tick":18,"honest_rep":81.34,"malicious_rep":55.71,"separation":25.63},{"tick":19,"honest_rep":81.39,"malicious_rep":55.56,"separation":25.83},{"tick":20,"honest_rep":81.44,"malicious_rep":55.41,"separation":26.03},{"tick":21,"honest_rep":81.48,"malicious_rep":55.27,"separation":26.21},{"tick":22,"honest_rep":81.53,"malicious_rep":55.2,"separation":26.33},{"tick":23,"honest_rep":81.57,"malicious_rep":54.97,"separation":26.6},{"tick":24,"honest_rep":81.61,"malicious_rep":54.87,"separation":26.74},{"tick":25,"honest_rep":81.66,"malicious_rep":54.66,"separation":27.0},{"tick":26,"honest_rep":81.71,"malicious_rep":54.55,"separation":27.15},{"tick":27,"honest_rep":81.74,"malicious_rep":54.4,"separation":27.35},{"tick":28,"honest_rep":81.79,"malicious_rep":54.28,"separation":27.51},{"tick":29,"honest_rep":81.83,"malicious_rep":54.12,"separation":27.71}],"atk_series":[{"tick":0,"attack_attempts":3,"attack_successes":1,"success_rate":0.333},{"tick":1,"attack_attempts":3,"attack_successes":1,"success_rate":0.333},{"tick":2,"attack_attempts":4,"attack_successes":1,"success_rate":0.25},{"tick":3,"attack_attempts":4,"attack_successes":1,"success_rate":0.25},{"tick":4,"attack_attempts":5,"attack_successes":1,"success_rate":0.2},{"tick":5,"attack_attempts":7,"attack_successes":1,"success_rate":0.143},{"tick":6,"attack_attempts":9,"attack_successes":1,"success_rate":0.111},{"tick":7,"attack_attempts":10,"attack_successes":1,"success_rate":0.1},{"tick":8,"attack_attempts":11,"attack_successes":1,"success_rate":0.091},{"tick":9,"attack_attempts":13,"attack_successes":2,"success_rate":0.154},{"tick":10,"attack_attempts":13,"attack_successes":2,"success_rate":0.154},{"tick":11,"attack_attempts":16,"attack_successes":3,"success_rate":0.188},{"tick":12,"attack_attempts":18,"attack_successes":3,"success_rate":0.167},{"tick":13,"attack_attempts":18,"attack_successes":3,"success_rate":0.167},{"tick":14,"attack_attempts":19,"attack_successes":3,"success_rate":0.158},{"tick":15,"attack_attempts":19,"attack_successes":3,"success_rate":0.158},{"tick":16,"attack_attempts":20,"attack_successes":3,"success_rate":0.15},{"tick":17,"attack_attempts":20,"attack_successes":3,"success_rate":0.15},{"tick":18,"attack_attempts":20,"attack_successes":3,"success_rate":0.15},{"tick":19,"attack_attempts":21,"attack_successes":3,"success_rate":0.143},{"tick":20,"attack_attempts":23,"attack_successes":3,"success_rate":0.13},{"tick":21,"attack_attempts":24,"attack_successes":3,"success_rate":0.125},{"tick":22,"attack_attempts":25,"attack_successes":3,"success_rate":0.12},{"tick":23,"attack_attempts":27,"attack_successes":3,"success_rate":0.111},{"tick":24,"attack_attempts":28,"attack_successes":3,"success_rate":0.107},{"tick":25,"attack_attempts":28,"attack_successes":3,"success_rate":0.107},{"tick":26,"attack_attempts":28,"attack_successes":3,"success_rate":0.107},{"tick":27,"attack_attempts":30,"attack_successes":3,"success_rate":0.1},{"tick":28,"attack_attempts":32,"attack_successes":3,"success_rate":0.094},{"tick":29,"attack_attempts":32,"attack_successes":3,"success_rate":0.094}],"tick_series":[{"tick":0,"tasks":10,"fraud_detected":2,"attacks":3,"avg_latency_ms":72.4,"consensus_failures":2},{"tick":1,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":72.33,"consensus_failures":4},{"tick":2,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":88.21,"consensus_failures":5},{"tick":3,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":83.65,"consensus_failures":5},{"tick":4,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":66.45,"consensus_failures":7},{"tick":5,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.67,"consensus_failures":9},{"tick":6,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.95,"consensus_failures":11},{"tick":7,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":78.09,"consensus_failures":11},{"tick":8,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":85.96,"consensus_failures":12},{"tick":9,"tasks":10,"fraud_detected":1,"attacks":2,"avg_latency_ms":79.16,"consensus_failures":12},{"tick":10,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":82.2,"consensus_failures":12},{"tick":11,"tasks":10,"fraud_detected":2,"attacks":3,"avg_latency_ms":84.76,"consensus_failures":15},{"tick":12,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":79.05,"consensus_failures":16},{"tick":13,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.62,"consensus_failures":18},{"tick":14,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":71.67,"consensus_failures":18},{"tick":15,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":76.26,"consensus_failures":18},{"tick":16,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":87.41,"consensus_failures":19},{"tick":17,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.46,"consensus_failures":19},{"tick":18,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.84,"consensus_failures":19},{"tick":19,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":82.08,"consensus_failures":21},{"tick":20,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.4,"consensus_failures":23},{"tick":21,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":75.28,"consensus_failures":23},{"tick":22,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":80.04,"consensus_failures":24},{"tick":23,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":86.6,"consensus_failures":24},{"tick":24,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.06,"consensus_failures":24},{"tick":25,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":72.04,"consensus_failures":24},{"tick":26,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":74.27,"consensus_failures":24},{"tick":27,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.54,"consensus_failures":26},{"tick":28,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.91,"consensus_failures":27},{"tick":29,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.29,"consensus_failures":28}]},"spam":{"validation_accuracy":0.9995,"attack_success_rate":0.0005,"false_approval_rate":0.0005,"consensus_disagreement":0.0581,"economic_loss":0.0135,"task_latency_mean":79.97,"task_latency_p95":113.05,"system_throughput":385.0,"validator_reputation_drift":12.8201,"collusion_success_rate":0.0,"sybil_capture_probability":0.0,"bribery_success_rate":0.0,"judge_failure_rate":0.0,"spam_overload_rate":0.0,"protocol_revenue":0.7749,"slashed_stake":0.0,"validator_reward_gini":0.0076,"total_tasks":77000,"rep_series":[{"tick":0,"honest_rep":80.49,"malicious_rep":58.54,"separation":21.95},{"tick":1,"honest_rep":80.54,"malicious_rep":58.41,"separation":22.12},{"tick":2,"honest_rep":80.58,"malicious_rep":58.23,"separation":22.35},{"tick":3,"honest_rep":80.62,"malicious_rep":58.12,"separation":22.5},{"tick":4,"honest_rep":80.67,"malicious_rep":58.03,"separation":22.64},{"tick":5,"honest_rep":80.72,"malicious_rep":57.87,"separation":22.85},{"tick":6,"honest_rep":80.77,"malicious_rep":57.71,"separation":23.05},{"tick":7,"honest_rep":80.82,"malicious_rep":57.54,"separation":23.28},{"tick":8,"honest_rep":80.86,"malicious_rep":57.46,"separation":23.4},{"tick":9,"honest_rep":80.91,"malicious_rep":57.35,"separation":23.56},{"tick":10,"honest_rep":80.95,"malicious_rep":57.26,"separation":23.7},{"tick":11,"honest_rep":81.0,"malicious_rep":57.1,"separation":23.9},{"tick":12,"honest_rep":81.04,"malicious_rep":56.94,"separation":24.1},{"tick":13,"honest_rep":81.08,"malicious_rep":56.75,"separation":24.33},{"tick":14,"honest_rep":81.14,"malicious_rep":56.55,"separation":24.59},{"tick":15,"honest_rep":81.18,"malicious_rep":56.32,"separation":24.85},{"tick":16,"honest_rep":81.21,"malicious_rep":56.08,"separation":25.13},{"tick":17,"honest_rep":81.25,"malicious_rep":55.95,"separation":25.31},{"tick":18,"honest_rep":81.31,"malicious_rep":55.77,"separation":25.53},{"tick":19,"honest_rep":81.35,"malicious_rep":55.62,"separation":25.73},{"tick":20,"honest_rep":81.4,"malicious_rep":55.51,"separation":25.89},{"tick":21,"honest_rep":81.45,"malicious_rep":55.4,"separation":26.06},{"tick":22,"honest_rep":81.5,"malicious_rep":55.16,"separation":26.34},{"tick":23,"honest_rep":81.54,"malicious_rep":55.02,"separation":26.52},{"tick":24,"honest_rep":81.6,"malicious_rep":54.85,"separation":26.75},{"tick":25,"honest_rep":81.64,"malicious_rep":54.7,"separation":26.94},{"tick":26,"honest_rep":81.69,"malicious_rep":54.54,"separation":27.15},{"tick":27,"honest_rep":81.75,"malicious_rep":54.51,"separation":27.24},{"tick":28,"honest_rep":81.78,"malicious_rep":54.36,"separation":27.42},{"tick":29,"honest_rep":81.82,"malicious_rep":54.28,"separation":27.54}],"atk_series":[{"tick":0,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":1,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":2,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":3,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":4,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":5,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":6,"attack_attempts":6,"attack_successes":0,"success_rate":0.0},{"tick":7,"attack_attempts":9,"attack_successes":0,"success_rate":0.0},{"tick":8,"attack_attempts":11,"attack_successes":0,"success_rate":0.0},{"tick":9,"attack_attempts":13,"attack_successes":0,"success_rate":0.0},{"tick":10,"attack_attempts":16,"attack_successes":0,"success_rate":0.0},{"tick":11,"attack_attempts":17,"attack_successes":0,"success_rate":0.0},{"tick":12,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":13,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":14,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":15,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":16,"attack_attempts":21,"attack_successes":0,"success_rate":0.0},{"tick":17,"attack_attempts":25,"attack_successes":0,"success_rate":0.0},{"tick":18,"attack_attempts":27,"attack_successes":0,"success_rate":0.0},{"tick":19,"attack_attempts":29,"attack_successes":0,"success_rate":0.0},{"tick":20,"attack_attempts":31,"attack_successes":0,"success_rate":0.0},{"tick":21,"attack_attempts":31,"attack_successes":0,"success_rate":0.0},{"tick":22,"attack_attempts":31,"attack_successes":0,"success_rate":0.0},{"tick":23,"attack_attempts":33,"attack_successes":0,"success_rate":0.0},{"tick":24,"attack_attempts":33,"attack_successes":0,"success_rate":0.0},{"tick":25,"attack_attempts":34,"attack_successes":0,"success_rate":0.0},{"tick":26,"attack_attempts":34,"attack_successes":0,"success_rate":0.0},{"tick":27,"attack_attempts":36,"attack_successes":0,"success_rate":0.0},{"tick":28,"attack_attempts":38,"attack_successes":0,"success_rate":0.0},{"tick":29,"attack_attempts":40,"attack_successes":0,"success_rate":0.0}],"tick_series":[{"tick":0,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":88.25,"consensus_failures":1},{"tick":1,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":74.79,"consensus_failures":2},{"tick":2,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":83.92,"consensus_failures":2},{"tick":3,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.28,"consensus_failures":2},{"tick":4,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":80.02,"consensus_failures":3},{"tick":5,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":83.63,"consensus_failures":3},{"tick":6,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":80.68,"consensus_failures":4},{"tick":7,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":95.08,"consensus_failures":4},{"tick":8,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":93.91,"consensus_failures":4},{"tick":9,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":72.92,"consensus_failures":4},{"tick":10,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":76.27,"consensus_failures":4},{"tick":11,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.07,"consensus_failures":6},{"tick":12,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":79.28,"consensus_failures":6},{"tick":13,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":76.99,"consensus_failures":6},{"tick":14,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":74.37,"consensus_failures":7},{"tick":15,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":82.51,"consensus_failures":8},{"tick":16,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":85.59,"consensus_failures":10},{"tick":17,"tasks":10,"fraud_detected":4,"attacks":4,"avg_latency_ms":75.3,"consensus_failures":11},{"tick":18,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":80.04,"consensus_failures":11},{"tick":19,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":93.4,"consensus_failures":13},{"tick":20,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":77.37,"consensus_failures":13},{"tick":21,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":69.34,"consensus_failures":13},{"tick":22,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.84,"consensus_failures":13},{"tick":23,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":89.65,"consensus_failures":14},{"tick":24,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":79.69,"consensus_failures":14},{"tick":25,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.44,"consensus_failures":14},{"tick":26,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":79.34,"consensus_failures":14},{"tick":27,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.85,"consensus_failures":14},{"tick":28,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":90.4,"consensus_failures":14},{"tick":29,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":74.19,"consensus_failures":14}]},"mixed":{"validation_accuracy":0.9247,"attack_success_rate":0.0753,"false_approval_rate":0.0753,"consensus_disagreement":0.0885,"economic_loss":0.0368,"task_latency_mean":79.47,"task_latency_p95":112.54,"system_throughput":10.0,"validator_reputation_drift":13.4014,"collusion_success_rate":0.1596,"sybil_capture_probability":0.0,"bribery_success_rate":0.0,"judge_failure_rate":0.0339,"spam_overload_rate":0.0,"protocol_revenue":0.0199,"slashed_stake":198.75,"validator_reward_gini":0.051,"total_tasks":2000,"rep_series":[{"tick":0,"honest_rep":80.49,"malicious_rep":58.49,"separation":22.0},{"tick":1,"honest_rep":80.54,"malicious_rep":58.33,"separation":22.21},{"tick":2,"honest_rep":80.59,"malicious_rep":58.17,"separation":22.42},{"tick":3,"honest_rep":80.65,"malicious_rep":58.05,"separation":22.6},{"tick":4,"honest_rep":80.69,"malicious_rep":57.89,"separation":22.8},{"tick":5,"honest_rep":80.73,"malicious_rep":57.69,"separation":23.05},{"tick":6,"honest_rep":80.78,"malicious_rep":57.62,"separation":23.16},{"tick":7,"honest_rep":80.82,"malicious_rep":57.47,"separation":23.35},{"tick":8,"honest_rep":80.87,"malicious_rep":57.21,"separation":23.66},{"tick":9,"honest_rep":80.91,"malicious_rep":57.05,"separation":23.86},{"tick":10,"honest_rep":80.95,"malicious_rep":56.9,"separation":24.05},{"tick":11,"honest_rep":81.0,"malicious_rep":56.73,"separation":24.27},{"tick":12,"honest_rep":81.05,"malicious_rep":56.6,"separation":24.45},{"tick":13,"honest_rep":81.1,"malicious_rep":56.46,"separation":24.64},{"tick":14,"honest_rep":81.14,"malicious_rep":56.25,"separation":24.89},{"tick":15,"honest_rep":81.19,"malicious_rep":56.13,"separation":25.07},{"tick":16,"honest_rep":81.24,"malicious_rep":55.97,"separation":25.27},{"tick":17,"honest_rep":81.29,"malicious_rep":55.85,"separation":25.44},{"tick":18,"honest_rep":81.34,"malicious_rep":55.71,"separation":25.63},{"tick":19,"honest_rep":81.39,"malicious_rep":55.56,"separation":25.83},{"tick":20,"honest_rep":81.44,"malicious_rep":55.41,"separation":26.03},{"tick":21,"honest_rep":81.48,"malicious_rep":55.27,"separation":26.21},{"tick":22,"honest_rep":81.53,"malicious_rep":55.2,"separation":26.33},{"tick":23,"honest_rep":81.57,"malicious_rep":54.97,"separation":26.6},{"tick":24,"honest_rep":81.61,"malicious_rep":54.87,"separation":26.74},{"tick":25,"honest_rep":81.66,"malicious_rep":54.66,"separation":27.0},{"tick":26,"honest_rep":81.71,"malicious_rep":54.55,"separation":27.15},{"tick":27,"honest_rep":81.74,"malicious_rep":54.4,"separation":27.35},{"tick":28,"honest_rep":81.79,"malicious_rep":54.28,"separation":27.51},{"tick":29,"honest_rep":81.83,"malicious_rep":54.12,"separation":27.71}],"atk_series":[{"tick":0,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":1,"attack_attempts":3,"attack_successes":0,"success_rate":0.0},{"tick":2,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":3,"attack_attempts":4,"attack_successes":0,"success_rate":0.0},{"tick":4,"attack_attempts":5,"attack_successes":0,"success_rate":0.0},{"tick":5,"attack_attempts":7,"attack_successes":0,"success_rate":0.0},{"tick":6,"attack_attempts":9,"attack_successes":0,"success_rate":0.0},{"tick":7,"attack_attempts":10,"attack_successes":0,"success_rate":0.0},{"tick":8,"attack_attempts":11,"attack_successes":0,"success_rate":0.0},{"tick":9,"attack_attempts":13,"attack_successes":0,"success_rate":0.0},{"tick":10,"attack_attempts":13,"attack_successes":0,"success_rate":0.0},{"tick":11,"attack_attempts":16,"attack_successes":0,"success_rate":0.0},{"tick":12,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":13,"attack_attempts":18,"attack_successes":0,"success_rate":0.0},{"tick":14,"attack_attempts":19,"attack_successes":0,"success_rate":0.0},{"tick":15,"attack_attempts":19,"attack_successes":0,"success_rate":0.0},{"tick":16,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":17,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":18,"attack_attempts":20,"attack_successes":0,"success_rate":0.0},{"tick":19,"attack_attempts":21,"attack_successes":0,"success_rate":0.0},{"tick":20,"attack_attempts":23,"attack_successes":0,"success_rate":0.0},{"tick":21,"attack_attempts":24,"attack_successes":0,"success_rate":0.0},{"tick":22,"attack_attempts":25,"attack_successes":0,"success_rate":0.0},{"tick":23,"attack_attempts":27,"attack_successes":0,"success_rate":0.0},{"tick":24,"attack_attempts":28,"attack_successes":0,"success_rate":0.0},{"tick":25,"attack_attempts":28,"attack_successes":0,"success_rate":0.0},{"tick":26,"attack_attempts":28,"attack_successes":0,"success_rate":0.0},{"tick":27,"attack_attempts":30,"attack_successes":0,"success_rate":0.0},{"tick":28,"attack_attempts":32,"attack_successes":0,"success_rate":0.0},{"tick":29,"attack_attempts":32,"attack_successes":0,"success_rate":0.0}],"tick_series":[{"tick":0,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":72.4,"consensus_failures":3},{"tick":1,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":72.34,"consensus_failures":4},{"tick":2,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":88.22,"consensus_failures":5},{"tick":3,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":83.66,"consensus_failures":5},{"tick":4,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":66.46,"consensus_failures":7},{"tick":5,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.68,"consensus_failures":9},{"tick":6,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.96,"consensus_failures":9},{"tick":7,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":78.09,"consensus_failures":10},{"tick":8,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":85.97,"consensus_failures":10},{"tick":9,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":79.16,"consensus_failures":11},{"tick":10,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":82.21,"consensus_failures":11},{"tick":11,"tasks":10,"fraud_detected":3,"attacks":3,"avg_latency_ms":84.77,"consensus_failures":13},{"tick":12,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":79.05,"consensus_failures":14},{"tick":13,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.63,"consensus_failures":14},{"tick":14,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":71.68,"consensus_failures":15},{"tick":15,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":76.26,"consensus_failures":17},{"tick":16,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":87.42,"consensus_failures":17},{"tick":17,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.46,"consensus_failures":17},{"tick":18,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":81.84,"consensus_failures":18},{"tick":19,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":82.09,"consensus_failures":22},{"tick":20,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.4,"consensus_failures":22},{"tick":21,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":75.29,"consensus_failures":23},{"tick":22,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":80.04,"consensus_failures":23},{"tick":23,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":86.61,"consensus_failures":24},{"tick":24,"tasks":10,"fraud_detected":1,"attacks":1,"avg_latency_ms":72.08,"consensus_failures":24},{"tick":25,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":72.05,"consensus_failures":25},{"tick":26,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":74.28,"consensus_failures":28},{"tick":27,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":73.54,"consensus_failures":28},{"tick":28,"tasks":10,"fraud_detected":2,"attacks":2,"avg_latency_ms":78.92,"consensus_failures":29},{"tick":29,"tasks":10,"fraud_detected":0,"attacks":0,"avg_latency_ms":78.3,"consensus_failures":30}]}};
+</script>
+
+<!-- Ticker -->
+<div class="ticker">
+  <div class="ticker-inner" id="tickerInner">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">
+      <div class="logo-mark">AA</div>
+      <div>
+        <div class="logo-text">AAIP Research Lab</div>
+        <div class="logo-sub">Adversarial Protocol Simulator v1.0.0</div>
+      </div>
+    </div>
+  </div>
+  <div class="header-status">
+    <div class="status-pill ok"><div class="status-dot"></div>Engine Online</div>
+    <div class="status-pill ok"><div class="status-dot"></div>7 Scenarios Loaded</div>
+    <div style="font-size:11px; color:var(--text-dim); font-family:var(--font-mono)" id="clockEl">--:--:--</div>
+  </div>
+</header>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Scenarios</div>
+      <button class="scenario-btn active" data-scenario="baseline" onclick="selectScenario('baseline', this)">
+        <span class="scenario-icon">🛡️</span> Baseline
+        <span class="badge safe">safe</span>
+      </button>
+      <button class="scenario-btn" data-scenario="collusion" onclick="selectScenario('collusion', this)">
+        <span class="scenario-icon">🤝</span> Collusion
+        <span class="badge">atk</span>
+      </button>
+      <button class="scenario-btn" data-scenario="sybil" onclick="selectScenario('sybil', this)">
+        <span class="scenario-icon">👥</span> Sybil
+        <span class="badge">atk</span>
+      </button>
+      <button class="scenario-btn" data-scenario="bribery" onclick="selectScenario('bribery', this)">
+        <span class="scenario-icon">💰</span> Bribery
+        <span class="badge">atk</span>
+      </button>
+      <button class="scenario-btn" data-scenario="adversarial" onclick="selectScenario('adversarial', this)">
+        <span class="scenario-icon">🎭</span> Adversarial
+        <span class="badge">atk</span>
+      </button>
+      <button class="scenario-btn" data-scenario="spam" onclick="selectScenario('spam', this)">
+        <span class="scenario-icon">📡</span> Spam
+        <span class="badge">atk</span>
+      </button>
+      <button class="scenario-btn" data-scenario="mixed" onclick="selectScenario('mixed', this)">
+        <span class="scenario-icon">⚔️</span> Mixed Attack
+        <span class="badge">atk</span>
+      </button>
+    </div>
+    <div style="padding: 0 20px; margin-top: auto;">
+      <div style="font-size:10px; color:var(--text-dim); line-height:1.6; border-top: 1px solid var(--border); padding-top: 12px;">
+        AAIP Protocol<br>Trust Layer v1.0.0<br>Research Grade
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Page tabs -->
+    <div class="page-tabs">
+      <button class="page-tab active" onclick="showPage('overview', this)">Overview</button>
+      <button class="page-tab" onclick="showPage('attacks', this)">Attack Explorer</button>
+      <button class="page-tab" onclick="showPage('metrics', this)">Metrics</button>
+      <button class="page-tab" onclick="showPage('network', this)">Network Graph</button>
+      <button class="page-tab" onclick="showPage('control', this)">Control Panel</button>
+    </div>
+
+    <!-- PAGE: Overview -->
+    <div id="page-overview" class="page active">
+
+      <!-- Stats row -->
+      <div class="stats-grid" id="statsGrid">
+        <!-- filled by JS -->
+      </div>
+
+      <!-- Charts row 1 -->
+      <div class="charts-grid-2">
+        <div class="chart-card">
+          <div class="chart-title">
+            Reputation Divergence Over Time
+            <span class="chart-badge">LIVE</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="repChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">
+            Attack Success Rate Evolution
+            <span class="chart-badge">TICKS</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="atkChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts row 2 -->
+      <div class="charts-grid-2">
+        <div class="chart-card">
+          <div class="chart-title">Validation Accuracy by Scenario</div>
+          <div class="chart-container">
+            <canvas id="accBar"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Economic Loss by Attack Vector</div>
+          <div class="chart-container">
+            <canvas id="econBar"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: Attacks -->
+    <div id="page-attacks" class="page">
+      <div class="attack-grid" id="attackGrid">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Attack Success Rate Comparison — All Scenarios</div>
+        <div class="chart-container-lg">
+          <canvas id="attackRadar"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: Metrics -->
+    <div id="page-metrics" class="page">
+      <div class="charts-grid-3">
+        <div class="chart-card">
+          <div class="chart-title">System Latency Distribution</div>
+          <div class="chart-container">
+            <canvas id="latencyBar"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Consensus Disagreement Rate</div>
+          <div class="chart-container">
+            <canvas id="consensusBar"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Slashed Stake by Scenario</div>
+          <div class="chart-container">
+            <canvas id="slashBar"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison table -->
+      <div class="chart-card" style="margin-bottom:16px;">
+        <div class="chart-title">Full Metrics Comparison</div>
+        <table class="comparison-table" id="metricsTable">
+          <!-- filled by JS -->
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: Network -->
+    <div id="page-network" class="page">
+      <div class="network-canvas-wrap">
+        <div class="chart-title">
+          Protocol Network — <span id="networkScenarioLabel">Baseline</span>
+          <span style="font-size:10px;color:var(--text-dim)">⬤ Honest Validator &nbsp; ⬤ Malicious &nbsp; ⬤ Agent Node</span>
+        </div>
+        <canvas id="networkCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- PAGE: Control -->
+    <div id="page-control" class="page">
+      <div class="control-panel">
+        <div style="font-size:13px;color:var(--text-bright);margin-bottom:16px;font-family:var(--font-sans);font-weight:600;">
+          Simulation Parameters
+        </div>
+        <div class="control-row">
+          <div class="control-group">
+            <label>Validators</label>
+            <input type="range" min="10" max="100" value="50" id="ctrl-validators"
+              oninput="document.getElementById('val-validators').textContent=this.value">
+            <div class="control-value" id="val-validators">50</div>
+          </div>
+          <div class="control-group">
+            <label>Malicious Ratio</label>
+            <input type="range" min="0" max="50" value="20" id="ctrl-malicious"
+              oninput="document.getElementById('val-malicious').textContent=this.value+'%'">
+            <div class="control-value" id="val-malicious">20%</div>
+          </div>
+          <div class="control-group">
+            <label>Agent Count</label>
+            <input type="range" min="5" max="50" value="20" id="ctrl-agents"
+              oninput="document.getElementById('val-agents').textContent=this.value">
+            <div class="control-value" id="val-agents">20</div>
+          </div>
+          <div class="control-group">
+            <label>Task Volume</label>
+            <input type="range" min="500" max="20000" step="500" value="5000" id="ctrl-tasks"
+              oninput="document.getElementById('val-tasks').textContent=Number(this.value).toLocaleString()">
+            <div class="control-value" id="val-tasks">5,000</div>
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;font-family:var(--font-mono)">
+          CLI equivalent:
+          <span style="color:var(--green);font-size:12px;" id="cliEquivalent">aaip-sim run --scenario baseline --validators 50 --malicious-ratio 0.20 --tasks 5000</span>
+        </div>
+
+        <button class="run-btn" onclick="runSimulation()">
+          ▶ Run Simulation
+        </button>
+        <span id="runStatus" style="margin-left:16px;font-size:11px;color:var(--text-dim);"></span>
+      </div>
+
+      <!-- Live progress simulation -->
+      <div class="chart-card">
+        <div class="chart-title">Simulated Live Metrics Feed</div>
+        <div class="charts-grid-2">
+          <div>
+            <div class="chart-container-sm"><canvas id="liveChart1"></canvas></div>
+          </div>
+          <div>
+            <div class="chart-container-sm"><canvas id="liveChart2"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let currentScenario = 'baseline';
+let charts = {};
+
+const SCENARIO_META = {
+  baseline:    { icon:'🛡️', name:'Baseline', desc:'Healthy network — no active attacks. Establishes performance baseline.', color:'#00b4ff', threatLevel:'None' },
+  collusion:   { icon:'🤝', name:'Collusion', desc:'Malicious validators coordinate to approve invalid outputs via a private ring.', color:'#ff4060', threatLevel:'High' },
+  sybil:       { icon:'👥', name:'Sybil Attack', desc:'Attacker generates hundreds of fake validators to capture consensus panels.', color:'#ff4060', threatLevel:'Critical' },
+  bribery:     { icon:'💰', name:'Bribery', desc:'Executors offer validators off-protocol incentives. Modeled as rational agent decision.', color:'#ffb800', threatLevel:'Medium' },
+  adversarial: { icon:'🎭', name:'Adversarial Tasks', desc:'Crafted outputs exploit LLM judge weaknesses via prompt injection, semantic ambiguity.', color:'#9b6cff', threatLevel:'High' },
+  spam:        { icon:'📡', name:'Spam Flood', desc:'System flooded with low-value tasks to exhaust validator capacity.', color:'#ffb800', threatLevel:'Medium' },
+  mixed:       { icon:'⚔️', name:'Mixed Attack', desc:'Multi-vector: collusion + bribery + adversarial techniques in coordinated phases.', color:'#ff4060', threatLevel:'Critical' },
+};
+
+const METRIC_LABELS = {
+  validation_accuracy:        'Validation Accuracy',
+  attack_success_rate:        'Attack Success Rate',
+  false_approval_rate:        'False Approval Rate',
+  consensus_disagreement:     'Consensus Disagreement',
+  economic_loss:              'Economic Loss (USDC)',
+  task_latency_mean:          'Avg Latency (ms)',
+  validator_reputation_drift: 'Rep. Drift (σ)',
+  protocol_revenue:           'Protocol Revenue',
+};
+
+const SCENARIOS = Object.keys(SIM_DATA);
+
+// ── Ticker ─────────────────────────────────────────────────────────────────
+function buildTicker() {
+  const d = SIM_DATA[currentScenario];
+  const items = [
+    ['VAL_ACC',      pct(d.validation_accuracy),     d.validation_accuracy >= 0.9 ? 'up' : 'down'],
+    ['ATK_SUCCESS',  pct(d.attack_success_rate),      d.attack_success_rate < 0.1  ? 'up' : 'down'],
+    ['LATENCY',      d.task_latency_mean.toFixed(1)+'ms', 'up'],
+    ['THROUGHPUT',   d.system_throughput.toFixed(0)+'/t',  'up'],
+    ['ECO_LOSS',     d.economic_loss.toFixed(4)+' USDC', d.economic_loss < 0.01 ? 'up' : 'down'],
+    ['SLASHED',      d.slashed_stake.toFixed(1)+' USDC',   'up'],
+    ['REP_DRIFT',    d.validator_reputation_drift.toFixed(2), 'up'],
+    ['REVENUE',      d.protocol_revenue.toFixed(4)+' USDC',   'up'],
+  ];
+  const makeItem = ([l,v,dir]) => `<span class="ticker-item"><span class="lbl">${l}</span><span class="val ${dir}">${v}</span></span>`;
+  const html = [...items, ...items].map(makeItem).join('');
+  const el = document.getElementById('tickerInner');
+  if (el) el.innerHTML = html;
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function pct(v) { return (v * 100).toFixed(1) + '%'; }
+
+function threatColor(rate) {
+  if (rate < 0.05) return 'var(--green)';
+  if (rate < 0.15) return 'var(--amber)';
+  return 'var(--red)';
+}
+function threatClass(rate) {
+  if (rate < 0.05) return 'ok';
+  if (rate < 0.15) return 'warn';
+  return 'danger';
+}
+function accColor(v)  { return v >= 0.95 ? 'green' : v >= 0.85 ? 'amber' : 'red'; }
+
+const CHART_DEFAULTS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: {
+    backgroundColor: '#0f141c',
+    borderColor: '#1e2a3a',
+    borderWidth: 1,
+    titleColor: '#c8d8e8',
+    bodyColor: '#6a8098',
+    titleFont: { family: 'IBM Plex Mono', size: 11 },
+    bodyFont:  { family: 'IBM Plex Mono', size: 11 },
+  }},
+  scales: {
+    x: { grid: { color: '#1e2a3a' }, ticks: { color: '#6a8098', font: { family:'IBM Plex Mono', size:10 }}},
+    y: { grid: { color: '#1e2a3a' }, ticks: { color: '#6a8098', font: { family:'IBM Plex Mono', size:10 }}},
+  },
+};
+
+function makeChart(id, type, data, options) {
+  const existing = charts[id];
+  if (existing) { existing.destroy(); delete charts[id]; }
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, { type, data, options: { ...CHART_DEFAULTS, ...options } });
+  return charts[id];
+}
+
+// ── Stats Grid ─────────────────────────────────────────────────────────────
+function renderStats() {
+  const d = SIM_DATA[currentScenario];
+  const sc = SCENARIO_META[currentScenario];
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Validation Accuracy</div>
+      <div class="stat-value ${accColor(d.validation_accuracy)}">${pct(d.validation_accuracy)}</div>
+      <div class="stat-sub">fraud detection rate</div>
+      <div class="progress-bar"><div class="progress-fill ${accColor(d.validation_accuracy)}" style="width:${d.validation_accuracy*100}%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Attack Success Rate</div>
+      <div class="stat-value ${d.attack_success_rate > 0.1 ? 'red' : 'green'}">${pct(d.attack_success_rate)}</div>
+      <div class="stat-sub">fraud approved / total fraud</div>
+      <div class="progress-bar"><div class="progress-fill ${d.attack_success_rate > 0.1 ? 'red' : 'green'}" style="width:${d.attack_success_rate*100}%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Latency</div>
+      <div class="stat-value blue">${d.task_latency_mean.toFixed(1)}</div>
+      <div class="stat-sub">ms per task · P95: ${d.task_latency_p95.toFixed(1)}ms</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Economic Loss</div>
+      <div class="stat-value ${d.economic_loss > 0.05 ? 'red' : d.economic_loss > 0.01 ? 'amber' : 'green'}">${d.economic_loss.toFixed(4)}</div>
+      <div class="stat-sub">USDC to fraud approvals</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Consensus Disagreement</div>
+      <div class="stat-value ${d.consensus_disagreement > 0.1 ? 'amber' : 'blue'}">${pct(d.consensus_disagreement)}</div>
+      <div class="stat-sub">split panel fraction</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Protocol Revenue</div>
+      <div class="stat-value purple">${d.protocol_revenue.toFixed(4)}</div>
+      <div class="stat-sub">USDC from escrow fees</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Slashed Stake</div>
+      <div class="stat-value ${d.slashed_stake > 100 ? 'amber' : 'green'}">${d.slashed_stake.toFixed(1)}</div>
+      <div class="stat-sub">USDC penalised validators</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Scenario</div>
+      <div class="stat-value" style="font-size:22px;">${sc.icon} <span style="font-size:16px;color:var(--text-bright);font-family:var(--font-sans)">${sc.name}</span></div>
+      <div class="stat-sub"><span class="chip ${sc.threatLevel === 'None' || sc.threatLevel === 'Medium' ? (sc.threatLevel === 'None' ? 'blue' : 'amber') : 'red'}">${sc.threatLevel} Threat</span></div>
+    </div>
+  `;
+}
+
+// ── Reputation Chart ───────────────────────────────────────────────────────
+function renderRepChart() {
+  const d = SIM_DATA[currentScenario];
+  const ticks = d.rep_series.map(r => r.tick);
+  const honest  = d.rep_series.map(r => r.honest_rep);
+  const mal     = d.rep_series.map(r => r.malicious_rep);
+  const sep     = d.rep_series.map(r => r.separation);
+
+  makeChart('repChart', 'line', {
+    labels: ticks,
+    datasets: [
+      {
+        label: 'Honest',
+        data: honest,
+        borderColor: 'rgba(0,255,136,0.8)',
+        backgroundColor: 'rgba(0,255,136,0.06)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 2,
+      },
+      {
+        label: 'Malicious',
+        data: mal,
+        borderColor: 'rgba(255,64,96,0.8)',
+        backgroundColor: 'rgba(255,64,96,0.06)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 2,
+      },
+      {
+        label: 'Separation',
+        data: sep,
+        borderColor: 'rgba(0,180,255,0.6)',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 1,
+        borderDash: [4,4],
+      }
+    ]
+  }, {
+    plugins: {
+      legend: {
+        display: true,
+        labels: { color:'#6a8098', font:{ family:'IBM Plex Mono', size:10 }, boxWidth: 12, padding: 16 }
+      }
+    }
+  });
+}
+
+// ── Attack Chart ───────────────────────────────────────────────────────────
+function renderAtkChart() {
+  const d = SIM_DATA[currentScenario];
+  const ticks = d.atk_series.map(r => r.tick);
+  const successes = d.atk_series.map(r => r.attack_successes);
+  const rates     = d.atk_series.map(r => r.success_rate * 100);
+
+  makeChart('atkChart', 'line', {
+    labels: ticks,
+    datasets: [
+      {
+        label: 'Attack Successes',
+        data: successes,
+        borderColor: 'rgba(255,64,96,0.8)',
+        backgroundColor: 'rgba(255,64,96,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 2,
+        yAxisID: 'y',
+      },
+      {
+        label: 'Success Rate %',
+        data: rates,
+        borderColor: 'rgba(255,184,0,0.7)',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 1.5,
+        borderDash: [3,3],
+        yAxisID: 'y1',
+      }
+    ]
+  }, {
+    plugins: {
+      legend: {
+        display: true,
+        labels: { color:'#6a8098', font:{ family:'IBM Plex Mono', size:10 }, boxWidth:12, padding:16 }
+      }
+    },
+    scales: {
+      ...CHART_DEFAULTS.scales,
+      y:  { ...CHART_DEFAULTS.scales.y, position:'left' },
+      y1: { grid:{display:false}, ticks:{ color:'#6a8098', font:{family:'IBM Plex Mono',size:10} }, position:'right' },
+    }
+  });
+}
+
+// ── Accuracy Bar ───────────────────────────────────────────────────────────
+function renderAccBar() {
+  const labels  = SCENARIOS.map(s => SCENARIO_META[s].icon + ' ' + s);
+  const values  = SCENARIOS.map(s => (SIM_DATA[s].validation_accuracy * 100).toFixed(1));
+  const colors  = SCENARIOS.map(s => {
+    const v = SIM_DATA[s].validation_accuracy;
+    return v >= 0.95 ? 'rgba(0,255,136,0.7)' : v >= 0.85 ? 'rgba(255,184,0,0.7)' : 'rgba(255,64,96,0.7)';
+  });
+
+  makeChart('accBar', 'bar', {
+    labels,
+    datasets: [{ data: values, backgroundColor: colors, borderRadius: 4, borderSkipped: false }]
+  }, {
+    scales: {
+      ...CHART_DEFAULTS.scales,
+      y: { ...CHART_DEFAULTS.scales.y, min: 0, max: 100, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => v+'%' } }
+    }
+  });
+}
+
+// ── Economic Bar ───────────────────────────────────────────────────────────
+function renderEconBar() {
+  const labels = SCENARIOS.map(s => SCENARIO_META[s].icon + ' ' + s);
+  const values = SCENARIOS.map(s => SIM_DATA[s].economic_loss);
+  const colors = SCENARIOS.map(s => {
+    const v = SIM_DATA[s].economic_loss;
+    return v < 0.01 ? 'rgba(0,180,255,0.6)' : v < 0.05 ? 'rgba(255,184,0,0.7)' : 'rgba(255,64,96,0.8)';
+  });
+
+  makeChart('econBar', 'bar', {
+    labels,
+    datasets: [{ data: values, backgroundColor: colors, borderRadius: 4, borderSkipped: false }]
+  }, {});
+}
+
+// ── Attack cards ───────────────────────────────────────────────────────────
+function renderAttackCards() {
+  const attacks = [
+    { key:'collusion',   primary:'Collusion Success', kpi:'collusion_success_rate' },
+    { key:'sybil',       primary:'Sybil Capture',     kpi:'sybil_capture_probability' },
+    { key:'bribery',     primary:'Bribery Success',   kpi:'bribery_success_rate' },
+    { key:'adversarial', primary:'Judge Failure',     kpi:'judge_failure_rate' },
+    { key:'spam',        primary:'Overload Rate',      kpi:'spam_overload_rate' },
+    { key:'mixed',       primary:'Multi-vector Atk',  kpi:'attack_success_rate' },
+  ];
+
+  document.getElementById('attackGrid').innerHTML = attacks.map(a => {
+    const d  = SIM_DATA[a.key];
+    const sm = SCENARIO_META[a.key];
+    const kpiVal = d[a.kpi];
+    const cls    = kpiVal < 0.05 ? 'ok' : kpiVal < 0.20 ? 'warn' : 'danger';
+    const isActive = a.key === currentScenario ? 'active' : '';
+
+    return `<div class="attack-card ${isActive}" style="--card-color:${sm.color}" onclick="selectScenario('${a.key}')">
+      <div class="attack-icon">${sm.icon}</div>
+      <div class="attack-name">${sm.name}</div>
+      <div class="attack-desc">${sm.desc}</div>
+      <div class="attack-metrics">
+        <div class="attack-metric">
+          <span class="attack-metric-label">${a.primary}</span>
+          <span class="attack-metric-value ${cls}">${pct(kpiVal)}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill ${cls === 'danger' ? 'red' : cls === 'warn' ? 'amber' : 'green'}" style="width:${Math.min(100,kpiVal*100)}%"></div></div>
+        <div class="attack-metric">
+          <span class="attack-metric-label">Val. Accuracy</span>
+          <span class="attack-metric-value ${d.validation_accuracy >= 0.9 ? 'ok' : 'danger'}">${pct(d.validation_accuracy)}</span>
+        </div>
+        <div class="attack-metric">
+          <span class="attack-metric-label">Economic Loss</span>
+          <span class="attack-metric-value ${d.economic_loss > 0.05 ? 'danger' : 'ok'}">${d.economic_loss.toFixed(4)} USDC</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Attack Radar ───────────────────────────────────────────────────────────
+function renderAttackRadar() {
+  const radarMetrics = ['Attack Success','False Approval','Consensus Dis.','Latency Norm.','Eco Loss Norm.'];
+  const datasets = SCENARIOS.filter(s => s !== 'baseline').map((s, i) => {
+    const d = SIM_DATA[s];
+    const sm = SCENARIO_META[s];
+    const hue = [0,30,270,180,60][i % 5];
+    return {
+      label: sm.name,
+      data: [
+        d.attack_success_rate * 100,
+        d.false_approval_rate * 100,
+        d.consensus_disagreement * 100,
+        Math.min(100, (d.task_latency_mean - 70) / 30 * 100),
+        Math.min(100, d.economic_loss / 0.25 * 100),
+      ],
+      borderColor: sm.color,
+      backgroundColor: sm.color.replace(')', ',0.08)').replace('rgb','rgba'),
+      pointBackgroundColor: sm.color,
+      borderWidth: 2,
+    };
+  });
+
+  const existing = charts['attackRadar'];
+  if (existing) { existing.destroy(); delete charts['attackRadar']; }
+  const ctx = document.getElementById('attackRadar');
+  if (!ctx) return;
+  charts['attackRadar'] = new Chart(ctx, {
+    type: 'radar',
+    data: { labels: radarMetrics, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'right', labels:{ color:'#6a8098', font:{family:'IBM Plex Mono',size:10}, boxWidth:12, padding:12 } },
+        tooltip: { ...CHART_DEFAULTS.plugins.tooltip },
+      },
+      scales: {
+        r: {
+          backgroundColor: 'transparent',
+          grid: { color: '#1e2a3a' },
+          angleLines: { color: '#1e2a3a' },
+          pointLabels: { color: '#6a8098', font:{ family:'IBM Plex Mono', size:10 } },
+          ticks: { display: false },
+          suggestedMax: 60,
+        }
+      }
+    }
+  });
+}
+
+// ── Metrics Charts ────────────────────────────────────────────────────────
+function renderMetricsCharts() {
+  const labels = SCENARIOS.map(s => SCENARIO_META[s].icon);
+
+  makeChart('latencyBar', 'bar', {
+    labels,
+    datasets: [
+      { label:'Avg (ms)',  data: SCENARIOS.map(s=>SIM_DATA[s].task_latency_mean),  backgroundColor:'rgba(0,180,255,0.6)', borderRadius:3 },
+      { label:'P95 (ms)',  data: SCENARIOS.map(s=>SIM_DATA[s].task_latency_p95),   backgroundColor:'rgba(155,108,255,0.5)', borderRadius:3 },
+    ]
+  }, {
+    plugins: { legend:{ display:true, labels:{color:'#6a8098',font:{family:'IBM Plex Mono',size:9},boxWidth:10} } }
+  });
+
+  makeChart('consensusBar', 'bar', {
+    labels,
+    datasets: [{
+      data: SCENARIOS.map(s => (SIM_DATA[s].consensus_disagreement * 100).toFixed(1)),
+      backgroundColor: SCENARIOS.map(s => {
+        const v = SIM_DATA[s].consensus_disagreement;
+        return v > 0.12 ? 'rgba(255,64,96,0.7)' : v > 0.07 ? 'rgba(255,184,0,0.7)' : 'rgba(0,255,136,0.6)';
+      }),
+      borderRadius: 3,
+    }]
+  }, { scales: { ...CHART_DEFAULTS.scales, y:{ ...CHART_DEFAULTS.scales.y, ticks:{...CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%'} } } });
+
+  makeChart('slashBar', 'bar', {
+    labels,
+    datasets: [{
+      data: SCENARIOS.map(s => SIM_DATA[s].slashed_stake.toFixed(2)),
+      backgroundColor: SCENARIOS.map(s => {
+        const v = SIM_DATA[s].slashed_stake;
+        return v > 500 ? 'rgba(255,64,96,0.8)' : v > 50 ? 'rgba(255,184,0,0.7)' : 'rgba(0,180,255,0.5)';
+      }),
+      borderRadius: 3,
+    }]
+  }, {});
+}
+
+// ── Metrics Table ─────────────────────────────────────────────────────────
+function renderMetricsTable() {
+  const headers = ['Scenario','Val.Acc','Atk.Success','False Approval','Consensus Dis.','Latency','Eco.Loss','Slashed','Revenue'];
+  const rows = SCENARIOS.map(s => {
+    const d = SIM_DATA[s];
+    const sm = SCENARIO_META[s];
+    const highlight = s === currentScenario ? 'style="background:rgba(0,255,136,0.03)"' : '';
+    return `<tr ${highlight}>
+      <td>${sm.icon} ${sm.name}</td>
+      <td><span class="chip ${d.validation_accuracy >= 0.95 ? 'green' : d.validation_accuracy >= 0.85 ? 'amber' : 'red'}">${pct(d.validation_accuracy)}</span></td>
+      <td><span class="chip ${d.attack_success_rate < 0.05 ? 'blue' : d.attack_success_rate < 0.15 ? 'amber' : 'red'}">${pct(d.attack_success_rate)}</span></td>
+      <td>${pct(d.false_approval_rate)}</td>
+      <td>${pct(d.consensus_disagreement)}</td>
+      <td>${d.task_latency_mean.toFixed(1)}ms</td>
+      <td>${d.economic_loss.toFixed(4)}</td>
+      <td>${d.slashed_stake.toFixed(1)}</td>
+      <td>${d.protocol_revenue.toFixed(4)}</td>
+    </tr>`;
+  });
+  document.getElementById('metricsTable').innerHTML =
+    `<thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+     <tbody>${rows.join('')}</tbody>`;
+}
+
+// ── Network Graph ─────────────────────────────────────────────────────────
+function renderNetwork() {
+  const canvas = document.getElementById('networkCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.clientWidth;
+  const H = 400;
+  canvas.width  = W * window.devicePixelRatio;
+  canvas.height = H * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const d   = SIM_DATA[currentScenario];
+  const sm  = SCENARIO_META[currentScenario];
+
+  // Generate stable node positions using seeded pseudo-random
+  const nodes = [];
+  let seed = 42;
+  const rand = () => { seed = (seed * 1664525 + 1013904223) % 2**32; return seed / 2**32; };
+
+  // 12 validators, 5 agents
+  const nValidators = 12;
+  const nAgents     = 5;
+  const maliciousV  = Math.round(nValidators * (currentScenario === 'sybil' ? 0.5 : 0.15));
+
+  for (let i = 0; i < nValidators; i++) {
+    const angle = (i / nValidators) * Math.PI * 2 - Math.PI / 2;
+    const r     = W * 0.3;
+    const isMal = i < maliciousV;
+    nodes.push({
+      x: W/2 + Math.cos(angle) * r,
+      y: H/2 + Math.sin(angle) * r,
+      type: 'validator',
+      malicious: isMal,
+      sybil: currentScenario === 'sybil' && isMal,
+      r: 7,
+      label: isMal ? (currentScenario === 'sybil' ? 'SYB' : 'MAL') : 'V'+i,
+    });
+  }
+
+  for (let i = 0; i < nAgents; i++) {
+    const angle = (i / nAgents) * Math.PI * 2;
+    const r     = W * 0.12;
+    nodes.push({
+      x: W/2 + Math.cos(angle) * r,
+      y: H/2 + Math.sin(angle) * r,
+      type: 'agent',
+      malicious: i < 1,
+      r: 6,
+      label: 'A'+i,
+    });
+  }
+
+  // Protocol core
+  nodes.push({ x: W/2, y: H/2, type:'core', r:18, label:'AAIP' });
+
+  // Clear
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  ctx.strokeStyle = 'rgba(30,42,58,0.5)';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 40) {
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  }
+  for (let y = 0; y < H; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+
+  const core = nodes.find(n => n.type === 'core');
+
+  // Draw edges
+  nodes.forEach(n => {
+    if (n.type === 'core') return;
+
+    // Agent → core
+    if (n.type === 'agent') {
+      ctx.beginPath();
+      ctx.moveTo(n.x, n.y);
+      ctx.lineTo(core.x, core.y);
+      ctx.strokeStyle = n.malicious ? 'rgba(255,64,96,0.2)' : 'rgba(0,255,136,0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Validator → core
+    if (n.type === 'validator') {
+      ctx.beginPath();
+      ctx.moveTo(n.x, n.y);
+      ctx.lineTo(core.x, core.y);
+      if (n.sybil) {
+        ctx.strokeStyle = 'rgba(255,64,96,0.4)';
+        ctx.lineWidth = 1.5;
+      } else if (n.malicious) {
+        ctx.strokeStyle = 'rgba(255,64,96,0.25)';
+        ctx.lineWidth = 1;
+      } else {
+        ctx.strokeStyle = 'rgba(0,180,255,0.12)';
+        ctx.lineWidth = 0.8;
+      }
+      ctx.stroke();
+    }
+  });
+
+  // Collusion ring
+  if (currentScenario === 'collusion' || currentScenario === 'mixed') {
+    const malNodes = nodes.filter(n => n.type === 'validator' && n.malicious);
+    ctx.setLineDash([4,4]);
+    ctx.strokeStyle = 'rgba(255,64,96,0.4)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < malNodes.length; i++) {
+      for (let j = i+1; j < malNodes.length; j++) {
+        ctx.beginPath();
+        ctx.moveTo(malNodes[i].x, malNodes[i].y);
+        ctx.lineTo(malNodes[j].x, malNodes[j].y);
+        ctx.stroke();
+      }
+    }
+    ctx.setLineDash([]);
+  }
+
+  // Draw nodes
+  nodes.forEach(n => {
+    // Glow
+    const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 3);
+    if (n.type === 'core') {
+      grd.addColorStop(0, 'rgba(0,180,255,0.4)');
+      grd.addColorStop(1, 'transparent');
+    } else if (n.malicious || n.sybil) {
+      grd.addColorStop(0, 'rgba(255,64,96,0.4)');
+      grd.addColorStop(1, 'transparent');
+    } else if (n.type === 'validator') {
+      grd.addColorStop(0, 'rgba(0,180,255,0.3)');
+      grd.addColorStop(1, 'transparent');
+    } else {
+      grd.addColorStop(0, 'rgba(0,255,136,0.3)');
+      grd.addColorStop(1, 'transparent');
+    }
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r * 3, 0, Math.PI * 2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+
+    // Circle
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = n.type === 'core' ? '#0f141c' :
+                    n.sybil ? '#300a0a' :
+                    n.malicious ? '#1a0a0a' :
+                    n.type === 'validator' ? '#0a0f1a' : '#0a1a0a';
+    ctx.fill();
+    ctx.strokeStyle = n.type === 'core' ? '#00b4ff' :
+                      n.sybil ? '#ff4060' :
+                      n.malicious ? 'rgba(255,64,96,0.8)' :
+                      n.type === 'validator' ? 'rgba(0,180,255,0.8)' : 'rgba(0,255,136,0.8)';
+    ctx.lineWidth = n.type === 'core' ? 2 : 1.5;
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = n.type === 'core' ? '#00b4ff' :
+                    n.malicious ? '#ff4060' :
+                    n.type === 'validator' ? '#6a8098' : '#00ff88';
+    ctx.font = n.type === 'core' ? '9px IBM Plex Mono' : '8px IBM Plex Mono';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(n.label, n.x, n.y);
+  });
+
+  document.getElementById('networkScenarioLabel').textContent =
+    SCENARIO_META[currentScenario].name;
+}
+
+// ── Live charts (control panel) ────────────────────────────────────────────
+let liveData = { rep: [], latency: [] };
+let liveTimer = null;
+
+function startLiveCharts() {
+  if (liveTimer) clearInterval(liveTimer);
+  liveData = { rep: [], latency: [] };
+  const d = SIM_DATA[currentScenario];
+
+  // Seed with real data
+  d.rep_series.slice(0,15).forEach(r => {
+    liveData.rep.push({ honest: r.honest_rep, mal: r.malicious_rep });
+  });
+  d.tick_series.slice(0,15).forEach(t => {
+    liveData.latency.push(t.avg_latency_ms);
+  });
+
+  renderLiveCharts();
+  liveTimer = setInterval(() => {
+    const last = liveData.rep[liveData.rep.length - 1] || { honest: 80, mal: 55 };
+    liveData.rep.push({
+      honest: Math.min(100, last.honest + (Math.random() - 0.4) * 0.3),
+      mal:    Math.max(0,   last.mal   - (Math.random() * 0.4)),
+    });
+    liveData.latency.push(60 + Math.random() * 40);
+    if (liveData.rep.length > 50)     liveData.rep.shift();
+    if (liveData.latency.length > 50) liveData.latency.shift();
+    renderLiveCharts();
+  }, 800);
+}
+
+function renderLiveCharts() {
+  const ticks = liveData.rep.map((_,i)=>i);
+
+  makeChart('liveChart1', 'line', {
+    labels: ticks,
+    datasets: [
+      { label:'Honest Rep',   data: liveData.rep.map(r=>r.honest), borderColor:'rgba(0,255,136,0.8)', backgroundColor:'rgba(0,255,136,0.06)', fill:true, tension:0.4, pointRadius:0, borderWidth:2 },
+      { label:'Malicious Rep',data: liveData.rep.map(r=>r.mal),    borderColor:'rgba(255,64,96,0.8)',  backgroundColor:'rgba(255,64,96,0.06)',  fill:true, tension:0.4, pointRadius:0, borderWidth:2 },
+    ]
+  }, { animation:{ duration:0 }, plugins:{ legend:{display:true,labels:{color:'#6a8098',font:{family:'IBM Plex Mono',size:9},boxWidth:10}} } });
+
+  makeChart('liveChart2', 'line', {
+    labels: liveData.latency.map((_,i)=>i),
+    datasets: [
+      { label:'Latency ms', data:liveData.latency, borderColor:'rgba(0,180,255,0.8)', backgroundColor:'rgba(0,180,255,0.06)', fill:true, tension:0.4, pointRadius:0, borderWidth:2 }
+    ]
+  }, { animation:{ duration:0 } });
+}
+
+// ── CLI equivalent updater ─────────────────────────────────────────────────
+function updateCLI() {
+  const validators = document.getElementById('ctrl-validators')?.value || 50;
+  const malicious  = (document.getElementById('ctrl-malicious')?.value || 20) / 100;
+  const tasks      = document.getElementById('ctrl-tasks')?.value || 5000;
+  const cli = `aaip-sim run --scenario ${currentScenario} --validators ${validators} --malicious-ratio ${malicious.toFixed(2)} --tasks ${tasks}`;
+  const el = document.getElementById('cliEquivalent');
+  if (el) el.textContent = cli;
+}
+
+function runSimulation() {
+  const status = document.getElementById('runStatus');
+  if (status) {
+    status.textContent = '⏳ Initialising...';
+    let t = 0;
+    const msgs = ['⏳ Loading scenario...', '⚙️ Building network...', '▶ Simulating ticks...', '📊 Aggregating metrics...', '✅ Complete!'];
+    const interval = setInterval(() => {
+      if (t < msgs.length) status.textContent = msgs[t++];
+      else { clearInterval(interval); setTimeout(() => status.textContent = '', 2000); }
+    }, 400);
+  }
+  startLiveCharts();
+  updateCLI();
+}
+
+// ── Clock ──────────────────────────────────────────────────────────────────
+function updateClock() {
+  const el = document.getElementById('clockEl');
+  if (el) el.textContent = new Date().toISOString().slice(11,19) + ' UTC';
+}
+setInterval(updateClock, 1000);
+
+// ── Page & Scenario switching ──────────────────────────────────────────────
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
+  const p = document.getElementById('page-' + name);
+  if (p) p.classList.add('active');
+  if (btn) btn.classList.add('active');
+
+  if (name === 'network')  setTimeout(renderNetwork, 50);
+  if (name === 'control')  { startLiveCharts(); updateCLI(); }
+}
+
+function selectScenario(name, btn) {
+  currentScenario = name;
+
+  // Update sidebar buttons
+  document.querySelectorAll('.scenario-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.scenario === name);
+  });
+
+  renderAll();
+  buildTicker();
+}
+
+function renderAll() {
+  renderStats();
+  renderRepChart();
+  renderAtkChart();
+  renderAccBar();
+  renderEconBar();
+  renderAttackCards();
+  renderAttackRadar();
+  renderMetricsCharts();
+  renderMetricsTable();
+}
+
+// ── Slider events ─────────────────────────────────────────────────────────
+document.querySelectorAll('.control-group input[type=range]').forEach(el => {
+  el.addEventListener('input', updateCLI);
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildTicker();
+  renderAll();
+  updateClock();
+});
+</script>
+</body>
+</html>
