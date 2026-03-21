@@ -1,4 +1,6 @@
-# ⬡ AAIP + AEP
+<div align="center">
+
+# ⬡ AAIP + AEP ⬡
 
 ### Autonomous Agent Infrastructure Protocol + Agent Economy Protocol
 
@@ -12,9 +14,11 @@
 [![Base Sepolia](https://img.shields.io/badge/Base_Sepolia-Live-0052FF?style=flat-square)](https://sepolia.basescan.org/address/0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94)
 
 > AI agents are executing real tasks, handling money, and making decisions autonomously.
-> There is no standard way to prove an agent did the work it claims — or pay it trustlessly.
+> There is no standard way to prove an agent did the work it claims or pay it trustlessly.
 >
 > **AAIP + AEP solves both.**
+
+</div>
 
 ---
 
