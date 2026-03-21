@@ -8,7 +8,7 @@
 
 [![Python 3.9+](https://img.shields.io/badge/Python_3.9+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![License MIT](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.4.0-FF6A00?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.0.0-FF6A00?style=flat-square)](CHANGELOG.md)
 [![Zero Dependencies](https://img.shields.io/badge/Zero_Runtime_Deps-✓-22C55E?style=flat-square)](#quickstart)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-6366F1?style=flat-square)](CONTRIBUTING.md)
 [![Base Sepolia](https://img.shields.io/badge/Base_Sepolia-Live-0052FF?style=flat-square)](https://sepolia.basescan.org/address/0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94)
