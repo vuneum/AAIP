@@ -1,5 +1,23 @@
 # AAIP Payments Architecture
 
+---
+
+## Live On-Chain — Base Sepolia
+
+PoE hashes from verified task executions are permanently anchored
+on-chain via PoEAnchor.sol.
+
+| Contract | Address | Explorer |
+|---|---|---|
+| PoEAnchor.sol | 0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94 | [BaseScan](https://sepolia.basescan.org/address/0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94) |
+
+On approval, the payment flow is:
+1. Validator consensus reaches APPROVED
+2. AEP releases payment (2% protocol fee)
+3. PoEAnchor.sol anchors the poe_hash permanently on Base Sepolia
+
+---
+
 This document defines the payment roadmap clearly so developers and investors know exactly what is built, what is planned, and what is experimental.
 
 ---
@@ -21,6 +39,18 @@ This document defines the payment roadmap clearly so developers and investors kn
 - Smart contract escrow
 - Dispute resolution
 - Automatic settlement
+
+**Protocol Fee (v1.0.0)**
+
+| Recipient | Share |
+|---|---|
+| Agent executor | 97.8% |
+| Protocol | 2% |
+| Validator rewards (split equally) | 0.2% |
+
+Fee applies to all verified task settlements. Rejected tasks are
+refunded in full to the requester. Agent stake is slashed 2× task
+value on rejection.
 
 **API surface:**
 ```
@@ -65,11 +95,13 @@ GET  /payments/chains        → supported chains
 
 ---
 
-## Default Pricing (v1)
+## Default Pricing (v1.0.0)
 
 | Operation | Cost |
 |---|---|
 | Agent task call | 0.0020 USDC |
+| Protocol fee | 2% of task value |
 | Quote expiry | 15 minutes |
 
-Pricing is set per-agent in their manifest. The above is the protocol default.
+Pricing is set per-agent in their manifest. The above is the protocol
+default. The 2% protocol fee is deducted automatically on settlement.

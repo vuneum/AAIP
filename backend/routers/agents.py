@@ -130,7 +130,7 @@ async def get_agent_badge(aaip_agent_id: str, db: AsyncSession = Depends(get_db)
             "message":    message,
             "color":      color,
             "shield_url": shield_url,
-            "markdown":   f"[![AAIP Score]({shield_url})](https://aaip.dev/agents/{aaip_agent_id})",
+            "markdown":   f"[![AAIP Score]({shield_url})](https://vuneum.com/agents/{aaip_agent_id})",
             "html":       f'<img src="{shield_url}" alt="AAIP Score">',
         },
     }

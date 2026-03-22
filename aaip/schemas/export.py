@@ -1,5 +1,5 @@
 """
-aaip/schemas/export.py — True JSON Schema Export  v1.4.0
+aaip/schemas/export.py — True JSON Schema Export  v1.0.0
 
 Generates proper JSON Schema (Draft 2020-12) from AEP dataclass models.
 
@@ -29,7 +29,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, get_type_hints, get_args, get_origin, Union
 
-VERSION     = "1.4.0"
+VERSION     = "1.0.0"
 SCHEMA_BASE = "https://aep.protocol/schemas/v{version}/"
 
 # ── Python type → JSON Schema type ────────────────────────────────────────────

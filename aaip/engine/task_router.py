@@ -1,5 +1,5 @@
 """
-aaip/engine/task_router.py — Capability-Aware Task Router  v1.4.0
+aaip/engine/task_router.py — Capability-Aware Task Router  v1.0.0
 
 Routes AgentTask objects to the best available agent using:
   - Capability matching   (task.required_capabilities ⊆ agent.capabilities)

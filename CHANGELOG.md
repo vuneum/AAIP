@@ -5,7 +5,7 @@ Format: [Semantic Versioning](https://semver.org)
 
 ---
 
-## [1.0.3] — 2025-03-12
+## [1.0.0] — 2025-03-12
 
 ### Fixed
 - **ed25519 pure-Python fallback** — Previous implementation had incorrect Edwards curve `d` constant

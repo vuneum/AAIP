@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class AAIPClient {
 
-    private static final String DEFAULT_BASE_URL = "https://api.aaip.dev";
+    private static final String DEFAULT_BASE_URL = "https://api.vuneum.com";
     private static final String SDK_VERSION = "1.0.0";
 
     private final String apiKey;

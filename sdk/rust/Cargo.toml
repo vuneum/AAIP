@@ -5,7 +5,7 @@ edition = "2021"
 description = "Autonomous Agent Infrastructure Protocol — Rust SDK"
 license = "MIT"
 repository = "https://github.com/aaip-protocol/aaip-rust"
-homepage = "https://aaip.dev"
+homepage = "https://vuneum.com"
 keywords = ["ai", "agents", "protocol", "identity", "aaip"]
 
 [dependencies]

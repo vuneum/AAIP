@@ -1,7 +1,7 @@
 /**
  * AAIP TypeScript/JavaScript SDK
  * Autonomous Agent Infrastructure Protocol
- * https://aaip.dev
+ * https://vuneum.com
  *
  * Works in Node.js, Next.js, Deno, and modern browsers.
  */
@@ -290,7 +290,7 @@ export class AAIPClient {
 
   constructor(options: AAIPClientOptions = {}) {
     this.apiKey = options.apiKey ?? (typeof process !== "undefined" ? process.env.AAIP_API_KEY ?? "" : "");
-    this.baseUrl = (options.baseUrl ?? (typeof process !== "undefined" ? process.env.AAIP_BASE_URL ?? "https://api.aaip.dev" : "https://api.aaip.dev")).replace(/\/$/, "");
+    this.baseUrl = (options.baseUrl ?? (typeof process !== "undefined" ? process.env.AAIP_BASE_URL ?? "https://api.vuneum.com" : "https://api.vuneum.com")).replace(/\/$/, "");
     this.timeout = options.timeout ?? 30000;
   }
 

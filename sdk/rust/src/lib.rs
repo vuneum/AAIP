@@ -1,5 +1,5 @@
 //! AAIP Rust SDK — Autonomous Agent Infrastructure Protocol
-//! https://aaip.dev
+//! https://vuneum.com
 //!
 //! # Quick Start
 //!
@@ -241,7 +241,7 @@ impl AAIPClient {
         };
         let url = base_url
             .map(|u| u.to_string())
-            .unwrap_or_else(|| env::var("AAIP_BASE_URL").unwrap_or_else(|_| "https://api.aaip.dev".to_string()));
+            .unwrap_or_else(|| env::var("AAIP_BASE_URL").unwrap_or_else(|_| "https://api.vuneum.com".to_string()));
 
         Self {
             api_key: key,

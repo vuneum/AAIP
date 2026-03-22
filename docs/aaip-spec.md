@@ -37,7 +37,7 @@ Stored at `.aaip-identity.json`:
 
 ```json
 {
-  "aaip_version":    "1.0",
+  "aaip_version":    "1.0.0",
   "created_at":      1710000000,
   "agent_id":        "8f21d3a4b7c91e2f",
   "public_key_hex":  "abcdef...",
@@ -53,7 +53,7 @@ Served at `/.well-known/aaip-agent.json`:
 
 ```json
 {
-  "aaip_version": "1.0",
+  "aaip_version": "1.0.0",
   "agent_id":     "8f21d3a4b7c91e2f",
   "agent_name":   "MyAgent",
   "owner":        "acme-corp",
@@ -66,7 +66,7 @@ Served at `/.well-known/aaip-agent.json`:
 
 ---
 
-## 3. Proof of Execution (PoE) v2.0
+## 3. Proof of Execution (PoE) v1.0
 
 ### 3.1 Canonical Object Fields
 
@@ -74,7 +74,7 @@ The canonical PoE contains exactly these eight fields. No additional fields are 
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `aaip_version` | string | Always `"2.0"` |
+| `aaip_version` | string | Always `"1.0"` |
 | `agent_id` | string | 16-char hex agent identifier |
 | `model_used` | string \| null | Model name, or null if no model was called |
 | `output_hash` | string | `sha256(raw_output_string)` as hex |
@@ -89,7 +89,7 @@ The canonical PoE contains exactly these eight fields. No additional fields are 
 import json, hashlib
 
 canonical = {
-    "aaip_version": "2.0",
+    "aaip_version": "1.0",
     "agent_id":     agent_id,
     "model_used":   model_used,       # None becomes JSON null
     "output_hash":  sha256(output),
@@ -124,7 +124,7 @@ The submitted object contains the canonical fields plus three derived fields:
 
 ```json
 {
-  "aaip_version": "2.0",
+  "aaip_version": "1.0",
   "agent_id":     "8f21d3a4b7c91e2f",
   "model_used":   "gpt-4o",
   "output_hash":  "d1a823c4...",
@@ -248,8 +248,8 @@ PENDING  →  LOCKED  →  RELEASED  (approved)
 
 | Recipient | Share |
 |-----------|-------|
-| Agent executor | 99.3% |
-| Protocol | 0.5% |
+| Agent executor | 97.8% |
+| Protocol | 2% |
 | Validator rewards (split equally) | 0.2% |
 
 ### 6.3 Slash on Rejection
@@ -311,12 +311,43 @@ aaip leaderboard                 # Global agent rankings
 
 ## 9. Versioning
 
-| Version | PoE | Validators | Escrow |
-|---------|-----|------------|--------|
-| v1 (current) | Signed traces | Local simulation | Ledger |
-| v2 | + ZK optional | On-chain VRF | Smart contract |
-| v3 | + TEE support | Decentralised + watcher | Cross-chain |
+| Version | PoE | Validators | Escrow | On-Chain |
+|---------|-----|------------|--------|----------|
+| v1.0.0 (live) | Signed traces + ed25519 | Local consensus | AEP + 2% fee | PoEAnchor.sol on Base Sepolia |
+| v2 | Signed receipts + API receipts | On-chain VRF + staking | Smart contract escrow | Mainnet deployment |
+| v3 | TEE attestation + ZK proofs | Decentralised + watcher | Cross-chain | Multi-chain |
 
 ---
 
-*AAIP Specification v1.0 — MIT License — aaip.dev*
+## 10. AAOP — Autonomous Agent Optimisation Protocol
+
+AAOP is the cost optimisation module of the Vuneum stack. It operates
+as a layer above the core AAIP protocol, intercepting agent inference
+calls before dispatch.
+
+### 10.1 Core Functions
+
+- **Model routing** — classifies task complexity and routes to the
+  cheapest model capable of handling it
+- **Token leak detection** — identifies redundant context, unnecessary
+  reasoning loops, and prompt inflation in real time
+- **Cost calculator** — live price feed across all major AI providers
+  with per-agent, per-task cost attribution
+- **Budget guardrails** — hard and soft spending limits per agent,
+  per task type, and per time window
+
+### 10.2 Integration with PoE
+
+AAOP consumes the PoE execution trace to perform execution-aware cost
+optimisation. Because AAOP knows what the agent actually did (via the
+verified trace), it can distinguish genuine task complexity from
+inefficient execution patterns — a capability no cost-only optimisation
+tool has.
+
+### 10.3 Status
+
+AAOP Phase 1 is in development. Internal benchmarks show 30–50% AI
+inference cost reduction in Phase 1. Planned for v2.0.0 release.
+
+---
+*AAIP Specification v1.0 — MIT License — vuneum.com*

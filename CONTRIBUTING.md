@@ -243,7 +243,7 @@ Open a [GitHub Issue](https://github.com/vuneum/aaip/issues/new) with:
 
 **Do not open public GitHub issues for security vulnerabilities.**
 
-Email: **security@vuneum.com**
+Email: **walid@vuneum.com**
 
 Include:
 - Vulnerability description
@@ -261,4 +261,4 @@ Be respectful. Contributions are reviewed on technical merit. Harassment, person
 
 ---
 
-*AAIP — MIT License — aaip.dev*
+*AAIP — MIT License — vuneum.com*

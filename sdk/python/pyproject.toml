@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Autonomous Agent Infrastructure Protocol — Identity, Discovery, Reputation & Payments for AI Agents"
 readme = "README.md"
 license = {text = "MIT"}
-authors = [{name = "AAIP", email = "dev@aaip.dev"}]
+authors = [{name = "AAIP", email = "walid@vuneum.com"}]
 keywords = ["ai", "agents", "protocol", "identity", "discovery", "reputation", "langchain", "crewai"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -45,8 +45,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://aaip.dev"
-Documentation = "https://docs.aaip.dev"
+Homepage = "https://vuneum.com"
+Documentation = "https://docs.vuneum.com"
 Repository = "https://github.com/aaip-protocol/aaip"
 Issues = "https://github.com/aaip-protocol/aaip/issues"
 

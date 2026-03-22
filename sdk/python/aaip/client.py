@@ -1,7 +1,7 @@
 """
 AAIP Python SDK — Main Client
 Autonomous Agent Infrastructure Protocol
-https://aaip.dev
+https://vuneum.com
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ from .poe import ProofOfExecution
 class _BaseClient:
     """Shared configuration and helpers."""
 
-    DEFAULT_BASE_URL = "https://api.aaip.dev"
+    DEFAULT_BASE_URL = "https://api.vuneum.com"
 
     def __init__(
         self,

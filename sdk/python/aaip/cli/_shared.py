@@ -44,7 +44,7 @@ def banner() -> None:
 def get_client(api_key: Optional[str] = None, base_url: Optional[str] = None):
     from aaip.client import AAIPClient
     key = api_key or os.environ.get("AAIP_API_KEY", "")
-    url = base_url or os.environ.get("AAIP_BASE_URL", "https://api.aaip.dev")
+    url = base_url or os.environ.get("AAIP_BASE_URL", "https://api.vuneum.com")
     return AAIPClient(api_key=key, base_url=url)
 
 def load_manifest(path: str = ".aaip.json") -> Optional[dict]:

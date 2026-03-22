@@ -1,5 +1,5 @@
 """
-aaip/engine/reconciliation.py — Credits ↔ Chain Settlement Reconciliation  v1.4.0
+aaip/engine/reconciliation.py — Credits ↔ Chain Settlement Reconciliation  v1.0.0
 
 Closes the loop between off-chain credit accumulation and on-chain settlement.
 

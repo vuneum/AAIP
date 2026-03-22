@@ -56,13 +56,18 @@ AAIP provides the infrastructure layer that makes agents composable, trustworthy
 - [x] Detailed developer report with `issues[]`, `recommendations[]`, `production_ready`
 - [x] Session expiry + cleanup
 
-**Payments — v1**
+**Payments — v1.0.0**
 - [x] Internal ledger (quote / verify / charge / credit / refund)
 - [x] Wallet registration (external wallets — Base, Ethereum, Tron, Solana)
 - [x] Quote API with 15-minute expiry
 - [x] On-chain payment verification (hash format validation; RPC integration in v2)
 - [x] Payment-gated task execution
 - [x] Shadow mode payment simulation
+- [x] AEP — Agent Economy Protocol integration
+- [x] EVM adapter for on-chain settlement
+- [x] 2% protocol fee on verified task settlements
+- [x] PoEAnchor.sol deployed on Base Sepolia
+- [x] PoE hashes anchored on-chain with verifiable BaseScan transactions
 
 **SDKs**
 - [x] Python (pip install aaip) — async + sync, typed models, CLI
@@ -124,6 +129,18 @@ AAIP provides the infrastructure layer that makes agents composable, trustworthy
 - [ ] LlamaIndex, Haystack, Autogen, DSPy adapters
 - [ ] Java SDK on Maven Central
 
+**AAOP — Autonomous Agent Optimisation Protocol**
+- [ ] Model routing — classify task complexity, dispatch to cheapest
+      capable model
+- [ ] Token leak detector — real-time alerts on redundant context
+      and inefficient reasoning loops
+- [ ] Live cost calculator — price feed across all major AI providers
+- [ ] Budget guardrails — hard and soft spending limits per agent
+- [ ] Per-agent cost attribution — breakdown by task type and model
+- [ ] Execution-aware optimisation — uses PoE trace data to distinguish
+      genuine complexity from inefficient patterns
+- [ ] Phase 1 target: 30–50% AI inference cost reduction
+
 ---
 
 ## AAIP v3 — Decentralised Validation 📋 Planned
@@ -150,6 +167,15 @@ AAIP provides the infrastructure layer that makes agents composable, trustworthy
 - [ ] Privacy-preserving proofs — prove work without revealing inputs
 - [ ] Optional ZK verification (zkVM integration research)
 
+**Sentry Network**
+- [ ] Cross-organisation threat intelligence layer
+- [ ] Anonymised agent behaviour telemetry aggregation
+- [ ] Real-time attack pattern propagation across all deployments
+- [ ] On-chain incentive layer — organisations earn credits for
+      contributing telemetry, spend credits for threat intelligence
+- [ ] Bootstrapped from AAIP simulation lab adversarial scenario
+      dataset (sybil, collusion, bribery, adversarial, spam, mixed)
+
 ---
 
 ## AAIP v4 — Agent Economy 🔭 Future
@@ -174,4 +200,4 @@ AAIP is infrastructure. We will not build:
 
 ---
 
-*Last updated: v1.0.0*
+*Last updated: v1.0.0 — March 2026 — vuneum.com*

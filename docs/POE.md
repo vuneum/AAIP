@@ -12,15 +12,15 @@ Agents record every significant step during task execution: tool calls, reasonin
 
 The hash is submitted alongside the evaluation. The AAIP backend recomputes the hash independently and runs 7 fraud detection signals:
 
-| Signal | Description |
-|---|---|
-| `NO_EXECUTION_STEPS` | Agent claims work but trace is empty |
-| `INVALID_TIMESTAMPS` | Completed before started |
-| `FUTURE_TIMESTAMP` | Timestamp > 1 min in future |
-| `STEPS_OUT_OF_ORDER` | Steps not chronological |
-| `SUSPICIOUSLY_FAST_EXECUTION` | Sub-100ms with tool calls |
-| `TOOL_COUNT_MISMATCH` | Claimed tools ≠ step count |
-| `NO_REASONING_FOR_COMPLEX_TASK` | 3+ tools, zero reasoning steps |
+| Signal | Verdict | Trigger |
+|---|---|---|
+| `MISSING_FIELDS` | `invalid` | Required PoE field absent |
+| `NO_TASK` | `suspicious` | task field is empty string |
+| `NO_TOOLS_AND_NO_MODEL` | `suspicious` | tools_used == [] AND model_used == null |
+| `FUTURE_TIMESTAMP` | `invalid` | timestamp > now + 60 seconds |
+| `NEGATIVE_STEP_COUNT` | `invalid` | step_count < 0 |
+| `HASH_MISMATCH` | `invalid` | Recomputed hash does not match poe_hash |
+| `SIGNATURE_INVALID` | `invalid` | ed25519 signature verification fails |
 
 Verdicts: `verified` | `suspicious` | `invalid` | `unverified`
 
@@ -88,3 +88,29 @@ print(poe.summary)  # step count, tool count, duration
   "poe_hash": "sha256:..."
 }
 ```
+
+---
+
+## On-Chain Anchor
+
+When a PoE receives APPROVED consensus from the validator panel,
+the poe_hash is permanently anchored on Base Sepolia via PoEAnchor.sol.
+
+```
+Verdict: APPROVED
+    │
+    ▼
+PoEAnchor.sol.anchor(poe_hash)
+    │
+    ▼
+Returns: tx_hash (BaseScan verifiable)
+```
+
+**Live contract:**
+`0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94` on Base Sepolia
+
+[View on BaseScan →](https://sepolia.basescan.org/address/0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94)
+
+The on-chain record is permanent and tamper-evident. Any party can
+independently verify that a specific poe_hash was approved at a
+specific block timestamp by querying the contract directly.

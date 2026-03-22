@@ -13,4 +13,4 @@ It covers:
 
 ---
 
-*AAIP v1.0 — MIT License — aaip.dev*
+*AAIP v1.0 — MIT License — vuneum.com*

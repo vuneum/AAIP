@@ -1,28 +1,26 @@
 <div align="center">
 
-# ⬡ AAIP + AEP ⬡
+# ⬡ AAIP
 
-### Autonomous Agent Infrastructure Protocol + Agent Economy Protocol
+### Autonomous Agent Infrastructure Protocol
 
 **The trust and payment layer for the autonomous agent economy.**
 
 [![Python 3.9+](https://img.shields.io/badge/Python_3.9+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![License MIT](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.0-FF6A00?style=flat-square)](CHANGELOG.md)
-[![Zero Dependencies](https://img.shields.io/badge/Zero_Runtime_Deps-✓-22C55E?style=flat-square)](#quickstart)
-[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-6366F1?style=flat-square)](CONTRIBUTING.md)
-[![Base Sepolia](https://img.shields.io/badge/Base_Sepolia-Live-0052FF?style=flat-square)](https://sepolia.basescan.org/address/0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94)
+[![Zero Runtime Deps](https://img.shields.io/badge/Zero_Runtime_Deps-✓-22C55E?style=flat-square)](#quickstart)
+[![Base Sepolia Live](https://img.shields.io/badge/Base_Sepolia_Live-0052FF?style=flat-square&logo=ethereum&logoColor=white)](https://sepolia.basescan.org/address/0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94)
+[![PRs Welcome](https://img.shields.io/badge/PRs_Welcome-6366F1?style=flat-square)](CONTRIBUTING.md)
 
-> AI agents are executing real tasks, handling money, and making decisions autonomously.
-> There is no standard way to prove an agent did the work it claims or pay it trustlessly.
->
-> **AAIP + AEP solves both.**
+> AI agents are executing real tasks, handling money,
+> and making decisions autonomously.
+> No standard way to prove the work. No trustless payment.
+> AAIP solves both.
 
 </div>
 
----
-
-## 🔗 Live On-Chain (Base Sepolia)
+## 🔗 Live On-Chain — Base Sepolia
 
 | Contract | Address | Explorer |
 |---|---|---|
@@ -35,14 +33,10 @@
 | Anchor #2 | [0xe0f88b53...](https://sepolia.basescan.org/tx/0xe0f88b53595e8da6ed6e84259ba335f32b55c704481b6d8f64a41ecf656af9b4) | Second PoE anchored |
 | Anchor #3 | [0x3df287fd...](https://sepolia.basescan.org/tx/0x3df287fd1afb3ce0efcd52fc6938acdec7446a048ef2e837252d69adff600fb0) | Third PoE anchored |
 
----
+## What AAIP Does
 
-## What AAIP + AEP Does
+Every agent gets a cryptographic identity. Every execution produces a signed tamper-evident Proof of Execution. A validator panel verifies the trace before payment releases — then anchors the result permanently on Base Sepolia.
 
-Every agent gets a cryptographic identity. Every execution produces a signed,
-tamper-evident Proof of Execution. A validator panel independently verifies
-the trace before any payment is released. Payment settles on-chain with a
-2% protocol fee. The PoE is anchored permanently on Base Sepolia.
 ```
 Agent executes task
       │
@@ -59,15 +53,20 @@ APPROVED → AEP settles payment on Base Sepolia (2% protocol fee)
 PoEAnchor.sol records poe_hash → tx_hash permanently on-chain
 ```
 
-No central authority. No trusted intermediary. Cryptographic proof all the way down.
-
----
-
 ## Quickstart
+
 ```bash
 pip install aaip web3 python-dotenv
-cp .env.example .env        # fill in your keys
+```
+
+**Try it now (no ETH needed)**  
+```bash
 python demo_two_agent.py --mock --fast   # no ETH needed
+```
+
+**Run on-chain**  
+```bash
+cp .env.example .env        # fill in your keys
 python demo_two_agent.py --fast          # real on-chain
 ```
 
@@ -88,9 +87,9 @@ print(result.poe_hash)            # sha256 of signed execution trace
 
 See **[QUICKSTART.md](QUICKSTART.md)** for the full 10-minute guide.
 
----
-
 ## Protocol Stack
+
+Seven composable layers. Use one, use all.
 
 | Layer | Name | What it does |
 |---|---|---|
@@ -102,9 +101,10 @@ See **[QUICKSTART.md](QUICKSTART.md)** for the full 10-minute guide.
 | 2 | **Proof of Execution** | Signed canonical trace. 7 fraud signals checked. |
 | 1 | **Identity** | ed25519 keypair. `agent_id = sha256(pubkey)[:16]`. |
 
----
+Each layer is independently installable and usable without the others.
 
 ## Two-Agent Demo
+
 ```
 Agent A (Requester)        Agent B (Worker)       Base Sepolia
      |                           |                    |
@@ -115,12 +115,11 @@ Agent A (Requester)        Agent B (Worker)       Base Sepolia
      |                           PoEAnchor.anchor() ->|
      |<-- ExecutionReceipt with BaseScan URLs ---------|
 ```
+
 ```bash
 python demo_two_agent.py --mock --fast
 # ✅ APPROVED (3/3) → SUCCESS → ON-CHAIN anchored
 ```
-
----
 
 ## Framework Support
 
@@ -150,11 +149,41 @@ print(t.result.verified)    # True
 print(t.result.signals)     # [] — no fraud detected
 ```
 
----
+Also supported: OpenAI Agents SDK · AutoGPT
+
+## Simulation Lab
+
+Research-grade adversarial testing — 7 attack scenarios, stdlib only. Protocol holds in every scenario.
+
+| Scenario | Attack vector | Protocol holds? |
+|---|---|---|
+| `sybil` | Fake validator injection | ✅ <5% success (stake-weighted) |
+| `collusion` | Coordinated validator ring | ✅ Capped at 24% |
+| `adversarial` | LLM judge manipulation | ✅ Ensemble correction limits to 14% |
+| `bribery` | Rational validator bribery | ✅ 0% (high-stake validators resist) |
+| `spam` | Resource exhaustion | ✅ <1% impact |
+| `mixed` | Multi-vector coordinated | ✅ Contained at 8% |
+
+```bash
+python simulation_lab/aaip_sim.py run --scenario collusion --validators 60 --tasks 5000
+python simulation_lab/aaip_sim.py benchmark    # run all scenarios
+```
+
+## Research
+
+Two working papers describe the protocol mechanisms formally.
+
+| Paper | Title | Status |
+|---|---|---|
+| PoE | Proof-of-Execution: Tamper-Evident Execution Evidence for Autonomous AI Agents in Economic Systems | Pre-Arxiv draft |
+| CAV | Continuous Agent Verification: Reputation Integrity Through Randomised Auditing in Multi-Agent Economies | Pre-Arxiv draft |
+
+Papers available in [/research](research/).
+Feedback and peer review welcome — walid@vuneum.com
 
 ## Fraud Detection
 
-Seven signals checked by every validator on every submission:
+Seven signals checked independently by every validator on every submission.
 
 | Signal | What triggered it |
 |---|---|
@@ -165,13 +194,15 @@ Seven signals checked by every validator on every submission:
 | `NEGATIVE_STEP_COUNT` | Impossible execution state |
 | `HASH_MISMATCH` | Recomputed hash ≠ submitted hash |
 | `SIGNATURE_INVALID` | ed25519 signature verification failed |
+
 ```bash
 aaip demo --fraud    # watch all signals fire on a tampered trace
 ```
 
----
-
 ## Shadow Mode
+
+Run verification without blocking your workflow. Audit first, enforce when ready.
+
 ```python
 from aaip import aaip_agent
 
@@ -186,9 +217,25 @@ print(result.consensus)  # "APPROVED" or "REJECTED"
 print(result.signals)    # [] or ["HASH_MISMATCH", ...]
 ```
 
----
+## Coming Soon — AAOP
+
+**AAOP — Autonomous Agent Optimisation Protocol** is the next Vuneum module. It sits above AAIP and cuts AI inference costs by 30–50% through intelligent model routing, token leak detection, and execution-aware optimisation.
+
+| Feature | What it does |
+|---|---|
+| Model routing | Routes each task to the cheapest capable model |
+| Token leak detector | Alerts on redundant context and inefficient loops |
+| Cost calculator | Live price feed across all major AI providers |
+| Budget guardrails | Hard spending limits per agent per task |
+| Execution-aware | Uses PoE trace data — not just metadata — to optimise |
+
+Phase 1 target: 30–50% AI inference cost reduction.
+Planned for v2.0.0.
 
 ## CLI
+
+Everything works offline. No API key, no account, no config.
+
 ```bash
 aaip demo                               # full end-to-end protocol walkthrough
 aaip demo --fraud                       # fraudulent trace → REJECTED
@@ -200,39 +247,8 @@ aaip explorer --pretty                  # inspect a PoE trace
 aaip leaderboard                        # agent reputation rankings
 ```
 
----
-
-## Simulation Lab
-
-Research-grade adversarial testing — 7 attack scenarios, stdlib only.
-
-| Scenario | Attack vector | Protocol holds? |
-|---|---|---|
-| `sybil` | Fake validator injection | ✅ <5% success (stake-weighted) |
-| `collusion` | Coordinated validator ring | ✅ Capped at 24% |
-| `adversarial` | LLM judge manipulation | ✅ Ensemble correction limits to 14% |
-| `bribery` | Rational validator bribery | ✅ 0% (high-stake validators resist) |
-| `spam` | Resource exhaustion | ✅ <1% impact |
-| `mixed` | Multi-vector coordinated | ✅ Contained at 8% |
-```bash
-python simulation_lab/aaip_sim.py run --scenario collusion --validators 60 --tasks 5000
-python simulation_lab/aaip_sim.py benchmark    # run all scenarios
-```
-
----
-
-## Examples
-```bash
-python examples/openclaw/agent.py       # custom agent, zero dependencies
-python examples/langchain/agent.py      # LangChain + AAIP
-python examples/crewai/crew.py          # CrewAI + AAIP
-python examples/fraud_detection.py      # 4 fraud scenarios, all caught
-python demo_two_agent.py --mock --fast  # two-agent payment demo
-```
-
----
-
 ## Backend (Optional)
+
 ```bash
 # Docker (recommended)
 cd docker && cp .env.example .env && docker compose up -d
@@ -243,18 +259,13 @@ cd backend && pip install -e . && cp .env.example .env
 alembic upgrade head && uvicorn main:app --reload
 ```
 
----
-
 ## Roadmap
 
 | | Phase | Scope |
 |---|---|---|
-| ✅ | **v1 — Local** | Identity · PoE · validators · fraud detection · SDK · CLI |
-| ✅ | **v1.4 — Payments** | AEP integration · EVM adapter · Base Sepolia · on-chain anchor · 2% fee |
-| 🔜 | **v2 — Network** | On-chain validators · staking · slashing · decentralized escrow |
-| ⬡ | **v3 — Scale** | ZK-PoE · TEE integration · cross-chain identity |
-
----
+| ✅ | **v1.0.0 — Live** | Identity · PoE · validators · fraud detection · SDK · CLI · AEP payments · EVM adapter · Base Sepolia · on-chain anchor · 2% fee |
+| 🔜 | **v2 — Network** | On-chain validators · staking · slashing · decentralised escrow · AAOP cost layer |
+| ⬡ | **v3 — Scale** | ZK-PoE · TEE integration · cross-chain identity · Sentry Network |
 
 ## Documentation
 
@@ -266,13 +277,12 @@ alembic upgrade head && uvicorn main:app --reload
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture + diagrams |
 | [docs/PAYMENTS.md](docs/PAYMENTS.md) | AEP payment layer documentation |
 | [docs/security.md](docs/security.md) | Threat model + attack analysis |
+| [research/](research/) | PoE and CAV working papers (pre-Arxiv) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
-
----
 
 ## License
 
-MIT © [Vuneum](https://x.com/vuneum) — see [LICENSE](LICENSE)
+MIT © [Vuneum](https://vuneum.com) — see [LICENSE](LICENSE)
 
 ---
 

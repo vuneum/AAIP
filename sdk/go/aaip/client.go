@@ -1,5 +1,5 @@
 // Package aaip provides the Go SDK for the Autonomous Agent Infrastructure Protocol.
-// https://aaip.dev
+// https://vuneum.com
 //
 // Usage:
 //
@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	DefaultBaseURL = "https://api.aaip.dev"
+	DefaultBaseURL = "https://api.vuneum.com"
 	SDKVersion     = "1.0.0"
 )
 

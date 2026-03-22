@@ -1,5 +1,5 @@
 """
-aaip/engine/queue.py — Durable Task Queue  v1.4.0
+aaip/engine/queue.py — Durable Task Queue  v1.0.0
 
 A production-grade queue with three backends:
 

@@ -29,7 +29,7 @@
     "type": "git",
     "url": "https://github.com/aaip-protocol/aaip-js"
   },
-  "homepage": "https://aaip.dev",
+  "homepage": "https://vuneum.com",
   "peerDependencies": {
     "typescript": ">=5.0.0"
   },

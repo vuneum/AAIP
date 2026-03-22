@@ -44,7 +44,7 @@ def init(
     caps = [cap.strip() for cap in capabilities.split(",") if cap.strip()]
 
     manifest = {
-        "aaip_version": "1.0",
+        "aaip_version": "1.0.0",
         "agent_name": name,
         "owner": owner,
         "version": "1.0.0",

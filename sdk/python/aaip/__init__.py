@@ -1,6 +1,6 @@
 """
 AAIP Python SDK — Autonomous Agent Infrastructure Protocol
-https://aaip.dev
+https://vuneum.com
 
 Quick start:
     pip install aaip

@@ -10,15 +10,17 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │                        AAIP PROTOCOL STACK                      │
 ├─────────────────────────────────────────────────────────────────┤
-│  Layer 6 │  ESCROW & PAYMENT        Atomic settlement           │
+│  Layer 7 │  ON-CHAIN ANCHOR         PoEAnchor.sol · Base Sepolia│
+├──────────┼──────────────────────────────────────────────────────┤
+│  Layer 6 │  ESCROW & AEP PAYMENT    Atomic settlement · 2% fee  │
 ├──────────┼──────────────────────────────────────────────────────┤
 │  Layer 5 │  REPUTATION              Rolling trust score 0–100   │
 ├──────────┼──────────────────────────────────────────────────────┤
 │  Layer 4 │  CAV (Continuous Audit)  Hidden benchmark checks     │
 ├──────────┼──────────────────────────────────────────────────────┤
-│  Layer 3 │  VALIDATOR NETWORK       Consensus-Assisted Verify   │
+│  Layer 3 │  VALIDATOR NETWORK       ≥2/3 consensus · slash      │
 ├──────────┼──────────────────────────────────────────────────────┤
-│  Layer 2 │  PROOF OF EXECUTION      Signed execution trace      │
+│  Layer 2 │  PROOF OF EXECUTION      Signed trace · 7 signals    │
 ├──────────┼──────────────────────────────────────────────────────┤
 │  Layer 1 │  AGENT IDENTITY          ed25519 keypair + agent_id  │
 └─────────────────────────────────────────────────────────────────┘
@@ -167,9 +169,47 @@ Requester ──► [task_value] ──► AAIP Escrow
            Validators 0.2%
 ```
 
-**Supported:** USDC, USDT on Base, Ethereum, Tron, Solana
+**Live:** USDC on Base Sepolia (v1.0.0).
+Full multi-chain support (Ethereum, Tron, Solana) and RPC-verified
+settlement planned for v2.
 
 ---
+
+## Layer 7 — On-Chain Anchor
+
+Approved PoE hashes are permanently anchored on-chain via PoEAnchor.sol,
+creating an immutable public registry of verified agent executions.
+
+```
+Validator consensus: APPROVED
+        │
+        ▼
+AEP releases payment
+        │
+        ▼
+PoEAnchor.sol.anchor(poe_hash)
+        │
+        ▼
+BaseScan transaction — permanent, tamper-evident, public
+```
+
+**Live deployment:**
+
+| Contract | Address | Network |
+|---|---|---|
+| PoEAnchor.sol | 0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94 | Base Sepolia |
+
+[View on BaseScan →](https://sepolia.basescan.org/address/0xE96e10Ee9c7De591b21FdD7269C1739b0451Fe94)
+
+The on-chain anchor provides:
+- **Tamper-evidence** — poe_hash cannot be altered after anchoring
+- **Public verifiability** — any party can verify a PoE was approved
+- **Permanent record** — anchored hashes persist indefinitely on Base
+- **Dispute resolution** — on-chain record is primary evidence in any
+  payment dispute
+
+---
+
 
 ## Full Protocol Flow
 
@@ -200,6 +240,27 @@ Requester                  AAIP                   Agent
 
 ---
 
+## Planned Modules (Roadmap)
+
+### AAOP — Autonomous Agent Optimisation Protocol (v2)
+
+AAOP intercepts agent inference calls and applies cost optimisation
+before dispatch. Key capabilities: model routing by task complexity,
+token leak detection, live price feed across all providers, budget
+guardrails, and per-agent cost attribution. Phase 1 benchmarks show
+30–50% AI inference cost reduction. Designed to integrate with the
+PoE trace layer for execution-aware optimisation.
+
+### Sentry Network (v3)
+
+Cross-organisation threat intelligence layer. Every AAIP deployment
+contributes anonymised agent behaviour telemetry. Attack patterns
+detected in one organisation propagate as protection to all others
+within minutes. Follows the CrowdStrike Falcon model applied to the
+agent security layer. The network effect compounds with adoption —
+more deployments produce stronger intelligence for all.
+
+---
 ## Repository Structure
 
 ```

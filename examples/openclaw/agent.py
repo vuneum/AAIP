@@ -35,9 +35,9 @@ def my_agent(task: str) -> str:
 
     # Simulate tool calls
     search_results = [
-        "AAIP Protocol Overview — aaip.dev",
+        "AAIP Protocol Overview — vuneum.com",
         "Agent Trust Models 2025 — arxiv.org",
-        "Zero-Trust AI Infrastructure — blog.aaip.dev",
+        "Zero-Trust AI Infrastructure — blog.vuneum.com",
     ]
     fact = {"verdict": "SUPPORTED", "confidence": 0.87}
 

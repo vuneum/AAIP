@@ -338,7 +338,7 @@ class AgentIdentity:
             if stripped and len(stripped) < 8:
                 raise ValueError("Passphrase must be at least 8 characters")
         data = {
-            "aaip_version":    "1.0",
+            "aaip_version":    "1.0.0",
             "created_at":      int(time.time()),
             "agent_id":        self.agent_id,
             "public_key_hex":  self.public_key_hex,
