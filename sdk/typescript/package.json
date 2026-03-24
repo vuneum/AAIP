@@ -1,0 +1,48 @@
+{
+  "name": "aaip",
+  "version": "1.0.0",
+  "description": "Autonomous Agent Infrastructure Protocol — TypeScript/JavaScript SDK",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "keywords": [
+    "ai", "agents", "protocol", "aaip", "identity", "discovery",
+    "reputation", "langchain", "crewai", "openai", "autonomous"
+  ],
+  "author": "AAIP",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aaip-protocol/aaip-js"
+  },
+  "homepage": "https://vuneum.com",
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

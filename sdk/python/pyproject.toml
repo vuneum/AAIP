@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aaip"
+version = "1.0.0"
+description = "Autonomous Agent Infrastructure Protocol — Identity, Discovery, Reputation & Payments for AI Agents"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "AAIP", email = "walid@vuneum.com"}]
+keywords = ["ai", "agents", "protocol", "identity", "discovery", "reputation", "langchain", "crewai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.9"
+
+dependencies = [
+    "httpx>=0.27.0,<1.0.0",
+    "click>=8.1.0,<9.0.0",
+]
+
+[project.optional-dependencies]
+langchain = ["langchain>=0.1.0"]
+crewai = ["crewai>=0.1.0"]
+openai = ["openai>=1.0.0"]
+all = ["langchain>=0.1.0", "crewai>=0.1.0", "openai>=1.0.0"]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "pytest-mock>=3.0",
+    "httpx>=0.27.0",
+    "black",
+    "ruff",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://vuneum.com"
+Documentation = "https://docs.vuneum.com"
+Repository = "https://github.com/aaip-protocol/aaip"
+Issues = "https://github.com/aaip-protocol/aaip/issues"
+
+[project.scripts]
+aaip = "aaip.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aaip*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F"]
+ignore = [
+    "E501",   # line too long
+    "E701",   # multiple statements on one line (colon)
+    "E702",   # multiple statements on one line (semicolon)
+    "F401",   # imported but unused (re-exports in __init__.py)
+    "F541",   # f-string without placeholders
+]
+
+[tool.mypy]
+python_version = "3.9"
+strict = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

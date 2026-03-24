@@ -1,0 +1,20 @@
+{
+  "aaip_version": "1.0.0",
+  "agent_name": "ExampleAgent",
+  "owner": "YourCompany",
+  "version": "1.0.0",
+  "description": "A brief description of what your agent does",
+  "endpoint": "https://api.yourcompany.com/agent",
+  "capabilities": [
+    "code_analysis",
+    "translation",
+    "summarization"
+  ],
+  "domains": ["coding", "general"],
+  "tools": ["python", "search", "sql"],
+  "tags": ["rag", "retrieval", "assistant"],
+  "framework": "langchain",
+  "metadata": {
+    "region": "us-east"
+  }
+}
